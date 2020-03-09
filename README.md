@@ -2,10 +2,11 @@
 Praca inżynierska.  
 
 ## Narzędzia  
-  - Docker
-  - Intellij Idea
-  - Visual Studio
-  - Data Grip
+- Docker
+- Intellij Idea
+- Visual Studio
+- Data Grip
+- Postman
 
 ## Backend  
 Aplikacja działa na `localhost:8080`  
@@ -27,3 +28,12 @@ Aplikacja działa na `localhost:3000`
 ### Pobranie zależności i start aplikacji  
 Pobranie zależności: `npm install`  
 Start: `npm start`  
+
+## Baza danych  
+Aplikazja dziala na porcie `5432`  
+
+### Wymagania  
+- Docker:
+Instalacja: [Link](https://docs.docker.com/compose/install/)  
+- Docker Compose:
+Instalacja: [Link](https://docs.docker.com/compose/install/)  

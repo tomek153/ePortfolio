@@ -34,6 +34,6 @@ Aplikazja dziala na porcie `5432`
 
 ### Wymagania  
 - Docker:
-Instalacja: [Link](https://docs.docker.com/compose/install/)  
+* Instalacja: [Link](https://docs.docker.com/install/)  
 - Docker Compose:
-Instalacja: [Link](https://docs.docker.com/compose/install/)  
+* Instalacja: [Link](https://docs.docker.com/compose/install/)  

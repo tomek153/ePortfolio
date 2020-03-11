@@ -42,9 +42,9 @@ Instalacja: [Link](https://docs.docker.com/compose/install/)
 Aby utworzyć baze:
 - Przejdź do katalogu bazy danych `cd ePortfolio-database`,  
 - Nadaj uprawnienia dla skryptów `chmod +x create-db.sh docker-compose.sh postgres-up.sh sql-exec.sh clear-db.sh`,  
-- Utwórz kontener Postgres `postgres-up.sh`,  
-- Utwórz baze wraz z tabelami `create-db.sh`.  
+- Utwórz kontener Postgres `./postgres-up.sh`,  
+- Utwórz baze wraz z tabelami `./create-db.sh`.  
 
-Kiedy baza raz została utworzona wystarczy aby ja uruchomić wystarczy wywołać skrypt `postgres-up.sh`.  
+Kiedy baza raz została utworzona, aby ja uruchomić wystarczy wywołać skrypt `./postgres-up.sh` lub `docker container start eportfolio_postgres_1`.  
 
 Aby wyczyścić zawartość bazy danych wykonaj `./clear-db.sh`.  

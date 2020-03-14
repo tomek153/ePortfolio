@@ -50,7 +50,7 @@ html, body {
 
 .slider-container-my {
     width: 800px;
-    height: 400px;
+    height: 395px;
     background-color: #5c5c5c;
     box-shadow:  0 0 10px  rgb(0,0,0);
       -moz-box-shadow: 0 0 10px rgb(0,0,0);
@@ -59,18 +59,6 @@ html, body {
     position: fixed;
     right: 8%;
     bottom: 10%;
-}
-
-.carousel-inner {
-    border-radius: 20px;
-}
-
-.carousel.slide {
-    border-radius: 20px;
-}
-
-.active.carousel-item > img {
-    border-radius: 20px;
 }
 
 .home-description-my {
@@ -92,4 +80,81 @@ html, body {
 .home-description-my > p {
     margin-left: 10px;
     color: #7c8a89;
+}
+
+.carousel-item {
+    color: #fff;
+}
+
+.carousel-item > img {
+    filter: contrast(40%);
+}
+
+.page-not-found-image {
+    width: 500px;
+    position: fixed;
+    right: 16%;
+    bottom: 10%;
+}
+
+.login-container-my {
+    width: 65%;
+    height: 100%;
+    float: right;
+    position: relative;
+}
+
+.login-form-my {
+    width: 600px;
+    height: 300px;
+    margin: 0;
+    position: absolute;
+    top: 48%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.login-logo-my {
+    width: 200px;
+    height: 93px;
+    margin: 0;
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.login-form-my > form > h3 {
+    color: rgba(0, 0, 0, 0.8);
+}
+
+.login-form-my > form > p {
+    color: rgba(0, 0, 0, 0.8);
+}
+
+.login-form-my > form > p:nth-child(3) {
+    font-size: 15px;
+}
+
+.login-links {
+    color: #31b4cb;
+}
+
+.login-links:hover {
+    color: #1092a9;
+}
+
+.login-button-my {
+    background-color: #eb4a4a;
+    border-color: #eb4a4a;
+}
+
+.login-button-my:hover {
+    background-color: #da3939;
+    border-color: #da3939;
+}
+
+.login-button-my:active {
+    background-color: #da3939;
+    border-color: #da3939;
 }

@@ -1,14 +1,14 @@
 import React from 'react';
 import './App.css';
 
-import HomeHeader from "./components/home-header";
-import HomeContent from "./components/home-content";
+import ContentRoute from './route/content-route';
+import HeaderRoute from './route/header-route';
 
 function App() {
   return (
     <>
-      <HomeHeader />
-      <HomeContent />
+      <HeaderRoute />
+      <ContentRoute />
     </>
   );
 }

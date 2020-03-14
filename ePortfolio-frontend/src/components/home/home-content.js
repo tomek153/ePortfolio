@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import Carousel from 'react-bootstrap/Carousel'
 
-import '../css/start.css';
-import ImageSlider from '../images/slider.png';
+
+import ImageSlider from '../../images/slider.png';
+import ImageSlider1 from '../../images/slider-1.png';
 
 class HomeContent extends Component {
     
@@ -31,8 +32,8 @@ class HomeContent extends Component {
                         <Carousel.Item>
                             <img
                                 className="d-block w-100"
-                                src={ImageSlider}
-                                alt="Third slide"
+                                src={ImageSlider1}
+                                alt="Second slide"
                             />
 
                             <Carousel.Caption>

@@ -1,0 +1,95 @@
+html, body {
+    height: 100%;
+}
+
+.header-image-logo {
+    margin-left: 50px;
+    width: 60%;
+}
+
+.navbar-my {
+    background-color: rgba(248, 249, 250, 0.9)!important;
+    box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.8);
+}
+
+#root {
+    background-color: rgba(248, 249, 250, 0.8);
+    background-image: url("../images/home-background-3-1.png");
+    background-position: left;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    height: 100%;
+}
+
+.container-my {
+    width: 100%;
+}
+
+.header-btn-my {
+    margin-left: 10px;
+}
+
+.header-btn-login-my {
+    color: #eb4a4a;
+    border-color: #eb4a4a;
+}
+
+.header-btn-login-my:hover {
+    background-color: #eb4a4a;
+    border-color: #eb4a4a;
+}
+
+.header-btn-register-my {
+    color: #31b4cb;
+}
+
+.header-btn-register-my:hover {
+    color: #20a3ba;
+}
+
+.slider-container-my {
+    width: 800px;
+    height: 400px;
+    background-color: #5c5c5c;
+    box-shadow:  0 0 10px  rgb(0,0,0);
+      -moz-box-shadow: 0 0 10px rgb(0,0,0);
+      -webkit-box-shadow: 0 0 10px rgb(0,0,0);
+      -o-box-shadow: 0 0 10px rgb(0,0,0);
+    position: fixed;
+    right: 8%;
+    bottom: 10%;
+}
+
+.carousel-inner {
+    border-radius: 20px;
+}
+
+.carousel.slide {
+    border-radius: 20px;
+}
+
+.active.carousel-item > img {
+    border-radius: 20px;
+}
+
+.home-description-my {
+    width: 800px;
+    height: 230px;
+    float: right;
+    margin-right: 10%;
+    margin-top: 100px;
+}
+
+.home-description-my > hr {
+    border-top: 2px solid #888
+}
+
+.home-description-my > h1 {
+    color: #555;
+}
+
+.home-description-my > p {
+    margin-left: 10px;
+    color: #7c8a89;
+}

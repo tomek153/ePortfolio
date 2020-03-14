@@ -1,6 +1,12 @@
 # ePortfolio  
 Praca inżynierska.  
 
+## Kolorystyka
+W projekcie korzystamy z 3 podstawowych kolorów (z logo):
+- niebieski: `#31b4cb`
+- żółty: `#ede576`
+- czerwony: `#eb4a4a`
+
 ## Narzędzia  
 - Docker
 - Intellij Idea

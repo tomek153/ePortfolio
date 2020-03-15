@@ -6,14 +6,21 @@ import ImageLogo from '../../images/logo.png';
 
 class LoginContent extends Component {
     
-    render() {
+    showPassword() {
+        var x = document.getElementById("login-password-my");
+        if (x.type === "password")
+          x.type = "text";
+        else
+          x.type = "password";
+    }
 
+    render() {
         return (
             <div className="login-container-my">
-                <img 
+                <a href="/"><img 
                     className="login-logo-my"
                     src={ImageLogo}
-                />
+                /></a>
                 <div className="login-form-my">
                     <Form>
                         <h3>Witaj !</h3>
@@ -31,10 +38,10 @@ class LoginContent extends Component {
 
                         <Form.Group controlId="formBasicPassword">
                             <Form.Label>Hasło</Form.Label>
-                            <Form.Control type="password" placeholder="Wprowadź hasło..." />
+                            <Form.Control type="password" placeholder="Wprowadź hasło..." id="login-password-my"/>
                         </Form.Group>
                         <Form.Group controlId="formBasicCheckbox">
-                            <Form.Check type="checkbox" label="Pokaż hasło" />
+                            <Form.Check type="checkbox" label="Pokaż hasło" onClick={this.showPassword}/>
                         </Form.Group>
                         <Button variant="primary" type="submit" className="login-button-my" style={{float: 'right'}}>
                             Zaloguj się

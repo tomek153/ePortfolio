@@ -14,7 +14,7 @@ html, body {
 
 #root {
     background-color: rgba(248, 249, 250, 0.8);
-    background-image: url("../images/home-background-3-1.png");
+    background-image: url("../images/home-background.png");
     background-position: left;
     background-size: contain;
     background-repeat: no-repeat;
@@ -98,7 +98,7 @@ html, body {
 }
 
 .login-container-my {
-    width: 65%;
+    width: 60%;
     height: 100%;
     float: right;
     position: relative;
@@ -122,13 +122,19 @@ html, body {
     top: 20%;
     left: 50%;
     transform: translate(-50%, -50%);
+    transition: ease-in-out .5s;
 }
 
-.login-form-my > form > h3 {
+.login-logo-my:hover {
+    width: 220px;
+    height: 102px;
+}
+
+.login-form-my > form > h3, .register-form-my > form > h3 {
     color: rgba(0, 0, 0, 0.8);
 }
 
-.login-form-my > form > p {
+.login-form-my > form > p, .register-form-my > form > p {
     color: rgba(0, 0, 0, 0.8);
 }
 
@@ -147,6 +153,7 @@ html, body {
 .login-button-my {
     background-color: #eb4a4a;
     border-color: #eb4a4a;
+    box-shadow:  0 0 4px 0px  rgb(0,0,0);
 }
 
 .login-button-my:hover {
@@ -157,4 +164,50 @@ html, body {
 .login-button-my:active {
     background-color: #da3939;
     border-color: #da3939;
+}
+
+.register-container-my {
+    width: 60%;
+    height: 100%;
+    float: left;
+    position: relative;
+}
+
+.register-form-my {
+    width: 800px;
+    height: 300px;
+    margin: 0;
+    position: absolute;
+    top: 52%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.register-logo-my {
+    width: 200px;
+    height: 93px;
+    margin: 0;
+    position: absolute;
+    top: 24%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: ease-in-out .5s;
+}
+
+.register-logo-my:hover {
+    width: 220px;
+    height: 102px;
+}
+
+.register-have-account {
+    font-size: 18px;
+    margin-top: 22px;
+}
+
+.register-have-account > a {
+    color: #31b4cb;
+}
+
+.register-have-account > a:hover {
+    color: #1092a9;
 }

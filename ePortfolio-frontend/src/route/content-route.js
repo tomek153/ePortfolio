@@ -5,6 +5,7 @@ import HomeContent from '../components/home/home-content';
 import NotFoundContent from '../components/page-not-found';
 import LoginContent from '../components/home/home-login-content';
 import RegisterContent from '../components/home/home-register-content';
+import RegulationsContent from '../components/home/home-regulations-content';
 
 const ContentRoute = () => (
     <BrowserRouter>
@@ -12,6 +13,7 @@ const ContentRoute = () => (
             <Route exact path="/" component={HomeContent} />
             <Route exact path="/logowanie" component={LoginContent} />
             <Route exact path="/rejestracja" component={RegisterContent} />
+            <Route exact path="/regulamin" component={RegulationsContent} />
             <Route path='*' component={NotFoundContent}/>
         </Switch>
     </BrowserRouter>

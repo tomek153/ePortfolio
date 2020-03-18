@@ -16,7 +16,7 @@ class LoginContent extends Component {
 
     render() {
         return (
-            <div className="login-container-my">
+            <div className="home-right-container-my">
                 <a href="/"><img 
                     className="login-logo-my"
                     src={ImageLogo}

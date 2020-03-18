@@ -63,7 +63,7 @@ html, body {
 
 .home-description-my {
     width: 800px;
-    height: 230px;
+    min-height: 230px;
     float: right;
     margin-right: 10%;
     margin-top: 100px;
@@ -97,7 +97,7 @@ html, body {
     bottom: 10%;
 }
 
-.login-container-my {
+.home-right-container-my {
     width: 60%;
     height: 100%;
     float: right;
@@ -154,16 +154,40 @@ html, body {
     background-color: #eb4a4a;
     border-color: #eb4a4a;
     box-shadow:  0 0 4px 0px  rgb(0,0,0);
+    transition: ease-in-out .3s;
+}
+.login-button-my:focus {
+    background-color: #eb4a4a;
+    border-color: #eb4a4a;
+    box-shadow:  0 0 4px 0px  rgb(0,0,0);
+    transition: ease-in-out .3s;
+}
+.login-button-my:active {
+    background-color: #eb4a4a;
+    border-color: #eb4a4a;
+    box-shadow:  0 0 4px 0px  rgb(0,0,0);
+    transition: ease-in-out .3s;
+}
+
+.login-button-my:disabled {
+    background-color: #eb4a4a;
+    border-color: #eb4a4a;
+    box-shadow:  0 0 4px 0px  rgb(0,0,0);
+    transition: ease-in-out .3s;
+}
+
+.login-button-my:disabled:hover {
+    background-color: #eb4a4a;
+    border-color: #eb4a4a;
+    box-shadow:  0 0 4px 0px  rgb(0,0,0);
+    transition: ease-in-out .3s;
+    cursor: auto;
 }
 
 .login-button-my:hover {
     background-color: #da3939;
     border-color: #da3939;
-}
-
-.login-button-my:active {
-    background-color: #da3939;
-    border-color: #da3939;
+    box-shadow:  0 0 8px 0px  rgb(0,0,0);
 }
 
 .register-container-my {
@@ -210,4 +234,127 @@ html, body {
 
 .register-have-account > a:hover {
     color: #1092a9;
+}
+
+.form-value-alert {
+    color: #de473c;
+    font-size: 15px;
+    margin-left: 8px;
+    float: right;
+    display: none;
+}
+
+#register-password-tooltip {
+    font-size: 18px;
+    margin-left: 5px;
+}
+
+#register-password-tooltip:hover {
+    cursor: pointer;
+    color: #555;
+}
+
+#popover-basic > div.popover-body > ul {
+    list-style-image: url(../images/check-solid.png);
+}
+
+#popover-basic > div.popover-body > ul > li {
+    margin-left: -10px;
+}
+
+.tooltip-register-password-header {
+    background-color: #666;
+    color: #eee;
+}
+.input-group-prepend {
+    border: none;
+    height: 38px;
+    width: 44px;
+    border-top-right-radius: .25rem;
+    border-bottom-right-radius: .25rem;
+}
+.input-group {
+    border-top-right-radius: .25rem;
+    border-bottom-right-radius: .25rem;
+}
+#inputGroupPrepend {
+    background-color: #fff;
+    border-left: none;
+    border-top-right-radius: .25rem;
+    border-bottom-right-radius: .25rem;
+    color: #999;
+}
+#inputGroupPrepend:hover {
+    color: #555;
+    cursor: pointer;
+}
+
+i.fas.fa-eye {
+    transition: ease-in-out .3s;
+}
+
+#formGridPassword {
+    border-right: none;
+}
+
+#formGridPassword:focus {
+    box-shadow: 0 0 0 0 rgba(0,123,255,.25);
+}
+
+form > div:nth-child(5) > div:nth-child(2) > div {
+    border-radius: .25rem;
+}
+i.fas.fa-eye-slash {
+    transition: ease-in-out .3s;
+    display: none;
+    width: 18px;
+}
+
+#checkbox-regulations-link {
+    color: #de473c;
+    font-weight: 500;
+}
+
+#checkbox-regulations-link:hover {
+    color: #bc251a;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.w3-animate-opacity{animation:opac 0.8s}@keyframes opac{from{opacity:0} to{opacity:1}}
+
+#successIconModal {
+    color: #31b4cb;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.modal-close-btn {
+    color: #555;
+    font-weight: bold;
+    transition: ease-in-out .3s;
+}
+
+.modal-close-btn:hover {
+    color: #333;
+    text-decoration: underline;
+}
+
+.modal-redirect-btn {
+    background-color: #de473c;
+    color: #fff;
+    border-color: #de473c;
+    box-shadow: 0px 0px 2px 0px #000;
+}
+
+.modal-redirect-btn:hover {
+    box-shadow: 0px 0px 4px 0px #000;
+    transition: ease-in-out .3s;
+    background-color: #de473c;
+    border-color: #de473c;
+}
+
+.modal-redirect-btn:focus {
+    background-color: #de473c;
+    border-color: #de473c;
 }

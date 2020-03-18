@@ -200,7 +200,7 @@ class LoginContent extends Component {
         root.style.backgroundPosition = "right";
         root.style.backgroundImage = "url("+BackgroundLogo+")";
 
-        // document.getElementsByClassName("login-button-my")[0].disabled = true;
+        document.getElementsByClassName("login-button-my")[0].disabled = true;
     }
 
     changePasswordInputStyleIn() {

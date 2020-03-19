@@ -325,14 +325,14 @@ class LoginContent extends Component {
                         <p className="register-have-account">Posiadasz już konto? <a href="/logowanie">Zaloguj się</a></p>
                     </Form>
                 </div>
-                {this.state.modalSuccesShow && <Modal show size="lg" aria-labelledby="contained-modal-title-vcenter" centered >
+                <Modal show={this.state.modalSuccesShow} size="lg" aria-labelledby="contained-modal-title-vcenter" centered >
                     <Modal.Header style={{color: "#31b4cb", backgroundColor: "rgba(49, 180, 203, 0.15)"}}>
                         <Modal.Title id="contained-modal-title-vcenter">
                             Konto zostało utworzone!
                         </Modal.Title>
                     </Modal.Header>
                     <Modal.Body style={{textAlign: "center"}}>
-                        <i class="fas fa-check fa-5x" id="successIconModal"></i>
+                        <i className="fas fa-check fa-5x" id="successIconModal"></i>
                         <p style={{color: "#444"}}>
                             Tworzenie konta zakończone. Na podany <b>adres email</b> został wysłany <b>link aktywacyjny</b>, potwierdź go aby móc się <b>zalogować</b>.
                         </p>
@@ -341,15 +341,15 @@ class LoginContent extends Component {
                         <Button variant="link" onClick={this.closeModal.bind(this)} className="modal-close-btn">Zamknij</Button>
                         <Button className="modal-redirect-btn" href="/logowanie">Przejdź do logowania</Button>
                     </Modal.Footer>
-                </Modal>}
-                {this.state.modalFailedShow && <Modal show size="lg" aria-labelledby="contained-modal-title-vcenter" centered >
+                </Modal>
+                <Modal show={this.state.modalFailedShow} size="lg" aria-labelledby="contained-modal-title-vcenter" centered >
                     <Modal.Header style={{color: "#de473c", backgroundColor: "rgba(222, 71, 60, 0.15)"}}>
                         <Modal.Title id="contained-modal-title-vcenter">
                             Konto nie zostało utworzone!
                         </Modal.Title>
                     </Modal.Header>
                     <Modal.Body style={{textAlign: "center"}}>
-                        <i class="fas fa-exclamation fa-5x" id="successIconModal" style={{color: "#de473c"}}></i>
+                        <i className="fas fa-exclamation fa-5x" id="successIconModal" style={{color: "#de473c"}}></i>
                         <p style={{color: "#444"}}>
                             Konto <b>nie zostało</b> utworzone, ponieważ <b>istnieje</b> użytkownik z podanym adresem email. Spróbuj ponownie z <b>innym</b> adresem email.
                         </p>
@@ -357,7 +357,7 @@ class LoginContent extends Component {
                     <Modal.Footer>
                         <Button variant="link" className="modal-close-btn" onClick={this.closeModal.bind(this)}>Zamknij</Button>
                     </Modal.Footer>
-                </Modal>}
+                </Modal>
             </div>
         )
     }

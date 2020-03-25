@@ -17,20 +17,22 @@ public class User {
     private final String password;
     @NotBlank
     private final String role;
-
+    private final boolean confirmed;
 
     public User(@JsonProperty("id") UUID id,
                 @JsonProperty("firstName") String firstName,
                 @JsonProperty("lastName") String lastName,
                 @JsonProperty("email") String email,
                 @JsonProperty("password") String password,
-                @JsonProperty("role") String role) {
+                @JsonProperty("role") String role,
+                @JsonProperty("confirmed") boolean confirmed) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.role = role;
+        this.confirmed = confirmed;
     }
 
     public UUID getId() {
@@ -55,5 +57,9 @@ public class User {
 
     public String getRole() {
         return role;
+    }
+
+    public boolean isConfirmed() {
+        return confirmed;
     }
 }

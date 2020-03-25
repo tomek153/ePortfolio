@@ -6,6 +6,7 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Modal from 'react-bootstrap/Modal';
+import Spinner from 'react-bootstrap/Spinner';
 
 import superagent from 'superagent';
 
@@ -31,7 +32,8 @@ class LoginContent extends Component {
                 regulations: false
             },
             modalSuccesShow: false,
-            modalFailedShow: false
+            modalFailedShow: false,
+            modalLoadingMessage: false
         }
     }
 
@@ -225,19 +227,35 @@ class LoginContent extends Component {
         this.checkFormDataValid();
     }
 
+    clearField() {
+        document.getElementById("formGridFirstName").value = "";
+        document.getElementById("formGridLastName").value = "";
+        document.getElementById("formGridEmail").value = "";
+        document.getElementById("formGridPassword").value = "";
+        document.getElementById("formBasicCheckbox").checked = false;
+        this.state.newUser.firstName = "";
+        this.state.newUser.lastName = "";
+        this.state.newUser.email = "";
+        this.state.newUser.password = "";
+    }
+
     submitFormAndSend(event) {
+        this.setState({modalLoadingMessage: true});
         event.preventDefault();
         superagent
             .post('http://localhost:8080/api/users')
             .send(this.state.newUser)
             .end((err, res) => {
                 if(err) {
-                    if(res.body.message == "User exist.")
+                    if(res.body.message == "User exist."){
+                        this.setState({modalLoadingMessage: false});
                         this.setState({modalFailedShow: true});
-                    else
+                    } else
                         alert("Registration failed");
                     return;
                 } else {
+                    this.clearField();
+                    this.setState({modalLoadingMessage: false});
                     this.setState({modalSuccesShow: true});
                 }
             }
@@ -325,7 +343,7 @@ class LoginContent extends Component {
                         <p className="register-have-account">Posiadasz już konto? <a href="/logowanie">Zaloguj się</a></p>
                     </Form>
                 </div>
-                <Modal show={this.state.modalSuccesShow} size="lg" aria-labelledby="contained-modal-title-vcenter" centered >
+                <Modal show={this.state.modalSuccesShow} size="lg" aria-labelledby="contained-modal-title-vcenter"  style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
                     <Modal.Header style={{color: "#31b4cb", backgroundColor: "rgba(49, 180, 203, 0.15)"}}>
                         <Modal.Title id="contained-modal-title-vcenter">
                             Konto zostało utworzone!
@@ -335,14 +353,14 @@ class LoginContent extends Component {
                         <i className="fas fa-check fa-5x" id="successIconModal"></i>
                         <p style={{color: "#444"}}>
                             Tworzenie konta zakończone. Na podany <b>adres email</b> został wysłany <b>link aktywacyjny</b>, potwierdź go aby móc się <b>zalogować</b>.
+                            <br /><b>Link</b> aktywacyjny będzie <b>ważny</b> przez <b>30 min</b>.
                         </p>
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="link" onClick={this.closeModal.bind(this)} className="modal-close-btn">Zamknij</Button>
-                        <Button className="modal-redirect-btn" href="/logowanie">Przejdź do logowania</Button>
                     </Modal.Footer>
                 </Modal>
-                <Modal show={this.state.modalFailedShow} size="lg" aria-labelledby="contained-modal-title-vcenter" centered >
+                <Modal show={this.state.modalFailedShow} size="lg" aria-labelledby="contained-modal-title-vcenter" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
                     <Modal.Header style={{color: "#de473c", backgroundColor: "rgba(222, 71, 60, 0.15)"}}>
                         <Modal.Title id="contained-modal-title-vcenter">
                             Konto nie zostało utworzone!
@@ -357,6 +375,9 @@ class LoginContent extends Component {
                     <Modal.Footer>
                         <Button variant="link" className="modal-close-btn" onClick={this.closeModal.bind(this)}>Zamknij</Button>
                     </Modal.Footer>
+                </Modal>
+                <Modal show={this.state.modalLoadingMessage} id="container-spinner-modal-register-request" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
+                    <Spinner animation="grow" variant="light" id="spinner-modal-register-request"/>
                 </Modal>
             </div>
         )

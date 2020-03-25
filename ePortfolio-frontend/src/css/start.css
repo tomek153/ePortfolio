@@ -358,3 +358,48 @@ i.fas.fa-eye-slash {
     background-color: #de473c;
     border-color: #de473c;
 }
+
+#spinner-modal-register-request {
+    width: 8rem;
+    height: 8rem;
+    margin-left: auto;
+    margin-right: auto;
+    color: #eb4a4a!important;
+}
+
+#container-spinner-modal-register-request > div {
+    background-color: transparent;
+    border: none;
+}
+
+.resend-link-button {
+    color: #fff;
+    background-color: #31b4cb;
+    border-color: #31b4cb;
+    box-shadow: 0px 0px 2px 0px #000;
+    transition: ease-in-out .3s;
+}
+
+.resend-link-button:hover {
+    box-shadow: 0px 0px 4px 0px #000;
+    background-color: #20a3ba;
+    border-color: #20a3ba;
+}
+
+.resend-link-button:focus {
+    box-shadow: 0px 0px 4px 0px #000;
+    background-color: #20a3ba;
+    border-color: #20a3ba;
+}
+
+.resend-link-button:active {
+    box-shadow: 0px 0px 4px 0px #000!important;
+    background-color: #20a3ba!important;
+    border-color: #20a3ba!important;
+}
+
+#resend-link-spinner {
+    margin-left: 37px;
+    margin-right: 37px;
+    color: #31b4cb!important;
+}

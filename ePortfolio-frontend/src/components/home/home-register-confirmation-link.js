@@ -104,7 +104,8 @@ class ConfirmationLinkSuccess extends Component {
         .send({ idKey: this.props.match.params.idKey, registerKey: this.props.match.params.registerKey })
         .end((err, res) => {
             if (err) {
-                alert("Coś poszło nie tak!");
+                this.closeModal();
+                this.setState({modalError404: true});
             } else {
                 let status = res.body.status;
                 let message = res.body.message;

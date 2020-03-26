@@ -5,7 +5,7 @@ import Button from 'react-bootstrap/Button';
 import ImageLogo from '../../images/logo.png';
 
 class LoginContent extends Component {
-    
+
     showPassword() {
         var x = document.getElementById("login-password-my");
         if (x.type === "password")
@@ -47,7 +47,7 @@ class LoginContent extends Component {
                             Zaloguj się
                         </Button>
                         <Button variant="link" style={{float: 'right'}} className="login-links">
-                            Nie pamiętasz hasła?
+                            <a href={"/zapomnialem_hasla"} >Nie pamiętasz hasła? </a>
                         </Button>
                     </Form>
                 </div>

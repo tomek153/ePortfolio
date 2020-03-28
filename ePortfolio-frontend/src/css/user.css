@@ -1,0 +1,12 @@
+/* START | CSS CODE: USER_PROFILE | AUTHOR: MICHAŁ STANCELEWSKI */
+
+.nav-link.disabled{ 
+    cursor: not-allowed;
+    pointer-events: auto;
+}
+
+.nav-link.disabled:focus{
+    outline: none;
+}
+
+/* END | CSS CODE: USER_PROFILE | AUTHOR: MICHAŁ STANCELEWSKI */

@@ -9,4 +9,37 @@
     outline: none;
 }
 
+/*
+.development-div-outter{
+    padding: 8% 15%;
+}
+
+.development-title{
+    color: #bababa;
+    font-weight: normal;
+    padding-bottom: 10px;
+}
+
+.development-button{
+    display: block;
+    margin: 0 0 15px 0;
+    padding-top: 15px;
+    padding-bottom: 3px;
+    background-color: rgba(0,0,0,0.6)
+}
+.development-button:hover{
+    cursor: pointer;
+    background-color: rgba(0,0,0,0.75)
+}
+
+.development-div{
+    background-color: rgba(30,30,30,0.8);
+    padding: 20px 15px;
+    margin: 20px auto;
+    text-align: center;
+    color: #ffffff;
+    font-weight: bold;
+    letter-spacing: 0.2em;
+}
+*/
 /* END | CSS CODE: USER_PROFILE | AUTHOR: MICHAŁ STANCELEWSKI */

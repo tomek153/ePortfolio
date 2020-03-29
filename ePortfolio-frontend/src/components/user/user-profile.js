@@ -1,24 +1,4 @@
 import React, { Component } from 'react';
-import Dropdown from 'react-dropdown'
-import 'react-dropdown/style.css'
-
-const defaultOption = options[0]
-const options = [
-    { value: 'one', label: 'One' },
-    { value: 'two', label: 'Two', className: 'myOptionClassName' },
-    {
-     type: 'group', name: 'group1', items: [
-       { value: 'three', label: 'Three', className: 'myOptionClassName' },
-       { value: 'four', label: 'Four' }
-     ]
-    },
-    {
-     type: 'group', name: 'group2', items: [
-       { value: 'five', label: 'Five' },
-       { value: 'six', label: 'Six' }
-     ]
-    }
-  ]
 
 class UserProfile extends Component {
 
@@ -71,9 +51,27 @@ class UserProfile extends Component {
                 <div className="row">
                     <div className="col-md-12 col-lg-6">
                         {/* START - ONLY FOR DEVELEPMENT! */}
-                        <Dropdown options={options} onChange={this._onSelect} value={defaultOption} placeholder="Select an option" />
+                        {/*
+                        <div className="col-md-12 col-lg-12 development-div-outter"> 
+                            <div className="col-md-12 col-lg-12 development-div"> 
+                            
+                                <p className="development-title"><i>DEBUG MODE</i></p>
 
+                                <div className="col-md-12 col-lg-12 development-button">
 
+                                    <p>Jan Kowalski</p>
+
+                                </div>
+
+                                <div className="col-md-12 col-lg-12 development-button">
+
+                                    <p>Mariusz Nowak</p>
+
+                                </div>
+
+                            </div>
+                        </div>
+                        */}
                         {/* END - ONLY FOR DEVELEPMENT! */}
                     </div>
 

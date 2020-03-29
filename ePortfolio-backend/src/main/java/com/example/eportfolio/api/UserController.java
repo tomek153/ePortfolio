@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
@@ -46,6 +47,13 @@ public class UserController {
     @ResponseBody
     public User getUserByEmail (@PathVariable ("email") String email) {
         return userService.getUserByEmail (email)
+                .orElse(null);
+    }
+
+    @RequestMapping (value = "/api/users/id/{uuid}", method = GET)
+    @ResponseBody
+    public User getUserByID (@PathVariable ("uuid") UUID id) {
+        return userService.getUserByID (id)
                 .orElse(null);
     }
 

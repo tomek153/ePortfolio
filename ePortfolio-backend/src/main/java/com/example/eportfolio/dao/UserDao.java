@@ -1,6 +1,7 @@
 package com.example.eportfolio.dao;
 
 import com.example.eportfolio.model.User;
+import com.example.eportfolio.model.UserBio;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,9 +20,10 @@ public interface UserDao {
 
     Optional<User> getUserByEmail(String email);
 
+    Optional<User> getUserByID(UUID id);
+
     int deleteUser(String email);
 
     int updateUser(String email, User user);
-
 
 }

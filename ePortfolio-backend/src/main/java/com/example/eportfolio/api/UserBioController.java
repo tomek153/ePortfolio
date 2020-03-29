@@ -30,7 +30,7 @@ public class UserBioController {
         this.userBioService = userBioService;
     }
 
-    @RequestMapping(value = "/api/users-bio/{user_uuid}", method = GET)
+    @RequestMapping(value = "/api/users-bio/id/{user_uuid}", method = GET)
     @ResponseBody
     public Optional<UserBio> getUserBioByID(@PathVariable("user_uuid") UUID id) {
         return userBioService.getUserBioByID(id);

@@ -20,17 +20,8 @@ class UserProfile extends Component {
                         </div>
                         <div className="col-md-12 page-content">
 
-                            <Tabs defaultActiveKey="user-bio" id="uncontrolled-tab-example">
-                                <Tab eventKey="user-bio" title="Dane osobowe">
-                                    <p>pierdu pierdu dodaj formularz</p>
-                                </Tab>
-                                <Tab eventKey="user-education" title="Wykształcenie" disabled >
-                                    <p>//TODO</p>
-                                </Tab>
-                                <Tab eventKey="user-experience" title="Doświadczenie" disabled>
-                                    <p>//TODO</p>
-                                </Tab>
-                            </Tabs>
+                            <p>pierdu pierdu dodaj formularz</p>
+
 
                         </div>
                     </div>

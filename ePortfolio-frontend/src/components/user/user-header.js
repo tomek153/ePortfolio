@@ -20,7 +20,7 @@ class HomeHeader extends Component {
                     </Navbar.Brand>
                     <Form inline>
                         <FormControl type="text" placeholder="Search" className="mr-sm-2" />
-                        <Button variant="outline-primary" className="header-btn-my header-btn-usersettings-my" href="/moj-profil">Ustawienia</Button>
+                        <Button variant="outline-primary" className="header-btn-my header-btn-usersettings-my" href="/moj-profil">Moje dane</Button>
                         <Button variant="link" className="header-btn-my header-btn-logout-my" href="#">Wyloguj</Button>
                     </Form>
                 </Navbar>

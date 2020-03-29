@@ -17,3 +17,10 @@ CREATE TABLE IF NOT EXISTS confirmation_emails (
     status boolean NOT NULL,
     time_stamp timestamp NOT NULL DEFAULT now()
 );
+
+CREATE TABLE IF NOT EXISTS reset_password_emails (
+	ID UUID PRIMARY KEY NOT NULL,
+    user_uuid UUID NOT NULL,
+    status boolean NOT NULL,
+    time_stamp timestamp NOT NULL DEFAULT now()
+);

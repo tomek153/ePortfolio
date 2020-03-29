@@ -19,6 +19,8 @@ public interface UserDao {
 
     Optional<User> getUserByEmail(String email);
 
+    int resetPasswordRequest(User user);
+
     int deleteUser(String email);
 
     int updateUser(String email, User user);

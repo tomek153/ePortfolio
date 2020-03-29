@@ -94,6 +94,65 @@ public class PostgresService implements UserDao {
     }
 
     @Override
+    public int resetPasswordRequest(User user){
+        final String sqlFirst = "SELECT * FROM users WHERE email = '"+user.getEmail()+"'";
+        String emailKey;
+        String idKey;
+
+        List<User> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
+            return new User(
+                    UUID.fromString(resultSet.getString("id")),
+                    resultSet.getString("first_name"),
+                    resultSet.getString("last_name"),
+                    resultSet.getString("email"),
+                    resultSet.getString("password"),
+                    resultSet.getString("role"),
+                    resultSet.getBoolean("confirmed")
+            );
+        });
+
+        if (listFind.isEmpty()) {
+           return 0;
+        } else
+            try {
+
+                final String addResetPasswordEmailSQL = "INSERT INTO reset_password_emails (id, user_uuid, status) VALUES (" +
+                        "uuid_generate_v4(), " +
+                        "(SELECT id FROM users WHERE email IN('"+user.getEmail()+"')), "+
+                        "false )";
+                jdbcTemplate.execute(addResetPasswordEmailSQL);
+
+                String getEmailKey = "SELECT id FROM reset_password_emails WHERE user_uuid IN (SELECT id FROM users WHERE email = '"+user.getEmail()+"')";
+                emailKey = jdbcTemplate.queryForObject(getEmailKey, new Object[]{}, (resultSet, i) -> {
+                    return new String (resultSet.getString("id"));
+                });
+                String getIdKey = "SELECT id FROM users WHERE email IN ('"+user.getEmail()+"')";
+                idKey = jdbcTemplate.queryForObject(getIdKey, new Object[]{}, (resultSet, i) -> {
+                    return new String (resultSet.getString("id"));
+                });
+
+                Map<String, Object> model = new HashMap<>();
+                model.put("Name", listFind.get(0).getFirstName());
+                model.put("location", "Poznań, Polska");
+                model.put( "idKey", idKey);
+                model.put( "linkKey", emailKey);
+
+                MailRequestModel request = new MailRequestModel(user.getFirstName(), user.getEmail(), "ePortfolio", "ePortfolio | Resetowanie hasła");
+                MailResponseModel response =  service.sendResetPasswordEmail(request, model);
+
+                if (response.isStatus())
+                    return 1;
+                else
+                    return 0;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.err.println("Add user to database error.");
+                return 0;
+            }
+    }
+
+    @Override
     public List<User> getUsers() {
         final String sql = "SELECT * FROM users";
 

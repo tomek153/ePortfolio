@@ -1,6 +1,7 @@
 package com.example.eportfolio.smtp;
 
 import com.example.eportfolio.model.ConfirmationLink;
+import com.example.eportfolio.model.ResetPasswordLink;
 import com.example.eportfolio.model.User;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -115,6 +116,37 @@ public class EmailService {
             // add attachment
 
             Template t = config.getTemplate("registration-link.html");
+            String html = FreeMarkerTemplateUtils.processTemplateIntoString(t, model);
+
+            helper.setTo(request.getTo());
+            helper.setText(html, true);
+            helper.addInline("imageLogo", new ClassPathResource("images/logo.png"));
+            helper.setSubject(request.getSubject());
+            helper.setFrom(request.getFrom());
+            sender.send(message);
+
+            response.setMessage("Mail send to : " + request.getTo());
+            response.setStatus(Boolean.TRUE);
+
+        } catch (MessagingException | IOException | TemplateException e) {
+            response.setMessage("Mail Sending failure : "+e.getMessage());
+            response.setStatus(Boolean.FALSE);
+        }
+
+        return response;
+    }
+
+    public MailResponseModel sendResetPasswordEmail(MailRequestModel request, Map<String, Object> model) {
+        MailResponseModel response = new MailResponseModel();
+        MimeMessage message = sender.createMimeMessage();
+
+        try {
+            // set mediaType
+            MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                    StandardCharsets.UTF_8.name());
+            // add attachment
+
+            Template t = config.getTemplate("reset-password-link.html");
             String html = FreeMarkerTemplateUtils.processTemplateIntoString(t, model);
 
             helper.setTo(request.getTo());

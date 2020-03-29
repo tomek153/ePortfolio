@@ -24,7 +24,9 @@ public class UserService {
     public List<User> getUsers() {
         return userDao.getUsers();
     }
-
+    public int resetPasswordRequest(User user){
+        return userDao.resetPasswordRequest(user);
+    }
     public Optional<User> getUserByEmail(String email) {
         return userDao.getUserByEmail(email);
     }

@@ -47,8 +47,12 @@ class UserProfile extends Component {
         }
 
         if (connectionError){
-            var h = document.getElementById("page-content"); 
-            h.className += " hide"; 
+            var h1 = document.getElementById("container-bio-address"); 
+            var h2 = document.getElementById("container-bio-personal"); 
+            var h3 = document.getElementById("container-bio-contact"); 
+            h1.className += " hide"; 
+            h2.className += " hide"; 
+            h3.className += " hide"; 
             var s = document.getElementById("error-box-523"); 
             s.className += " show"; 
             return;
@@ -94,7 +98,7 @@ class UserProfile extends Component {
                                 </div>
                             </div>
                             <div className="col-md-12 page-content">
-                                <div className="col-12 user-bio-personal-container">
+                                <div className="col-12 user-bio-personal-container" id="container-bio-personal">
                                     <div className="row">
                                         <div className="col-10 user-bio-name">
 
@@ -135,7 +139,7 @@ class UserProfile extends Component {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="col-12 user-bio-contact-container">
+                                <div className="col-12 user-bio-contact-container" id="container-bio-contact">
                                     <div className="row">          
                                         <div className="col-12 user-bio-contact-title">
                                             <h3 className="subtitle">Dane kontaktowe</h3>
@@ -159,7 +163,7 @@ class UserProfile extends Component {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="col-12 user-bio-address-container">
+                                <div className="col-12 user-bio-address-container" id="container-bio-address">
                                     
                                     <div className="row">          
                                         <div className="col-12 user-bio-address-title">

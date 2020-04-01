@@ -26,5 +26,6 @@ CREATE TABLE IF NOT EXISTS users_bio (
     address_city VARCHAR(60) NOT NULL,
     address_zip VARCHAR(60) NOT NULL,
     address_country VARCHAR(60) NOT NULL,
-    date_birth VARCHAR(60) NOT NULL
+    date_birth VARCHAR(60) NOT NULL,
+    gender VARCHAR(30) NOT NULL
 );

@@ -1,7 +1,6 @@
 package com.example.eportfolio.service;
 
 import com.example.eportfolio.dao.UserBioDao;
-import com.example.eportfolio.model.User;
 import com.example.eportfolio.model.UserBio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -34,7 +33,8 @@ public class PostgresUserBioService implements UserBioDao {
                             resultSet.getString("address_city"),
                             resultSet.getString("address_zip"),
                             resultSet.getString("address_country"),
-                            resultSet.getString("date_birth")
+                            resultSet.getString("date_birth"),
+                            resultSet.getString("gender")
                     );
                 }
         );

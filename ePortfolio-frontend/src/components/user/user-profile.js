@@ -21,14 +21,21 @@ class UserProfile extends Component {
         userAddressCity: null,
         userAddressZip: null,
         userAddressCountry: null,
-        userDateBirth: null
+        userDateBirth: null,
+        userGender: null
     }
 
     async componentDidMount() {
 
         let connectionError = false;
 
-        let id = "07e89215-8de7-4c81-a973-f418454b654f"
+        {/*
+            DOSTĘPNE ID:
+            1a1d1d84-be02-4184-a26f-565302a0a9ab | uzupełnione
+            67d37b2e-428f-4ec4-9525-668383def1db | nowy user
+        */}
+
+        let id = "67d37b2e-428f-4ec4-9525-668383def1db"
         const urlMain = "http://localhost:8080/api/users/id/";
         const urlBio = "http://localhost:8080/api/users-bio/id/";
 
@@ -40,8 +47,10 @@ class UserProfile extends Component {
         }
 
         if (connectionError){
-            var v = document.getElementById("error-box-523"); 
-            v.className += " show"; 
+            var h = document.getElementById("page-content"); 
+            h.className += " hide"; 
+            var s = document.getElementById("error-box-523"); 
+            s.className += " show"; 
             return;
         } else {
             const dataUserMain = await responseUserMain.json();
@@ -59,6 +68,7 @@ class UserProfile extends Component {
             this.setState({userAddressZip: dataUserBio.address_zip})
             this.setState({userAddressCountry: dataUserBio.address_country})
             this.setState({userDateBirth: dataUserBio.date_birth})
+            this.setState({userGender: dataUserBio.gender})
         } 
     }
 
@@ -68,33 +78,11 @@ class UserProfile extends Component {
             <div className="container-my container">
                 <div className="row">
                     <div className="col-md-12 col-lg-6">
-                        {/* START - ONLY FOR DEVELEPMENT! */}
-                        {/*
-                        <div className="col-md-12 col-lg-12 development-div-outter"> 
-                            <div className="col-md-12 col-lg-12 development-div"> 
-                            
-                                <p className="development-title"><i>DEBUG MODE</i></p>
 
-                                <div className="col-md-12 col-lg-12 development-button">
-
-                                    <p>Jan Kowalski</p>
-
-                                </div>
-
-                                <div className="col-md-12 col-lg-12 development-button">
-
-                                    <p>Mariusz Nowak</p>
-
-                                </div>
-
-                            </div>
-                        </div>
-                        */}
-                        {/* END - ONLY FOR DEVELEPMENT! */}
                     </div>
 
                     <div className="col-md-12 col-lg-6 user-profile-description-my">
-                        <div className="row">
+                        <div className="row background-container">
                             <div className="col-md-12 page-header">
                                 <h1 className="page-title">Mój profil</h1>
                                 <hr />
@@ -106,15 +94,120 @@ class UserProfile extends Component {
                                 </div>
                             </div>
                             <div className="col-md-12 page-content">
-                                <p>{this.state.userFirstName}</p>   
-                                <p>{this.state.userLastName}</p>   
-                                <p>{this.state.userEmail}</p>   
-                                <p>{this.state.userPhone}</p>   
-                                <p>{this.state.userAddressMain}</p>   
-                                <p>{this.state.userAddressCity}</p>   
-                                <p>{this.state.userAddressZip}</p>   
-                                <p>{this.state.userAddressCountry}</p>   
-                                <p>{this.state.userDateBirth}</p>   
+                                <div className="col-12 user-bio-personal-container">
+                                    <div className="row">
+                                        <div className="col-10 user-bio-name">
+
+                                            <h2 className="user-name">{this.state.userFirstName} {this.state.userLastName}</h2>
+                                            
+                                        </div>
+                                        <div className="col-2 user-bio-edit">
+
+                                            <a href="#" className="user-bio-edit-link disabled"> <i className="fa fa-cog" aria-hidden="true"></i></a>
+
+                                        </div>
+                                    </div>
+
+                                    <div className="row">          
+                                        <div className="col-12 user-bio-personal-title">
+                                            <h3 className="subtitle">Dane osobowe</h3>
+                                        </div>                                  
+                                    </div>
+                                    <div className="row">
+                                        <div className="col-12 col-md-6 user-bio-birth user-bio-data-container">
+                                        
+                                            <p className="user-birth-main-label label">Data urodzenia</p>
+                                            <p className="user-birth-main user-bio-data">
+                                                {this.state.userDateBirth == '' && <span>-</span>}
+                                                {this.state.userDateBirth != '' && <span>{this.state.userDateBirth}</span>}
+                                            </p>
+                                            
+                                        </div>
+                                        <div className="col-12 col-md-6 user-bio-gender user-bio-data-container">
+                                        
+                                            <p className="user-gender-main-label label">Płeć</p>
+                                            <p className="user-gender-main user-bio-data">
+                                                {this.state.userGender == '' && <span>-</span>}
+                                                {this.state.userGender == 'male' && <span>Mężczyzna</span>}
+                                                {this.state.userGender == 'female' && <span>Kobieta</span>}
+                                            </p>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-12 user-bio-contact-container">
+                                    <div className="row">          
+                                        <div className="col-12 user-bio-contact-title">
+                                            <h3 className="subtitle">Dane kontaktowe</h3>
+                                        </div>                                  
+                                    </div>
+                                    <div className="row">
+                                        <div className="col-12 col-md-6 user-bio-email user-bio-data-container">
+
+                                            <p className="user-email-label label">E-mail</p>
+                                            <p className="user-email user-bio-data">{this.state.userEmail}</p>
+                                            
+                                        </div>
+                                        <div className="col-12 col-md-6 user-bio-phone user-bio-data-container">
+                                        
+                                            <p className="user-phone-label label">Telefon</p>
+                                            <p className="user-phone user-bio-data">
+                                                {this.state.userPhone == '' && <span>-</span>}
+                                                {this.state.userPhone != '' && <span>{this.state.userPhone}</span>}
+                                            </p>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-12 user-bio-address-container">
+                                    
+                                    <div className="row">          
+                                        <div className="col-12 user-bio-address-title">
+                                            <h3 className="subtitle">Dane adresowe</h3>
+                                        </div>                                  
+                                    </div>
+
+                                    <div className="row">
+                                        
+                                        <div className="col-12 col-md-6 user-bio-address-main user-bio-data-container">
+
+                                            <p className="user-address-main-label label">Adres</p>
+                                            <p className="user-address-main user-bio-data">
+                                                {this.state.userAddressMain == '' && <span>-</span>}
+                                                {this.state.userAddressMain != '' && <span>{this.state.userAddressMain}</span>}
+                                            </p>
+                                            
+                                        </div>
+                                        <div className="col-12 col-md-6 user-bio-address-city user-bio-data-container">
+                                        
+                                            <p className="user-address-city-label label">Miasto</p>
+                                            <p className="user-address-city user-bio-data">
+                                                {this.state.userAddressCity == '' && <span>-</span>}
+                                                {this.state.userAddressCity != '' && <span>{this.state.userAddressCity}</span>}
+                                            </p>
+
+                                        </div>
+
+                                        <div className="col-12 col-md-6 user-bio-address-zip user-bio-data-container">
+
+                                            <p className="user-address-zip-label label">Kod pocztowy</p>
+                                            <p className="user-address-zip user-bio-data">
+                                                {this.state.userAddressZip == '' && <span>-</span>}
+                                                {this.state.userAddressZip != '' && <span>{this.state.userAddressZip}</span>}
+                                            </p>
+
+                                            </div>
+                                            <div className="col-12 col-md-6 user-bio-address-country user-bio-data-container">
+
+                                            <p className="user-address-country-label label">Kraj</p>
+                                            <p className="user-address-country user-bio-data">
+                                                {this.state.userAddressCountry == '' && <span>-</span>}
+                                                {this.state.userAddressCountry != '' && <span>{this.state.userAddressCountry}</span>}
+                                            </p>
+
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -122,6 +215,7 @@ class UserProfile extends Component {
             </div>
         )
     }
+
 }
 
 export default UserProfile;

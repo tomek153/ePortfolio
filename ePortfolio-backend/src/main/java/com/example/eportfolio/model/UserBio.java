@@ -13,6 +13,7 @@ public class UserBio {
     private final String address_zip;
     private final String address_country;
     private final String date_birth;
+    private final String gender;
 
     public UserBio(@JsonProperty("user_uuid") UUID id,
                    @JsonProperty("phone") String phone,
@@ -20,7 +21,8 @@ public class UserBio {
                    @JsonProperty("address_city") String address_city,
                    @JsonProperty("address_zip") String address_zip,
                    @JsonProperty("address_country") String address_country,
-                   @JsonProperty("date_birth") String date_birth) {
+                   @JsonProperty("date_birth") String date_birth,
+                   @JsonProperty("gender") String gender) {
         this.id = id;
         this.phone = phone;
         this.address_main = address_main;
@@ -28,6 +30,7 @@ public class UserBio {
         this.address_zip = address_zip;
         this.address_country = address_country;
         this.date_birth = date_birth;
+        this.gender = gender;
     }
 
     public UUID getUserBioId() {
@@ -56,5 +59,8 @@ public class UserBio {
 
     public String getDate_birth() {
         return date_birth;
+    }
+    public String getGender() {
+        return gender;
     }
 }

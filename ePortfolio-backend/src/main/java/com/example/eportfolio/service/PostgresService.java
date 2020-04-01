@@ -2,7 +2,6 @@ package com.example.eportfolio.service;
 
 import com.example.eportfolio.dao.UserDao;
 import com.example.eportfolio.model.User;
-import com.example.eportfolio.model.UserBio;
 import com.example.eportfolio.smtp.EmailService;
 import com.example.eportfolio.smtp.MailRequestModel;
 import com.example.eportfolio.smtp.MailResponseModel;
@@ -56,17 +55,17 @@ public class PostgresService implements UserDao {
                         ")";
                 jdbcTemplate.execute(addUserSQL);
 
+                final String addUserBioSQL = "INSERT INTO users_bio (id, user_uuid, phone, address_main, address_city, address_zip, address_country, date_birth, gender) VALUES (" +
+                        "uuid_generate_v4(), " +
+                        "(SELECT id FROM users WHERE email IN('"+user.getEmail()+"'))," +
+                        "'','','','','','', '')";
+                jdbcTemplate.execute(addUserBioSQL);
+
                 final String addConfirmationEmailSQL = "INSERT INTO confirmation_emails (id, user_uuid, status) VALUES (" +
                     "uuid_generate_v4(), " +
                     "(SELECT id FROM users WHERE email IN('"+user.getEmail()+"')), "+
                     "false )";
                 jdbcTemplate.execute(addConfirmationEmailSQL);
-
-                final String addUserBioSQL = "INSERT INTO users_bio (id, user_uuid, phone, address_main, address_city, address_zip, address_country, date_birth) VALUES (" +
-                        "uuid_generate_v4(), " +
-                        "(SELECT id FROM users WHERE email IN('"+user.getEmail()+"'))," +
-                        "'','','','','','')";
-                jdbcTemplate.execute(addUserBioSQL);
 
                 String getEmailKey = "SELECT id FROM confirmation_emails WHERE user_uuid IN (SELECT id FROM users WHERE email = '"+user.getEmail()+"') AND status = false";
                 emailKey = jdbcTemplate.queryForObject(getEmailKey, new Object[]{}, (resultSet, i) -> {

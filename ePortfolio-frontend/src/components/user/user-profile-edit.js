@@ -151,6 +151,10 @@ class UserProfileEdit extends Component {
         );
     }
 
+    dateDay = '';
+    dateMonth = '';
+    dateYear = '';
+
     render() {
 
         return (
@@ -176,7 +180,7 @@ class UserProfileEdit extends Component {
                             <Form>   
                                 <div className="col-12 user-bio-personal-container" id="container-bio-personal">
                                     <div className="row">
-                                        <div className="col-12 col-md-6 user-bio-name">
+                                        <div className="col-12 col-md-6 user-bio-name user-bio-data-container">
 
                                             <Form.Group as={Col} controlId="formGridFirstName">
                                                 <Form.Label><p className="user-firstname-main-label label">Imię</p></Form.Label>
@@ -185,7 +189,7 @@ class UserProfileEdit extends Component {
                                             </Form.Group>
                                             
                                         </div>
-                                        <div className="col-12 col-md-6 user-bio-name">
+                                        <div className="col-12 col-md-6 user-bio-name user-bio-data-container">
 
                                         <Form.Group as={Col} controlId="formGridFirstName">
                                                 <Form.Label><p className="user-lastname-main-label label">Nazwisko</p></Form.Label>
@@ -204,28 +208,21 @@ class UserProfileEdit extends Component {
                                     <div className="row">
                                         <div className="col-12 col-md-6 user-bio-birth user-bio-data-container">
                                         
-                                            <p className="user-birth-main-label label">Data urodzenia</p>
-                                            <p className="user-birth-main user-bio-data">
-                                                {this.state.userDateBirth == '' && <span>-</span>}
-                                                {this.state.userDateBirth != '' && <span>{this.state.userDateBirth}</span>}
-                                            </p>
-
                                             <Form.Group as={Col} controlId="formGridBirthDate">
                                                 <Form.Label><p className="user-birth-main-label label">Data urodzenia</p></Form.Label>
-                                                <span id="form-value-alert-birthdate" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
-                                                <Form.Control placeholder={this.state.userLastName} />
-                                        </Form.Group>
+                                                <Form.Control placeholder={this.state.userDateBirth}/>
+                                            </Form.Group>
                                             
                                         </div>
                                         <div className="col-12 col-md-6 user-bio-gender user-bio-data-container">
                                         
-                                            <p className="user-gender-main-label label">Płeć</p>
-                                            <p className="user-gender-main user-bio-data">
-                                                {this.state.userGender == '' && <span>-</span>}
-                                                {this.state.userGender == 'male' && <span>Mężczyzna</span>}
-                                                {this.state.userGender == 'female' && <span>Kobieta</span>}
-                                            </p>
-                                            
+                                            <Form.Group as={Col} controlId="formGridGender">
+                                                <Form.Label><p className="user-gender-main-label label">Płeć</p></Form.Label>
+                                                    {this.state.userGender == '' && <span><Form.Control as="select"><option>Kobieta</option><option>Mężczyzna</option></Form.Control></span>}
+                                                    {this.state.userGender == 'female' && <span><Form.Control as="select"><option>Kobieta</option><option>Mężczyzna</option></Form.Control></span>}
+                                                    {this.state.userGender == 'male' && <span><Form.Control as="select"><option>Mężczyzna</option><option>Kobieta</option></Form.Control></span>}
+                                            </Form.Group>
+
                                         </div>
                                     </div>
                                 </div>
@@ -238,17 +235,20 @@ class UserProfileEdit extends Component {
                                     <div className="row">
                                         <div className="col-12 col-md-6 user-bio-email user-bio-data-container">
 
-                                            <p className="user-email-label label">E-mail</p>
-                                            <p className="user-email user-bio-data">{this.state.userEmail}</p>
+                                            <Form.Group as={Col} controlId="formGridEmail">
+                                                <Form.Label><p className="user-email-label label">E-mail</p></Form.Label>
+                                                <span id="form-value-alert-email" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
+                                                <Form.Control placeholder={this.state.userEmail} />
+                                            </Form.Group>
                                             
                                         </div>
                                         <div className="col-12 col-md-6 user-bio-phone user-bio-data-container">
                                         
-                                            <p className="user-phone-label label">Telefon</p>
-                                            <p className="user-phone user-bio-data">
-                                                {this.state.userPhone == '' && <span>-</span>}
-                                                {this.state.userPhone != '' && <span>{this.state.userPhone}</span>}
-                                            </p>
+                                            <Form.Group as={Col} controlId="formGridPhone">
+                                                <Form.Label><p className="user-phone-label label">Telefon</p></Form.Label>
+                                                <span id="form-value-alert-phone" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
+                                                <Form.Control placeholder={this.state.userPhone} />
+                                            </Form.Group>
 
                                         </div>
                                     </div>
@@ -265,46 +265,57 @@ class UserProfileEdit extends Component {
                                         
                                         <div className="col-12 col-md-6 user-bio-address-main user-bio-data-container">
 
-                                            <p className="user-address-main-label label">Adres</p>
-                                            <p className="user-address-main user-bio-data">
-                                                {this.state.userAddressMain == '' && <span>-</span>}
-                                                {this.state.userAddressMain != '' && <span>{this.state.userAddressMain}</span>}
-                                            </p>
+                                            <Form.Group as={Col} controlId="formGridAddressMain">
+                                                <Form.Label><p className="user-address-main-label label">Adres</p></Form.Label>
+                                                <span id="form-value-alert-address-main" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
+                                                <Form.Control placeholder={this.state.userAddressMain} />
+                                            </Form.Group>
                                             
                                         </div>
                                         <div className="col-12 col-md-6 user-bio-address-city user-bio-data-container">
                                         
-                                            <p className="user-address-city-label label">Miasto</p>
-                                            <p className="user-address-city user-bio-data">
-                                                {this.state.userAddressCity == '' && <span>-</span>}
-                                                {this.state.userAddressCity != '' && <span>{this.state.userAddressCity}</span>}
-                                            </p>
+                                            <Form.Group as={Col} controlId="formGridAddressCity">
+                                                <Form.Label><p className="user-address-city-label label">Miasto</p></Form.Label>
+                                                <span id="form-value-alert-address-city" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
+                                                <Form.Control placeholder={this.state.userAddressCity} />
+                                            </Form.Group>
 
                                         </div>
 
                                         <div className="col-12 col-md-6 user-bio-address-zip user-bio-data-container">
 
-                                            <p className="user-address-zip-label label">Kod pocztowy</p>
-                                            <p className="user-address-zip user-bio-data">
-                                                {this.state.userAddressZip == '' && <span>-</span>}
-                                                {this.state.userAddressZip != '' && <span>{this.state.userAddressZip}</span>}
-                                            </p>
+                                            <Form.Group as={Col} controlId="formGridAddressZip">
+                                                <Form.Label><p className="user-address-zip-label label">Kod pocztowy</p></Form.Label>
+                                                <span id="form-value-alert-address-zip" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
+                                                <Form.Control placeholder={this.state.userAddressZip} />
+                                            </Form.Group>
 
-                                            </div>
-                                            <div className="col-12 col-md-6 user-bio-address-country user-bio-data-container">
+                                        </div>  
+                                        <div className="col-12 col-md-6 user-bio-address-country user-bio-data-container">
 
-                                            <p className="user-address-country-label label">Kraj</p>
-                                            <p className="user-address-country user-bio-data">
-                                                {this.state.userAddressCountry == '' && <span>-</span>}
-                                                {this.state.userAddressCountry != '' && <span>{this.state.userAddressCountry}</span>}
-                                            </p>
-
+                                            <Form.Group as={Col} controlId="formGridAddressCountry">
+                                                <Form.Label><p className="user-address-country-label label">Kraj</p></Form.Label>
+                                                <span id="form-value-alert-address-country" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
+                                                <Form.Control placeholder={this.state.userAddressCountry} />
+                                            </Form.Group>
+                                        
                                         </div>
-
-                                        <Button onClick={this.submitFormAndSend.bind(this)} type="button" variant="primary" className="update-button">
-                                                Zapisz
-                                        </Button>
-
+                                    </div>
+                                </div>
+                                <div className="col-12 user-bio-sumbit-container" id="container-submit">
+                                <hr />  
+                                    <div className="row">
+                                                                 
+                                        <div className="col-12 col-md-6 user-bio-submit">
+                                            <Button onClick={this.submitFormAndSend.bind(this)} type="button" variant="primary" className="update-button">
+                                                    Zapisz
+                                            </Button>
+                                        </div>
+                                        <div className="col-12 col-md-6 user-bio-exit">
+                                            <Button onClick={event =>  window.location.href='/moj-profil'} type="button" variant="primary" className="exit-button">
+                                                    Cofnij
+                                            </Button>
+                                        </div>
 
                                     </div>
                                 </div>

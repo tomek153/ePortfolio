@@ -21,4 +21,8 @@ public class UserBioService {
         return userBioDao.getUserBioByID(id);
     }
 
+    public int updateUserBio(UUID id, UserBio user) {
+        return userBioDao.updateUserBioByID(id, user);
+    }
+
 }

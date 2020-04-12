@@ -10,4 +10,6 @@ public interface UserBioDao {
 
     Optional<UserBio> getUserBioByID(UUID ID);
 
+    int updateUserBioByID(UUID ID, UserBio user);
+
 }

@@ -88,4 +88,15 @@
     font-size: 17px;
 }
 
+.update-button:hover{
+    background-color: #31b4cb;
+    border: 1px solid #31b4cb;
+}
+
+.update-button{
+    background-color: #20a3bc;
+    border: 1px solid #20a3bc;
+    float: right;
+}
+
 /* END | CSS CODE: USER_PROFILE | AUTHOR: MICHAŁ STANCELEWSKI */

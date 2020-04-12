@@ -1,4 +1,13 @@
 import React, { Component } from 'react';
+import superagent from 'superagent';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
+import Col from 'react-bootstrap/Col';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Popover from 'react-bootstrap/Popover';
+import InputGroup from 'react-bootstrap/InputGroup';
+import Modal from 'react-bootstrap/Modal';
+import Spinner from 'react-bootstrap/Spinner';
 
 function handleErrors(response) {
     if (!response.ok) {
@@ -7,7 +16,42 @@ function handleErrors(response) {
     return response;
 }
 
-class UserProfile extends Component {
+class UserProfileEdit extends Component {
+
+
+    constructor() {
+        super();
+        this.state = {
+            editUser: {
+                firstName: "",
+                lastName: "",
+                email: "",
+                phone: "",
+                addres_main: "",
+                addres_city: "",
+                addres_zip: "",
+                address_country: "",
+                date_birth: "",
+                gender: ""
+            },
+            formControll: {
+                firstName: false,
+                lastName: false,
+                email: false,
+                phone: false,
+                addres_main: false,
+                addres_city: false,
+                addres_zip: false,
+                address_country: false,
+                date_birth: false,
+                gender: false
+
+            },
+            modalSuccesShow: false,
+            modalFailedShow: false,
+            modalLoadingMessage: false
+        }
+    }
 
     state = {
         userUUID: null,
@@ -77,6 +121,36 @@ class UserProfile extends Component {
         } 
     }
 
+
+    submitFormAndSend(event) {
+
+        let id = "148deb3a-a0ae-4f16-bd45-86ffa2bf28a7"
+
+        const urlBio = "http://localhost:8080/api/users-bio/id/";
+        const urlMain = "http://localhost:8080/api/users/id/";
+
+        this.setState({modalLoadingMessage: true});
+        event.preventDefault();
+        superagent
+            .post(urlBio + id)
+            .send(this.state.editUser)
+            .end((err, res) => {
+                if(err) {
+                    if(res.body.message == "Update user error."){
+                        this.setState({modalLoadingMessage: false});
+                        this.setState({modalFailedShow: true});
+                    } else
+                        alert("User update failed.");
+                    return;
+                } else {
+                    this.clearField();
+                    this.setState({modalLoadingMessage: false});
+                    this.setState({modalSuccesShow: true});
+                }
+            }
+        );
+    }
+
     render() {
 
         return (
@@ -99,17 +173,26 @@ class UserProfile extends Component {
                                 </div>
                             </div>
                             <div className="col-md-12 page-content">
+                            <Form>   
                                 <div className="col-12 user-bio-personal-container" id="container-bio-personal">
                                     <div className="row">
-                                        <div className="col-10 user-bio-name">
+                                        <div className="col-12 col-md-6 user-bio-name">
 
-                                            <h2 className="user-name">{this.state.userFirstName} {this.state.userLastName}</h2>
+                                            <Form.Group as={Col} controlId="formGridFirstName">
+                                                <Form.Label><p className="user-firstname-main-label label">Imię</p></Form.Label>
+                                                <span id="form-value-alert-firstname" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
+                                                <Form.Control placeholder={this.state.userFirstName} />
+                                            </Form.Group>
                                             
                                         </div>
-                                        <div className="col-2 user-bio-edit">
+                                        <div className="col-12 col-md-6 user-bio-name">
 
-                                            <a href="/moj-profil/edytuj" className="user-bio-edit-link" title="Edytuj"> <i className="fa fa-cog" aria-hidden="true"></i></a>
-
+                                        <Form.Group as={Col} controlId="formGridFirstName">
+                                                <Form.Label><p className="user-lastname-main-label label">Nazwisko</p></Form.Label>
+                                                <span id="form-value-alert-lastname" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
+                                                <Form.Control placeholder={this.state.userLastName} />
+                                        </Form.Group>
+                                            
                                         </div>
                                     </div>
 
@@ -126,6 +209,12 @@ class UserProfile extends Component {
                                                 {this.state.userDateBirth == '' && <span>-</span>}
                                                 {this.state.userDateBirth != '' && <span>{this.state.userDateBirth}</span>}
                                             </p>
+
+                                            <Form.Group as={Col} controlId="formGridBirthDate">
+                                                <Form.Label><p className="user-birth-main-label label">Data urodzenia</p></Form.Label>
+                                                <span id="form-value-alert-birthdate" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
+                                                <Form.Control placeholder={this.state.userLastName} />
+                                        </Form.Group>
                                             
                                         </div>
                                         <div className="col-12 col-md-6 user-bio-gender user-bio-data-container">
@@ -211,8 +300,15 @@ class UserProfile extends Component {
                                             </p>
 
                                         </div>
+
+                                        <Button onClick={this.submitFormAndSend.bind(this)} type="button" variant="primary" className="update-button">
+                                                Zapisz
+                                        </Button>
+
+
                                     </div>
                                 </div>
+                            </Form>     
                             </div>
                         </div>
                     </div>
@@ -223,4 +319,4 @@ class UserProfile extends Component {
 
 }
 
-export default UserProfile;
+export default UserProfileEdit;

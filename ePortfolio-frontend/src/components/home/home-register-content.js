@@ -12,6 +12,7 @@ import superagent from 'superagent';
 
 import ImageLogo from '../../images/logo.png';
 import BackgroundLogo from '../../images/home-background-revert.png';
+import PageLoading from '../page-loading';
 
 class LoginContent extends Component {
     constructor() {
@@ -267,6 +268,56 @@ class LoginContent extends Component {
         this.setState({modalFailedShow: false});
     }
 
+    componentDidMount() {
+        const loader = document.querySelector(".page-loading");
+        window.onload = function() {
+            this.setTimeout(function() {
+                loader.classList.add("hidden");
+                this.setTimeout(function() {
+                    const regTab = document.querySelector(".register-container-my");
+                    regTab.style = "display: block";
+                }, 200);
+            }, 600);
+        }
+    }
+
+    homeRedirect() {
+        const helper = document.querySelector(".fade-out-helper");
+        const regTab = document.querySelector(".box-container-shadow");
+
+        regTab.classList.remove("w3-animate-left-registration");
+        regTab.classList.add("w3-animate-left-out-registration");
+        
+        setTimeout(function() {
+            regTab.style = "display: none";
+            helper.style = "display: block";
+            helper.classList.add("fade-in");
+
+            
+            setTimeout(function() {
+                window.location.href = "/";
+            }, 200);
+        }, 600);
+    }
+
+    loginRedirect() {
+        const helper = document.querySelector(".fade-out-helper");
+        const regTab = document.querySelector(".box-container-shadow");
+
+        regTab.classList.remove("w3-animate-left-registration");
+        regTab.classList.add("w3-animate-left-out-registration");
+
+        setTimeout(function() {
+            regTab.style = "display: none";
+            helper.style = "display: block";
+            helper.classList.add("fade-in");
+            
+            setTimeout(function() {
+                window.location.href = "/logowanie";
+            }, 200);
+        }, 600);
+    }
+
     render() {
         const popover = (
             <Popover id="popover-basic">
@@ -285,101 +336,108 @@ class LoginContent extends Component {
           );
 
         return (
-            <div className="register-container-my" onLoad={this.changeBackground}>
-                <a href="/"><img 
-                    className="register-logo-my"
-                    src={ImageLogo}
-                /></a>
-                <div className="register-form-my">
-                    <Form>
-                        <h3>Witaj!</h3>
-                        <p>Utworzenie konta zajmie Ci tylko <b>kilka sekund</b>.</p>
-                        <hr />
-                        <Form.Row>
-                            <Form.Group as={Col} controlId="formGridFirstName">
-                                <Form.Label>Imię</Form.Label><span id="form-value-alert-name" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
-                                <Form.Control placeholder="Wprowadź imię..." onChange={this.handleFirstNameChanged.bind(this)}/>
-                            </Form.Group>
+            <>
+                <div className="fade-out-helper"></div>
+                <PageLoading />
+                <div className="register-container-my" onLoad={this.changeBackground}>
+                    <div className="box-container-shadow w3-animate-left-registration">
+                        <i className="fas fa-arrow-left home-link-register" onClick={this.homeRedirect.bind(this)}></i>
+                        <img 
+                            className="register-logo-my"
+                            src={ImageLogo}
+                        />
+                        <div className="register-form-my">
+                            <Form>
+                                <h3>Witaj!</h3>
+                                <p>Utworzenie konta zajmie Ci tylko <b>kilka sekund</b>.</p>
+                                <hr />
+                                <Form.Row>
+                                    <Form.Group as={Col} controlId="formGridFirstName">
+                                        <Form.Label>Imię</Form.Label><span id="form-value-alert-name" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
+                                        <Form.Control placeholder="Wprowadź imię..." onChange={this.handleFirstNameChanged.bind(this)}/>
+                                    </Form.Group>
 
-                            <Form.Group as={Col} controlId="formGridLastName">
-                                <Form.Label>Nazwisko</Form.Label><span id="form-value-alert-lastName" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
-                                <Form.Control placeholder="Wprowadź nazwisko..." onChange={this.handleLastNameChanged.bind(this)}/>
-                            </Form.Group>
-                        </Form.Row>
+                                    <Form.Group as={Col} controlId="formGridLastName">
+                                        <Form.Label>Nazwisko</Form.Label><span id="form-value-alert-lastName" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
+                                        <Form.Control placeholder="Wprowadź nazwisko..." onChange={this.handleLastNameChanged.bind(this)}/>
+                                    </Form.Group>
+                                </Form.Row>
 
-                        <Form.Row>
-                            <Form.Group as={Col} controlId="formGridEmail">
-                                <Form.Label>Email</Form.Label><span id="form-value-alert-email" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
-                                <Form.Control placeholder="Wprowadź email..." onChange={this.handleEmailChanged.bind(this)}/>
-                            </Form.Group>
+                                <Form.Row>
+                                    <Form.Group as={Col} controlId="formGridEmail">
+                                        <Form.Label>Email</Form.Label><span id="form-value-alert-email" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
+                                        <Form.Control placeholder="Wprowadź email..." onChange={this.handleEmailChanged.bind(this)}/>
+                                    </Form.Group>
 
-                            <Form.Group as={Col} controlId="formGridPassword">
-                                <Form.Label>Hasło</Form.Label>
-                                <span id="form-value-alert-password" className="form-value-alert">
-                                    <sub>Podano niepoprawne hasło. </sub>
-                                    <OverlayTrigger trigger="hover" placement="right" overlay={popover}>
-                                        <sub variant="success" id="register-password-tooltip"><i className="fas fa-question-circle"></i></sub>
-                                    </OverlayTrigger>
-                                </span>
-                                <InputGroup>
-                                    <Form.Control type="password" placeholder="Wprowadź hasło..." onChange={this.handlePasswordChanged.bind(this)} onFocus={this.changePasswordInputStyleIn} onBlur={this.changePasswordInputStyleOut}/>
-                                    <InputGroup.Prepend>
-                                        <InputGroup.Text id="inputGroupPrepend" onClick={this.showPassword}><i className="fas fa-eye w3-animate-opacity"></i><i className="fas fa-eye-slash w3-animate-opacity"></i></InputGroup.Text>
-                                    </InputGroup.Prepend>
-                                </InputGroup>
-                            </Form.Group>
-                        </Form.Row>
-                        <Form.Group controlId="formBasicCheckbox">
-                            <Form.Check>
-                                <Form.Check.Input type="checkbox" onClick={this.checkRegulations.bind(this)}/>
-                                <Form.Check.Label>Zapoznałem się z <a id="checkbox-regulations-link" href="/regulamin" target="_blank">regulaminem</a> serwisu, oraz akceptuje jego warunki.</Form.Check.Label>
-                            </Form.Check>
-                        </Form.Group>
+                                    <Form.Group as={Col} controlId="formGridPassword">
+                                        <Form.Label>Hasło</Form.Label>
+                                        <span id="form-value-alert-password" className="form-value-alert">
+                                            <sub>Podano niepoprawne hasło. </sub>
+                                            <OverlayTrigger trigger="hover" placement="right" overlay={popover}>
+                                                <sub variant="success" id="register-password-tooltip"><i className="fas fa-question-circle"></i></sub>
+                                            </OverlayTrigger>
+                                        </span>
+                                        <InputGroup>
+                                            <Form.Control type="password" placeholder="Wprowadź hasło..." onChange={this.handlePasswordChanged.bind(this)} onFocus={this.changePasswordInputStyleIn} onBlur={this.changePasswordInputStyleOut}/>
+                                            <InputGroup.Prepend>
+                                                <InputGroup.Text id="inputGroupPrepend" onClick={this.showPassword}><i className="fas fa-eye w3-animate-opacity"></i><i className="fas fa-eye-slash w3-animate-opacity"></i></InputGroup.Text>
+                                            </InputGroup.Prepend>
+                                        </InputGroup>
+                                    </Form.Group>
+                                </Form.Row>
+                                <Form.Group controlId="formBasicCheckbox">
+                                    <Form.Check>
+                                        <Form.Check.Input type="checkbox" onClick={this.checkRegulations.bind(this)}/>
+                                        <Form.Check.Label>Zapoznałem się z <a id="checkbox-regulations-link" href="/regulamin" target="_blank">regulaminem</a> serwisu, oraz akceptuje jego warunki.</Form.Check.Label>
+                                    </Form.Check>
+                                </Form.Group>
 
-                        <Button onClick={this.submitFormAndSend.bind(this)} type="button" variant="primary" className="login-button-my" style={{float: 'right'}} >
-                            Utwórz konto
-                        </Button>
+                                <Button onClick={this.submitFormAndSend.bind(this)} type="button" variant="primary" className="login-button-my" style={{float: 'right'}} >
+                                    Utwórz konto
+                                </Button>
 
-                        <p className="register-have-account">Posiadasz już konto? <a href="/logowanie">Zaloguj się</a></p>
-                    </Form>
+                                <p className="register-have-account">Posiadasz już konto? <a onClick={this.loginRedirect.bind(this)} className="register-login-btn">Zaloguj się</a></p>
+                            </Form>
+                        </div>
+                    </div>
+                    <Modal show={this.state.modalSuccesShow} size="lg" aria-labelledby="contained-modal-title-vcenter"  style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
+                        <Modal.Header style={{color: "#31b4cb", backgroundColor: "rgba(49, 180, 203, 0.15)"}}>
+                            <Modal.Title id="contained-modal-title-vcenter">
+                                Konto zostało utworzone!
+                            </Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body style={{textAlign: "center"}}>
+                            <i className="fas fa-check fa-5x" id="successIconModal"></i>
+                            <p style={{color: "#444"}}>
+                                Tworzenie konta zakończone. Na podany <b>adres email</b> został wysłany <b>link aktywacyjny</b>, potwierdź go aby móc się <b>zalogować</b>.
+                                <br /><b>Link</b> aktywacyjny będzie <b>ważny</b> przez <b>30 min</b>.
+                            </p>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="link" onClick={this.closeModal.bind(this)} className="modal-close-btn">Zamknij</Button>
+                        </Modal.Footer>
+                    </Modal>
+                    <Modal show={this.state.modalFailedShow} size="lg" aria-labelledby="contained-modal-title-vcenter" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
+                        <Modal.Header style={{color: "#de473c", backgroundColor: "rgba(222, 71, 60, 0.15)"}}>
+                            <Modal.Title id="contained-modal-title-vcenter">
+                                Konto nie zostało utworzone!
+                            </Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body style={{textAlign: "center"}}>
+                            <i className="fas fa-exclamation fa-5x" id="successIconModal" style={{color: "#de473c"}}></i>
+                            <p style={{color: "#444"}}>
+                                Konto <b>nie zostało</b> utworzone, ponieważ <b>istnieje</b> użytkownik z podanym adresem email. Spróbuj ponownie z <b>innym</b> adresem email.
+                            </p>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="link" className="modal-close-btn" onClick={this.closeModal.bind(this)}>Zamknij</Button>
+                        </Modal.Footer>
+                    </Modal>
+                    <Modal show={this.state.modalLoadingMessage} id="container-spinner-modal-register-request" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
+                        <Spinner animation="grow" variant="light" id="spinner-modal-register-request"/>
+                    </Modal>
                 </div>
-                <Modal show={this.state.modalSuccesShow} size="lg" aria-labelledby="contained-modal-title-vcenter"  style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
-                    <Modal.Header style={{color: "#31b4cb", backgroundColor: "rgba(49, 180, 203, 0.15)"}}>
-                        <Modal.Title id="contained-modal-title-vcenter">
-                            Konto zostało utworzone!
-                        </Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body style={{textAlign: "center"}}>
-                        <i className="fas fa-check fa-5x" id="successIconModal"></i>
-                        <p style={{color: "#444"}}>
-                            Tworzenie konta zakończone. Na podany <b>adres email</b> został wysłany <b>link aktywacyjny</b>, potwierdź go aby móc się <b>zalogować</b>.
-                            <br /><b>Link</b> aktywacyjny będzie <b>ważny</b> przez <b>30 min</b>.
-                        </p>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="link" onClick={this.closeModal.bind(this)} className="modal-close-btn">Zamknij</Button>
-                    </Modal.Footer>
-                </Modal>
-                <Modal show={this.state.modalFailedShow} size="lg" aria-labelledby="contained-modal-title-vcenter" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
-                    <Modal.Header style={{color: "#de473c", backgroundColor: "rgba(222, 71, 60, 0.15)"}}>
-                        <Modal.Title id="contained-modal-title-vcenter">
-                            Konto nie zostało utworzone!
-                        </Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body style={{textAlign: "center"}}>
-                        <i className="fas fa-exclamation fa-5x" id="successIconModal" style={{color: "#de473c"}}></i>
-                        <p style={{color: "#444"}}>
-                            Konto <b>nie zostało</b> utworzone, ponieważ <b>istnieje</b> użytkownik z podanym adresem email. Spróbuj ponownie z <b>innym</b> adresem email.
-                        </p>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="link" className="modal-close-btn" onClick={this.closeModal.bind(this)}>Zamknij</Button>
-                    </Modal.Footer>
-                </Modal>
-                <Modal show={this.state.modalLoadingMessage} id="container-spinner-modal-register-request" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
-                    <Spinner animation="grow" variant="light" id="spinner-modal-register-request"/>
-                </Modal>
-            </div>
+            </>
         )
     }
 }

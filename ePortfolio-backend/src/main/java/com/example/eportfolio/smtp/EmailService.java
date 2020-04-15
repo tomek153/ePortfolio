@@ -229,4 +229,63 @@ public class EmailService {
 
         return response;
     }
+
+    public MailResponseModel checkResetPasswordLink(LinkMailRequestModel request) {
+        MailResponseModel response = new MailResponseModel();
+
+        try {
+            User user = jdbcTemplate.queryForObject(
+                    "SELECT * FROM users WHERE id IN('"+request.getIdKey()+"')",
+                    new Object[]{},
+                    (resultSet, i) -> {
+                        return new User(
+                                UUID.fromString(resultSet.getString("id")),
+                                resultSet.getString("first_name"),
+                                resultSet.getString("last_name"),
+                                resultSet.getString("email"),
+                                resultSet.getString("password"),
+                                resultSet.getString("role"),
+                                resultSet.getBoolean("confirmed")
+                        );
+                    }
+            );
+
+            ResetPasswordLink resetPasswordLink = jdbcTemplate.queryForObject(
+                    "SELECT * FROM reset_password_emails WHERE id IN('"+request.getRegisterKey()+"') AND user_uuid IN('"+request.getIdKey()+"')",
+                    new Object[]{},
+                    (resultSet, i) -> {
+                        return new ResetPasswordLink(
+                                UUID.fromString(resultSet.getString("id")),
+                                UUID.fromString(resultSet.getString("user_uuid")),
+                                resultSet.getBoolean("status"),
+                                LocalDateTime.parse(resultSet.getString("time_stamp"), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS"))
+                        );
+                    }
+            );
+
+
+                if (resetPasswordLink.isStatus()) {
+                    response.setMessage("deactivated");
+                    response.setStatus(Boolean.TRUE);
+                } else {
+                    LocalDateTime now = LocalDateTime.now();
+
+                    if (now.compareTo(resetPasswordLink.getTime_stamp().plusMinutes(LINK_TIME_EXPIRED)) > 0) {
+                        response.setMessage("expired");
+                        response.setStatus(Boolean.TRUE);
+                    } else {
+                        jdbcTemplate.execute("UPDATE reset_password_emails SET status = true WHERE id IN('"+resetPasswordLink.getId()+"');");
+
+                        response.setMessage("success");
+                        response.setStatus(Boolean.TRUE);
+                    }
+                }
+
+        } catch (EmptyResultDataAccessException | DateTimeParseException e) {
+            response.setMessage("Error 404");
+            response.setStatus(Boolean.FALSE);
+        }
+
+        return response;
+    }
 }

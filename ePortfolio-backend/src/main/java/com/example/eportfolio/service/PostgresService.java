@@ -93,6 +93,30 @@ public class PostgresService implements UserDao {
             return 0;
     }
 
+    public int changePassword(UUID id, User user){
+
+        final String sqlFirst = "SELECT * FROM users WHERE email = '"+user.getEmail()+"'";
+        String emailKey;
+        String idKey;
+
+        List<User> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
+            return new User(
+                    UUID.fromString(resultSet.getString("id")),
+                    resultSet.getString("first_name"),
+                    resultSet.getString("last_name"),
+                    resultSet.getString("email"),
+                    resultSet.getString("password"),
+                    resultSet.getString("role"),
+                    resultSet.getBoolean("confirmed")
+            );
+        });
+
+        if (listFind.isEmpty()) {
+            return 0;
+        } else{
+        return 0;
+        }
+    }
     @Override
     public int resetPasswordRequest(User user){
         final String sqlFirst = "SELECT * FROM users WHERE email = '"+user.getEmail()+"'";

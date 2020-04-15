@@ -6,7 +6,7 @@ import NotFoundContent from '../components/page-not-found';
 import LoginContent from '../components/home/home-login-content';
 import RegisterContent from '../components/home/home-register-content';
 import ResetPasswordRequest from '../components/home/home-reset-password-request';
-import ResetPasswordLink from '../components/home/home-reset-password-link';
+import ResetPasswordLinkSuccess from '../components/home/home-reset-password-link';
 import RegulationsContent from '../components/home/home-regulations-content';
 import ConfirmationLinkSuccess from '../components/home/home-register-confirmation-link';
 
@@ -18,8 +18,8 @@ const ContentRoute = () => (
             <Route exact path="/rejestracja" component={RegisterContent} />
             <Route exact path="/regulamin" component={RegulationsContent} />
             <Route exact path="/zapomnialem_hasla" component={ResetPasswordRequest} />
-            <Route exact path="/zmien_haslo" component={ResetPasswordLink} />
             <Route exact path="/register_link/:idKey/:registerKey" component={ConfirmationLinkSuccess} />
+            <Route exact path="/reset_password_link/:idKey/:registerKey" component={ResetPasswordLinkSuccess} />
             <Route path='*' component={NotFoundContent}/>
         </Switch>
     </BrowserRouter>

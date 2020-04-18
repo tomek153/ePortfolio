@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -24,6 +25,11 @@ public class UserService {
     public List<User> getUsers() {
         return userDao.getUsers();
     }
+
+    public int changePassword(User user){
+        return userDao.changePassword(user);
+    }
+
     public int resetPasswordRequest(User user){
         return userDao.resetPasswordRequest(user);
     }

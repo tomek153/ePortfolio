@@ -93,9 +93,10 @@ public class PostgresService implements UserDao {
             return 0;
     }
 
-    public int changePassword(UUID id, User user){
+    public int changePassword(User user){
 
-        final String sqlFirst = "SELECT * FROM users WHERE email = '"+user.getEmail()+"'";
+        final String sqlFirst = "SELECT * FROM users WHERE id ='" + user.getId() + "'";
+        String sqlChangePassword;
         String emailKey;
         String idKey;
 
@@ -112,9 +113,15 @@ public class PostgresService implements UserDao {
         });
 
         if (listFind.isEmpty()) {
+            System.out.println("User");
             return 0;
         } else{
-        return 0;
+            //System.out.println(user.getId() + " =? " + listFind.get(0).getId());
+            sqlChangePassword = "UPDATE users SET password = '"+user.getPassword()+"' where id ='"+ listFind.get(0).getId() +"'";
+            jdbcTemplate.execute(sqlChangePassword);
+            jdbcTemplate.execute("UPDATE reset_password_emails SET status = true WHERE user_uuid IN('"+user.getId()+"');");
+
+        return 1;
         }
     }
     @Override
@@ -139,6 +146,9 @@ public class PostgresService implements UserDao {
            return 0;
         } else
             try {
+                final String deactivateExistingResetPasswordLinks = "UPDATE reset_password_emails SET status = true WHERE" +
+                        " user_uuid = (SELECT id FROM users WHERE email IN('" +user.getEmail()+"') limit 1)";
+                jdbcTemplate.execute(deactivateExistingResetPasswordLinks);
 
                 final String addResetPasswordEmailSQL = "INSERT INTO reset_password_emails (id, user_uuid, status) VALUES (" +
                         "uuid_generate_v4(), " +
@@ -146,7 +156,7 @@ public class PostgresService implements UserDao {
                         "false )";
                 jdbcTemplate.execute(addResetPasswordEmailSQL);
 
-                String getEmailKey = "SELECT id FROM reset_password_emails WHERE user_uuid IN (SELECT id FROM users WHERE email = '"+user.getEmail()+"')";
+                String getEmailKey = "SELECT id FROM reset_password_emails WHERE user_uuid IN (SELECT id FROM users WHERE email = '"+user.getEmail()+"') ORDER BY time_stamp desc limit 1";
                 emailKey = jdbcTemplate.queryForObject(getEmailKey, new Object[]{}, (resultSet, i) -> {
                     return new String (resultSet.getString("id"));
                 });
@@ -171,7 +181,7 @@ public class PostgresService implements UserDao {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                System.err.println("Add user to database error.");
+                System.err.println("Problem na etapie wysyłania maila resetowania hasła");
                 return 0;
             }
     }

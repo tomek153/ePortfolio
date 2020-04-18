@@ -234,22 +234,6 @@ public class EmailService {
         MailResponseModel response = new MailResponseModel();
 
         try {
-            User user = jdbcTemplate.queryForObject(
-                    "SELECT * FROM users WHERE id IN('"+request.getIdKey()+"')",
-                    new Object[]{},
-                    (resultSet, i) -> {
-                        return new User(
-                                UUID.fromString(resultSet.getString("id")),
-                                resultSet.getString("first_name"),
-                                resultSet.getString("last_name"),
-                                resultSet.getString("email"),
-                                resultSet.getString("password"),
-                                resultSet.getString("role"),
-                                resultSet.getBoolean("confirmed")
-                        );
-                    }
-            );
-
             ResetPasswordLink resetPasswordLink = jdbcTemplate.queryForObject(
                     "SELECT * FROM reset_password_emails WHERE id IN('"+request.getRegisterKey()+"') AND user_uuid IN('"+request.getIdKey()+"')",
                     new Object[]{},
@@ -274,7 +258,7 @@ public class EmailService {
                         response.setMessage("expired");
                         response.setStatus(Boolean.TRUE);
                     } else {
-                        jdbcTemplate.execute("UPDATE reset_password_emails SET status = true WHERE id IN('"+resetPasswordLink.getId()+"');");
+
 
                         response.setMessage("success");
                         response.setStatus(Boolean.TRUE);

@@ -23,6 +23,22 @@ class ResetPasswordLinkSuccess extends Component {
                 idKey: "",
                 registerKey: ""
             },
+            newUser: {
+                firstName: "",
+                lastName: "",
+                email: "",
+                password: "",
+                role: "user"
+            },
+            User: {
+                id: "",
+                firstName: "Zmiana",
+                lastName: "Hasła",
+                email: "test@test.pl",
+                password: "xxx",
+                role: "none",
+                confirmed: true
+            },
             modalSuccesShow: false,
             modalFailedShow: false,
             modalAlreadyConfirmed: false,
@@ -38,13 +54,7 @@ class ResetPasswordLinkSuccess extends Component {
                 password: false,
                 regulations: false
             },
-            newUser: {
-                firstName: "",
-                lastName: "",
-                email: "",
-                password: "",
-                role: "user"
-            },
+            
         }
         
     }
@@ -133,8 +143,7 @@ class ResetPasswordLinkSuccess extends Component {
 
     handlePasswordChanged(event) {
         let password = event.target.value;
-        this.state.newUser.password = password;
-
+        this.state.User.password = password;
         let length = event.target.value.length;
         let element = document.getElementById("form-value-alert-password");
 
@@ -179,6 +188,29 @@ class ResetPasswordLinkSuccess extends Component {
         }
     }
 
+    submitFormAndSend(event) {
+        this.setState({modalLoadingMessage: true});
+        event.preventDefault();
+        this.state.User.id = this.props.match.params.idKey
+        superagent
+             .post('http://localhost:8080/api/change-password')       
+             .send(this.state.User)            
+             .end((err, res) => {
+                if(err) {
+                    if(res.body.message == "User_does_not_exist."){
+                        this.setState({modalLoadingMessage: false});
+                        this.setState({modalFailedShow: true});
+                    } else
+                        alert("Password change falied");
+                    return;
+                } else {
+                   // this.clearField();
+                    this.setState({modalLoadingMessage: false});
+                    this.setState({modalSuccesShow: true});
+                }
+            }
+        );
+    }
     render() {
         return (
             <>
@@ -209,7 +241,7 @@ class ResetPasswordLinkSuccess extends Component {
                                 </InputGroup>
                             </Form.Group>
                        
-                        <Button variant="primary" type="submit" className="login-button-my" style={{float: 'right'}}>
+                        <Button onClick={this.submitFormAndSend.bind(this)}  variant="primary" type="submit" className="login-button-my" style={{float: 'right'}}>
                             Zmień hasło
                         </Button>
                 </Form>    
@@ -233,7 +265,6 @@ class ResetPasswordLinkSuccess extends Component {
                         </p>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="link" className="modal-close-btn" onClick={this.closeModal.bind(this)} href="/">Zamknij</Button>
                         <Button className="modal-redirect-btn" href="/logowanie">Przejdź do logowania</Button>
                     </Modal.Footer>
                 </Modal>
@@ -251,7 +282,6 @@ class ResetPasswordLinkSuccess extends Component {
                         </p>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="link" className="modal-close-btn" onClick={this.closeModal.bind(this)} href="/">Zamknij</Button>
                         <Button className="modal-redirect-btn" href="/logowanie">Przejdź do logowania</Button>
                     </Modal.Footer>
                 </Modal>
@@ -273,7 +303,7 @@ class ResetPasswordLinkSuccess extends Component {
                     </Modal.Body>               
                     <Modal.Footer>
                         <Button variant="link" className="modal-close-btn" onClick={this.closeModal.bind(this)} href="/">Zamknij</Button>
-                        <Button className="resend-link-button" href="/zapomnialem_hasla">Wyslij link</Button>
+                        <Button className="resend-link-button" href="/zapomnialem_hasla">Wyslij nowy link</Button>
                         <Spinner style={{display: this.state.reSendLinkSpinner}} id="resend-link-spinner" animation="border" variant="primary" />
                     </Modal.Footer>
                 </Modal>

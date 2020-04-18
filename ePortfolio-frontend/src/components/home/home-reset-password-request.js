@@ -138,6 +138,7 @@ class LoginContent extends Component {
     }
     render() {
         return (
+            <>
             <div className="home-right-container-my">
                 <a href="/"><img
                     className="login-logo-my"
@@ -162,6 +163,7 @@ class LoginContent extends Component {
                         </Button>
                     </Form>
                 </div>
+            </div>
                 <Modal show={this.state.modalSuccesShow} size="lg" aria-labelledby="contained-modal-title-vcenter"  style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
                     <Modal.Header style={{color: "#31b4cb", backgroundColor: "rgba(49, 180, 203, 0.15)"}}>
                         <Modal.Title id="contained-modal-title-vcenter">
@@ -199,7 +201,7 @@ class LoginContent extends Component {
                 <Modal show={this.state.modalLoadingMessage} id="container-spinner-modal-register-request" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
                     <Spinner animation="grow" variant="light" id="spinner-modal-register-request"/>
                 </Modal>
-            </div>
+                </>
         )
     }
 }

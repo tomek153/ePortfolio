@@ -36,10 +36,10 @@ public class UserBioController {
     public void updateUserBioById (@Valid @NonNull @PathVariable("uuid") UUID id, @RequestBody UserBio userBio, HttpServletResponse response) throws IOException {
         int status = userBioService.updateUserBioById(id, userBio);
         if (status == 0) {
-            System.out.println ("Błąd aktualizacji użytkownika!");
+            System.out.println ("Błąd aktualizacji użytkownika! (BIO)");
             response.sendError (405, "Update error");
         } else {
-            System.out.println("Aktualizacja użytkownika pomyślna.");
+            System.out.println("Aktualizacja użytkownika pomyślna. (BIO)");
         }
     }
 }

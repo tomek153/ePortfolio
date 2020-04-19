@@ -2,6 +2,7 @@ package com.example.eportfolio.service;
 
 import com.example.eportfolio.dao.UserDao;
 import com.example.eportfolio.model.User;
+import com.example.eportfolio.model.UserBio;
 import com.example.eportfolio.smtp.EmailService;
 import com.example.eportfolio.smtp.MailRequestModel;
 import com.example.eportfolio.smtp.MailResponseModel;
@@ -166,8 +167,43 @@ public class PostgresService implements UserDao {
     }
 
     @Override
-    public int updateUser(String email, User user) {
-        return 0;
+    public int updateUser(UUID id, User user) {
+
+        final String checkEmail = "SELECT * FROM users WHERE email = '"+user.getEmail()+"'";
+
+        List<User> listFind = jdbcTemplate.query(checkEmail, (resultSet, i) -> {
+            return new User(
+                    UUID.fromString(resultSet.getString("id")),
+                    resultSet.getString("first_name"),
+                    resultSet.getString("last_name"),
+                    resultSet.getString("email"),
+                    resultSet.getString("password"),
+                    resultSet.getString("role"),
+                    resultSet.getBoolean("confirmed")
+            );
+        });
+
+        if (listFind.isEmpty() || listFind.get(0).getId().toString().equals(user.getId().toString())) {
+
+            try {
+                final String updateUserSQL = "UPDATE users SET" +
+                        " first_name = '" + user.getFirstName() +
+                        "', last_name = '" + user.getLastName() +
+                        "', email = '" + user.getEmail()
+                        + "' WHERE id = '" + user.getId() + "';";
+
+                jdbcTemplate.execute(updateUserSQL);
+                return 1;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.err.println("Update user error.");
+                return 0;
+            }
+        } else {
+            System.out.println("Email error.");
+            return -1;
+        }
     }
 
 }

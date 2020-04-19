@@ -36,7 +36,7 @@ public class UserService {
         return userDao.deleteUser(email);
     }
 
-    public int updateUser(String email, User user) {
-        return userDao.updateUser(email, user);
+    public int updateUser(UUID id, User user) {
+        return userDao.updateUser(id, user);
     }
 }

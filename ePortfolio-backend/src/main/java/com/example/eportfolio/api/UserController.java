@@ -3,6 +3,7 @@ package com.example.eportfolio.api;
 import com.example.eportfolio.model.User;
 import com.example.eportfolio.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,8 +63,17 @@ public class UserController {
         userService.deleteUser (email);
     }
 
-    @RequestMapping (value = "/api/users/{email}", method = PUT)
-    public void updateUser (@PathVariable ("email") String email, @Valid @NonNull @RequestBody User user) {
-        userService.updateUser (email, user);
+    @RequestMapping (value = "/api/users/update/{uuid}", method = PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = { MediaType.APPLICATION_JSON_VALUE})
+    public void updateUser (@Valid @NonNull @PathVariable("uuid") UUID id, @RequestBody User user, HttpServletResponse response) throws IOException {
+        int status = userService.updateUser(id, user);
+        if (status == 0) {
+            System.out.println ("Błąd aktualizacji użytkownika!");
+            response.sendError (405, "Update error");
+        } else if(status == -1) {
+            System.out.println ("Błąd aktualizacji użytkownika! - Email");
+            response.sendError (405, "Update error - email");
+        } else {
+            System.out.println("Aktualizacja użytkownika pomyślna.");
+        }
     }
 }

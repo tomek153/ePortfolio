@@ -6,6 +6,7 @@ import NotFoundContent from '../components/page-not-found';
 import LoginContent from '../components/home/home-login-content';
 import RegisterContent from '../components/home/home-register-content';
 import RegulationsContent from '../components/home/home-regulations-content';
+import ContactContent from '../components/home/home-contact-content';
 import ConfirmationLinkSuccess from '../components/home/home-register-confirmation-link';
 import PagheLoading from '../components/page-loading';
 
@@ -16,6 +17,7 @@ const ContentRoute = () => (
             <Route exact path="/logowanie" component={LoginContent} />
             <Route exact path="/rejestracja" component={RegisterContent} />
             <Route exact path="/regulamin" component={RegulationsContent} />
+            <Route exact path="/kontakt" component={ContactContent} />
             <Route exact path="/register_link/:idKey/:registerKey" component={ConfirmationLinkSuccess} />
             <Route exact path="/loading" component={PagheLoading} />
             <Route path='*' component={NotFoundContent}/>

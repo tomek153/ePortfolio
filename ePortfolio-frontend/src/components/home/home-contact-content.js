@@ -1,17 +1,10 @@
 import React, { Component } from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import Col from 'react-bootstrap/Col';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Popover from 'react-bootstrap/Popover';
-import InputGroup from 'react-bootstrap/InputGroup';
-import Modal from 'react-bootstrap/Modal';
-import Spinner from 'react-bootstrap/Spinner';
-
-import superagent from 'superagent';
 
 import ImageLogo from '../../images/logo.png';
-import BackgroundLogo from '../../images/home-background-revert.png';
+import PageLoading from '../page-loading';
+import superagent from 'superagent';
 
 class ContactContent extends Component {
 
@@ -163,71 +156,105 @@ submitFormAndSend(event) {
             this.setState({modalFailedShow: false});
         }
 
+    showPassword() {
+        var x = document.getElementById("login-password-my");
+        if (x.type === "password")
+          x.type = "text";
+        else
+          x.type = "password";
+    }
+
+    componentDidMount() {
+        const loader = document.querySelector(".page-loading");
+        window.onload = function() {
+            this.setTimeout(function() {
+                loader.classList.add("hidden");
+                this.setTimeout(function() {
+                    const regTab = document.querySelector(".home-right-container-my");
+                    regTab.style = "display: block";
+                }, 200);
+            }, 600);
+        }
+    }
+
+    homeRedirect() {
+        const helper = document.querySelector(".fade-out-helper");
+        const logTab = document.querySelector(".box-container-shadow");
+
+        logTab.classList.remove("w3-animate-right-login");
+        logTab.classList.add("w3-animate-right-out-login");
+
+        setTimeout(function() {
+            logTab.style = "display: none";
+            helper.style = "display: block";
+            helper.classList.add("fade-in");
+
+            setTimeout(function() {
+                window.location.href = "/";
+            }, 200);
+        }, 600);
+    }
+
+    registerRedirect() {
+        const helper = document.querySelector(".fade-out-helper");
+        const logTab = document.querySelector(".box-container-shadow");
+
+        logTab.classList.remove("w3-animate-right-login");
+        logTab.classList.add("w3-animate-right-out-login");
+
+        setTimeout(function() {
+            logTab.style = "display: none";
+            helper.style = "display: block";
+            helper.classList.add("fade-in");
+
+            setTimeout(function() {
+                window.location.href = "/rejestracja";
+            }, 200);
+        }, 600);
+    }
+
     render() {
-
         return (
-            <div className="home-right-container-my" onLoad={this.changeBackground}>
-                            <a href="/"><img className="login-logo-my" src={ImageLogo}/></a>
-                <div className="login-form-my">
-                    <Form>
-                        <h3>Masz wątpliwości? Zapytaj!</h3>
-                                    <p>Wypełnij poniższy formularz, aby się z nami skontaktować.</p>
-                                    <hr />
-                                    <Form.Group controlId="formGridFirstName">
-                                                                    <Form.Label>Imię</Form.Label><span id="form-value-alert-name" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
-                                                                    <Form.Control placeholder="Wprowadź imię..." onChange={this.handleFirstNameChanged.bind(this)}/>
-                                                                </Form.Group>
-                                    <Form.Group controlId="formGridEmail">
-                                        <Form.Label>Email</Form.Label><span id="form-value-alert-email" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
-                                        <Form.Control placeholder="Wprowadź email..." onChange={this.handleEmailChanged.bind(this)}/>
-                                        <Form.Text className="text-muted">Na ten email otrzymasz wiadomość od ePortfolio.</Form.Text>
-                                    </Form.Group>
+            <>
+                <div className="fade-out-helper"></div>
+                <PageLoading />
+                <div className="home-right-container-my">
+                    <div className="box-container-shadow w3-animate-right-login" style={{width: '720px', height: '670px'}}>
+                        <i className="fas fa-arrow-left home-link-register" onClick={this.homeRedirect.bind(this)}></i>
+                        <a href="/"><img
+                            className="login-logo-my"
+                            src={ImageLogo}
+                            style={{top: '18%'}}
+                        /></a>
+                        <div className="login-form-my">
+                                            <Form>
+                                                <h3>Masz wątpliwości? Zapytaj!</h3>
+                                                            <p>Wypełnij poniższy formularz, aby się z nami skontaktować.</p>
+                                                            <hr />
+                                                            <Form.Group controlId="formGridFirstName">
+                                                                                            <Form.Label>Imię</Form.Label><span id="form-value-alert-name" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
+                                                                                            <Form.Control placeholder="Wprowadź imię..." onChange={this.handleFirstNameChanged.bind(this)}/>
+                                                                                        </Form.Group>
+                                                            <Form.Group controlId="formGridEmail">
+                                                                <Form.Label>Email</Form.Label><span id="form-value-alert-email" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
+                                                                <Form.Control placeholder="Wprowadź email..." onChange={this.handleEmailChanged.bind(this)}/>
+                                                                <Form.Text className="text-muted">Na ten email otrzymasz wiadomość od ePortfolio.</Form.Text>
+                                                            </Form.Group>
 
 
-                                    <Form.Group controlId="formBasicText">
-                                        <Form.Label>Wiadomość</Form.Label><br/>
-                                        <textarea rows="5" placeholder="Wprowadź tekst..." id="message-text-my" style={{width:600}}></textarea>
-                                    </Form.Group>
-                                    <Button onClick={this.submitFormAndSend.bind(this)} variant="primary" type="button" className="login-button-my" style={{float: 'right'}}>
-                                        Wyślij
-                                    </Button>
-                    </Form>
+                                                            <Form.Group controlId="formBasicText">
+                                                                <Form.Label>Wiadomość</Form.Label><br/>
+                                                                <textarea rows="2" placeholder="Wprowadź tekst..." id="message-text-my" style={{width:600}}></textarea>
+                                                            </Form.Group>
+                                                            <Button onClick={this.submitFormAndSend.bind(this)} variant="primary" type="button" className="login-button-my" style={{float: 'right'}}>
+                                                                Wyślij
+                                                            </Button>
+                                            </Form>
+                                        </div>
+
+                    </div>
                 </div>
-
-<Modal show={this.state.modalSuccesShow} size="lg" aria-labelledby="contained-modal-title-vcenter"  style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
-                    <Modal.Header style={{color: "#31b4cb", backgroundColor: "rgba(49, 180, 203, 0.15)"}}>
-                        <Modal.Title id="contained-modal-title-vcenter">
-                            Sukces!
-                        </Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body style={{textAlign: "center"}}>
-                        <i className="fas fa-check fa-5x" id="successIconModal"></i>
-                        <p style={{color: "#444"}}>
-                            Wiadomość została wysłana. Odpowiedź zostanie wysłana na podany <b>adres email</b>.
-                        </p>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="link" onClick={this.closeModal.bind(this)} className="modal-close-btn">Zamknij</Button>
-                    </Modal.Footer>
-                </Modal>
-                <Modal show={this.state.modalFailedShow} size="lg" aria-labelledby="contained-modal-title-vcenter" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
-                    <Modal.Header style={{color: "#de473c", backgroundColor: "rgba(222, 71, 60, 0.15)"}}>
-                        <Modal.Title id="contained-modal-title-vcenter">
-                            Błąd!
-                        </Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body style={{textAlign: "center"}}>
-                        <i className="fas fa-exclamation fa-5x" id="successIconModal" style={{color: "#de473c"}}></i>
-                        <p style={{color: "#444"}}>
-                            Wiadomość <b>nie została</b> wysłana. <br/>Spróbuj ponownie <b>później</b>.
-                        </p>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="link" className="modal-close-btn" onClick={this.closeModal.bind(this)}>Zamknij</Button>
-                    </Modal.Footer>
-                </Modal>
-
-            </div>
+            </>
         )
     }
 }

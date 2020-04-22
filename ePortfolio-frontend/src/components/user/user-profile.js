@@ -35,7 +35,7 @@ class UserProfile extends Component {
             67d37b2e-428f-4ec4-9525-668383def1db | nowy user
         */}
 
-        let id = "67d37b2e-428f-4ec4-9525-668383def1db"
+        let id = "1a1d1d84-be02-4184-a26f-565302a0a9ab"
         const urlMain = "http://localhost:8080/api/users/id/";
         const urlBio = "http://localhost:8080/api/users-bio/id/";
 

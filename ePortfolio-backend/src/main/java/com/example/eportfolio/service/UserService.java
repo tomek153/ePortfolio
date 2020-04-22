@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -28,6 +29,8 @@ public class UserService {
     public Optional<User> getUserByEmail(String email) {
         return userDao.getUserByEmail(email);
     }
+
+    public Optional<User> getUserByID(UUID id) { return userDao.getUserByID(id); }
 
     public int deleteUser(String email) {
         return userDao.deleteUser(email);

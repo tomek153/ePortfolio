@@ -55,6 +55,12 @@ public class PostgresService implements UserDao {
                         ")";
                 jdbcTemplate.execute(addUserSQL);
 
+                final String addUserBioSQL = "INSERT INTO users_bio (id, user_uuid, phone, address_main, address_city, address_zip, address_country, date_birth, gender) VALUES (" +
+                        "uuid_generate_v4(), " +
+                        "(SELECT id FROM users WHERE email IN('"+user.getEmail()+"'))," +
+                        "'','','','','','', '')";
+                jdbcTemplate.execute(addUserBioSQL);
+
                 final String addConfirmationEmailSQL = "INSERT INTO confirmation_emails (id, user_uuid, status) VALUES (" +
                     "uuid_generate_v4(), " +
                     "(SELECT id FROM users WHERE email IN('"+user.getEmail()+"')), "+
@@ -133,6 +139,28 @@ public class PostgresService implements UserDao {
     }
 
     @Override
+    public Optional<User> getUserByID(UUID id) {
+        final String sql = "SELECT * FROM users WHERE id = ?";
+
+        User user = jdbcTemplate.queryForObject(
+                sql,
+                new Object[]{id},
+                (resultSet, i) -> {
+                    return new User(
+                            UUID.fromString(resultSet.getString("id")),
+                            resultSet.getString("first_name"),
+                            resultSet.getString("last_name"),
+                            resultSet.getString("email"),
+                            resultSet.getString("password"),
+                            resultSet.getString("role"),
+                            resultSet.getBoolean("confirmed")
+                    );
+                }
+        );
+        return Optional.ofNullable(user);
+    }
+
+    @Override
     public int deleteUser(String email) {
         return 0;
     }
@@ -141,4 +169,5 @@ public class PostgresService implements UserDao {
     public int updateUser(String email, User user) {
         return 0;
     }
+
 }

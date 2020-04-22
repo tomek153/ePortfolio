@@ -8,15 +8,17 @@ import RegisterContent from '../components/home/home-register-content';
 import RegulationsContent from '../components/home/home-regulations-content';
 import ContactContent from '../components/home/home-contact-content';
 import ConfirmationLinkSuccess from '../components/home/home-register-confirmation-link';
+import UserProfile from '../components/user/user-profile';
 import PagheLoading from '../components/page-loading';
 
-const ContentRoute = () => (
+const ContentRoute = 0 => (
     <BrowserRouter>
         <Switch>
             <Route exact path="/" component={HomeContent} />
             <Route exact path="/logowanie" component={LoginContent} />
             <Route exact path="/rejestracja" component={RegisterContent} />
             <Route exact path="/regulamin" component={RegulationsContent} />
+            <Route exact path="/moj-profil" component={UserProfile} />
             <Route exact path="/kontakt" component={ContactContent} />
             <Route exact path="/register_link/:idKey/:registerKey" component={ConfirmationLinkSuccess} />
             <Route exact path="/loading" component={PagheLoading} />

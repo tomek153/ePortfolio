@@ -17,3 +17,15 @@ CREATE TABLE IF NOT EXISTS confirmation_emails (
     status boolean NOT NULL,
     time_stamp timestamp NOT NULL DEFAULT now()
 );
+
+CREATE TABLE IF NOT EXISTS users_bio (
+	ID UUID PRIMARY KEY NOT NULL,
+    user_uuid UUID NOT NULL,
+    phone VARCHAR(60) NOT NULL,
+    address_main VARCHAR(60) NOT NULL,
+    address_city VARCHAR(60) NOT NULL,
+    address_zip VARCHAR(60) NOT NULL,
+    address_country VARCHAR(60) NOT NULL,
+    date_birth VARCHAR(60) NOT NULL,
+    gender VARCHAR(30) NOT NULL
+);

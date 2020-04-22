@@ -44,10 +44,8 @@ public class EmailService {
         MimeMessage message = sender.createMimeMessage();
 
         try {
-            // set mediaType
             MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
                     StandardCharsets.UTF_8.name());
-            // add attachment
 
             User user = jdbcTemplate.queryForObject(
                     "SELECT * FROM users WHERE id IN('"+model.get("idKey")+"')",

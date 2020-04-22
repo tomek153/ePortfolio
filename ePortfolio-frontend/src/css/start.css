@@ -214,8 +214,9 @@ a.login-links:hover {
     cursor: pointer;
 }
 
-.register-login-btn:hover {
+a.register-login-btn:hover {
     cursor: pointer;
+    text-decoration: underline;
 }
 
 .register-container-my {

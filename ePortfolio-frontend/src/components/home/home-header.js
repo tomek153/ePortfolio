@@ -73,6 +73,7 @@ class HomeHeader extends Component {
                         <FormControl type="text" placeholder="Search" className="mr-sm-2" />
                         <Button variant="outline-primary" className="header-btn-my header-btn-login-my" onClick={this.loginRedirect.bind(this)}>Zaloguj</Button>
                         <Button variant="link" className="header-btn-my header-btn-register-my" onClick={this.registerRedirect.bind(this)}>Rejestracja</Button>
+                        <Button variant="link" className="header-btn-my header-btn-register-my" href="/kontakt">Kontakt</Button>
                     </Form>
                 </Navbar>
             </>

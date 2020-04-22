@@ -61,6 +61,13 @@ public class UserController {
                 .orElse(null);
     }
 
+    @RequestMapping (value = "/api/users/id/{uuid}", method = GET)
+    @ResponseBody
+    public User getUserByID (@PathVariable ("uuid") UUID id) {
+        return userService.getUserByID (id)
+                .orElse(null);
+    }
+
     @RequestMapping (value = "/api/users/{email}", method = DELETE)
     public void deleteUser (@PathVariable ("email") String email) {
         userService.deleteUser (email);

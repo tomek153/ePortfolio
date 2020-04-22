@@ -11,7 +11,7 @@ import ConfirmationLinkSuccess from '../components/home/home-register-confirmati
 import UserProfile from '../components/user/user-profile';
 import PagheLoading from '../components/page-loading';
 
-const ContentRoute = 0 => (
+const ContentRoute = () => (
     <BrowserRouter>
         <Switch>
             <Route exact path="/" component={HomeContent} />

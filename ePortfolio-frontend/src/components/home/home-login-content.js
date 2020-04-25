@@ -32,21 +32,44 @@ class LoginContent extends Component {
             reSendLinkSuccess: "none",
             reSendLinkFailed: "none",
             reSendLinkSpinner: "none",
-            userId: ""
+            userId: "",
+            redirectExpired: false,
+            redirectBad_token: false
         }
     }
 
+    setBadTokenState = () => {
+        this.setState({redirectBad_token: true})
+    }
+
+    setExpiredState = () => {
+        this.setState({redirectExpired: true})
+    }
+
     componentDidMount() {
-        this.checkFormDataValid();
-        const loader = document.querySelector(".page-loading");
-        window.onload = function() {
-            this.setTimeout(function() {
-                loader.classList.add("hidden");
-                this.setTimeout(function() {
-                    const regTab = document.querySelector(".home-right-container-my");
-                    regTab.style = "display: block";
-                }, 200);
-            }, 600);
+        let token = localStorage.getItem("token");
+        if (token != null && this.props.location.search != "?token=bad_token" && this.props.location.search != "?token=expired") {
+            this.userRedirect();
+        } else {
+            this.checkFormDataValid();
+            const loader = document.querySelector(".page-loading");
+
+            window.onload = () => {
+                window.setTimeout(function() {
+                    loader.classList.add("hidden");
+                    this.setTimeout(function() {
+                        const regTab = document.querySelector(".home-right-container-my");
+                        regTab.style = "display: block";
+                    }, 200);
+                }, 600);
+                if (this.props.location.search == "?token=bad_token") {
+                    window.setTimeout(this.setBadTokenState, 1200);
+                    localStorage.removeItem("token");
+                } else if (this.props.location.search == "?token=expired") {
+                    window.setTimeout(this.setExpiredState, 1200);
+                    localStorage.removeItem("token");
+                }
+            }
         }
     }
 
@@ -82,6 +105,24 @@ class LoginContent extends Component {
             
             setTimeout(function() {
                 window.location.href = "/rejestracja";
+            }, 200);
+        }, 600);
+    }
+
+    userRedirect() {
+        const helper = document.querySelector(".fade-out-helper");
+        const logTab = document.querySelector(".box-container-shadow");
+
+        logTab.classList.remove("w3-animate-right-login");
+        logTab.classList.add("w3-animate-right-out-login");
+
+        setTimeout(function() {
+            logTab.style = "display: none";
+            helper.style = "display: block";
+            helper.classList.add("fade-in");
+            
+            setTimeout(function() {
+                window.location.href = "/test-user";
             }, 200);
         }, 600);
     }
@@ -225,9 +266,8 @@ class LoginContent extends Component {
                     this.setState({modalLoadingMessage: false});
                     this.setState({modalUnconfirmed: true});
                 } else if (data.message == "Authentication success.") {
-                    alert('login ok');
                     localStorage.setItem('token', data.token);
-                    localStorage.setItem('user', JSON.stringify(data.user));
+                    this.userRedirect();
                 } else {
                     console.log(data);
                     alert("Uknown error.");
@@ -240,6 +280,8 @@ class LoginContent extends Component {
         this.setState({modalSuccesShow: false});
         this.setState({modalFailedShow: false});
         this.setState({modalUnconfirmed: false});
+        this.setState({redirectExpired: false});
+        this.setState({redirectBad_token: false});
     }
 
     reSendConfirmationLink(event) {
@@ -398,6 +440,38 @@ class LoginContent extends Component {
                             <Button variant="link" className="modal-close-btn" onClick={this.closeModal.bind(this)}>Zamknij</Button>
                             <Button className="resend-link-button" onClick={this.reSendConfirmationLink.bind(this)}>Wyslij link</Button>
                             <Spinner style={{display: this.state.reSendLinkSpinner}} id="resend-link-spinner" animation="border" variant="primary" />
+                        </Modal.Footer>
+                    </Modal>
+                    <Modal show={this.state.redirectExpired} size="lg" aria-labelledby="contained-modal-title-vcenter" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
+                        <Modal.Header style={{color: "#de473c", backgroundColor: "rgba(222, 71, 60, 0.15)"}}>
+                            <Modal.Title id="contained-modal-title-vcenter">
+                                Sesja wygasła!
+                            </Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body style={{textAlign: "center"}}>
+                            <i className="fas fa-exclamation fa-5x" id="successIconModal" style={{color: "#de473c"}}></i>
+                            <p style={{color: "#444"}}>
+                                Twoja sesja wygasła. Zaloguj się ponownie aby wejść na swoje konto.
+                            </p>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="link" className="modal-close-btn" onClick={this.closeModal.bind(this)}>Zamknij</Button>
+                        </Modal.Footer>
+                    </Modal>
+                    <Modal show={this.state.redirectBad_token} size="lg" aria-labelledby="contained-modal-title-vcenter" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
+                        <Modal.Header style={{color: "#de473c", backgroundColor: "rgba(222, 71, 60, 0.15)"}}>
+                            <Modal.Title id="contained-modal-title-vcenter">
+                                Brak autoryzacji!
+                            </Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body style={{textAlign: "center"}}>
+                            <i className="fas fa-exclamation fa-5x" id="successIconModal" style={{color: "#de473c"}}></i>
+                            <p style={{color: "#444"}}>
+                                Zaloguj się aby móc wejść do serwisu.
+                            </p>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="link" className="modal-close-btn" onClick={this.closeModal.bind(this)}>Zamknij</Button>
                         </Modal.Footer>
                     </Modal>
                 </div>

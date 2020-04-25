@@ -1,24 +1,22 @@
 package com.example.eportfolio.api;
 
+import com.auth0.jwt.interfaces.Claim;
 import com.example.eportfolio.model.Login;
 import com.example.eportfolio.model.User;
+import com.example.eportfolio.model.UserBio;
+import com.example.eportfolio.service.UserBioService;
 import com.example.eportfolio.service.UserService;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
@@ -28,12 +26,14 @@ public class UserController {
 
     private Gson gson = new Gson();
     private final UserService userService;
+    private final UserBioService userBioService;
     @Autowired
     private Login login;
 
     @Autowired
-    public UserController (UserService userService) {
+    public UserController(UserService userService, UserBioService userBioService) {
         this.userService = userService;
+        this.userBioService = userBioService;
     }
 
     @RequestMapping (value = "/api/users", method = POST)
@@ -61,11 +61,46 @@ public class UserController {
                 .orElse(null);
     }
 
-    @RequestMapping (value = "/api/users/id/{uuid}", method = GET)
-    @ResponseBody
-    public User getUserByID (@PathVariable ("uuid") UUID id) {
-        return userService.getUserByID (id)
-                .orElse(null);
+    @RequestMapping (value = "/api/users/profile", method = GET)
+    public void getUser (HttpServletResponse response, HttpServletRequest request) throws IOException {
+        Map<String, String> profile = new HashMap<>();
+        String token = request.getHeader("Authorization");
+        String responseString = "";
+        int decryptionStatus = Login.checkJWT(token);
+
+        if (decryptionStatus == 0) {
+            Map<String, Claim> claims = Login.getClaims();
+
+            profile.put("id", claims.get("id").asString());
+            profile.put("firstName", claims.get("first_name").asString());
+            profile.put("lastName", claims.get("last_name").asString());
+            profile.put("email", claims.get("email").asString());
+
+            Optional<UserBio> userBio = userBioService.getUserBioByID(UUID.fromString(profile.get("id")));
+            if (userBio.isPresent()) {
+                profile.put("phone", userBio.get().getPhone());
+                profile.put("address", userBio.get().getAddress_main());
+                profile.put("city", userBio.get().getAddress_city());
+                profile.put("zip", userBio.get().getAddress_zip());
+                profile.put("country", userBio.get().getAddress_country());
+                profile.put("dateBirth", userBio.get().getDate_birth());
+                profile.put("gender", userBio.get().getGender());
+            }
+
+            responseString = this.gson.toJson(profile);
+        } else if (decryptionStatus == 2) {
+            response.sendError(400, "Token expired");
+        } else if (decryptionStatus == 1) {
+            response.sendError(400, "Token decryption error");
+        } else {
+            response.sendError(400, "Unknown error");
+        }
+
+        PrintWriter out = response.getWriter();
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        out.print(responseString);
+        out.flush();
     }
 
     @RequestMapping (value = "/api/users/{email}", method = DELETE)
@@ -79,7 +114,7 @@ public class UserController {
     }
 
     @RequestMapping (value = "/api/login", method = POST)
-    public void updateUser (@RequestBody Map body, HttpServletResponse response, HttpServletRequest request) throws IOException{
+    public void userLogin (@RequestBody Map body, HttpServletResponse response, HttpServletRequest request) throws IOException{
         int status = login.authenticate(body.get("email").toString(), body.get("password").toString());
         Map<String, Object> responseMap = new HashMap<>();
 
@@ -91,16 +126,9 @@ public class UserController {
         } else if (status == 0) {
             String token = login.createToken();
             if (!token.equals("Create token error.")) {
-                User user = login.getUser();
-                Map<String, String> userMap = new HashMap<>();
-                userMap.put("id", user.getId().toString());
-                userMap.put("firstName", user.getFirstName());
-                userMap.put("lastName", user.getLastName());
-                userMap.put("email", user.getEmail());
 
                 responseMap.put("message", "Authentication success.");
                 responseMap.put("token", token);
-                responseMap.put("user", userMap);
             } else
                 responseMap.put("message", "Token error.");
         }

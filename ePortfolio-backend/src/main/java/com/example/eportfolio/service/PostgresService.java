@@ -1,7 +1,9 @@
 package com.example.eportfolio.service;
 
+import com.example.eportfolio.dao.UserBioDao;
 import com.example.eportfolio.dao.UserDao;
 import com.example.eportfolio.model.User;
+import com.example.eportfolio.model.UserBio;
 import com.example.eportfolio.smtp.EmailService;
 import com.example.eportfolio.smtp.MailRequestModel;
 import com.example.eportfolio.smtp.MailResponseModel;
@@ -12,7 +14,7 @@ import org.springframework.stereotype.Repository;
 import java.util.*;
 
 @Repository("postgres")
-public class PostgresService implements UserDao {
+public class PostgresService implements UserDao, UserBioDao {
 
     @Autowired
     private EmailService service;
@@ -170,4 +172,26 @@ public class PostgresService implements UserDao {
         return 0;
     }
 
+    @Override
+    public Optional<UserBio> getUserBioByID(UUID ID) {
+        final String sql = "SELECT user_uuid, phone, address_main, address_city, address_zip, address_country, date_birth, gender FROM users_bio WHERE user_uuid = ?";
+
+        UserBio userBio = jdbcTemplate.queryForObject(
+                sql,
+                new Object[]{ID},
+                (resultSet, i) -> {
+                    return new UserBio(
+                            UUID.fromString(resultSet.getString("user_uuid")),
+                            resultSet.getString("phone"),
+                            resultSet.getString("address_main"),
+                            resultSet.getString("address_city"),
+                            resultSet.getString("address_zip"),
+                            resultSet.getString("address_country"),
+                            resultSet.getString("date_birth"),
+                            resultSet.getString("gender")
+                    );
+                }
+        );
+        return Optional.ofNullable(userBio);
+    }
 }

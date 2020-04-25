@@ -125,4 +125,26 @@
     padding-right: 0 !important; 
 }
 
+.user-bio-edit-message{
+    color: #fff;
+    font-size: 14px;
+}
+
+.user-bio-edit-message .message-success,
+.user-bio-edit-message .message-failure{
+    border-radius: 8px;
+}
+
+.user-bio-edit-message .message-success p,
+.user-bio-edit-message .message-failure p{
+    padding: 15px 10px 15px 10px;
+}
+
+.user-bio-edit-message .message-success{
+    background-color: rgb(7, 173, 7);
+}
+.user-bio-edit-message .message-failure{
+    background-color: #dd3d3d;
+}
+
 /* END | CSS CODE: USER_PROFILE | AUTHOR: MICHAŁ STANCELEWSKI */

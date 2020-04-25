@@ -16,6 +16,45 @@ function handleErrors(response) {
     return response;
 }
 
+function clearMessages(){
+    var e1 = document.getElementById("msg-err");
+    var e2 = document.getElementById("msg-suc");
+    var e3 = document.getElementById("msg-err-email"); 
+    var e4 = document.getElementById("msg-err-empty");
+    e1.classList.remove("show");
+    e2.classList.remove("show");
+    e3.classList.remove("show");
+    e4.classList.remove("show");
+    e1.classList.add("hide");
+    e2.classList.add("hide");
+    e3.classList.add("hide");
+    e4.classList.add("hide");
+}
+
+function showErrorBox(){
+    var e = document.getElementById("msg-err"); 
+    e.classList.remove("hide");
+    e.className += " show"; 
+}
+
+function showSuccessBox(){
+    var e = document.getElementById("msg-suc"); 
+    e.classList.remove("hide");
+    e.className += " show"; 
+}
+
+function showErrorBox_Email(){
+    var e = document.getElementById("msg-err-email"); 
+    e.classList.remove("hide");
+    e.className += " show"; 
+}
+
+function showErrorBox_Empty(){
+    var e = document.getElementById("msg-err-empty"); 
+    e.classList.remove("hide");
+    e.className += " show"; 
+}
+
 class UserProfileEdit extends Component {
 
 
@@ -56,22 +95,6 @@ class UserProfileEdit extends Component {
             modalLoadingMessage: false
         }
     }
-
-    /*state = {
-        userUUID: null,
-        userFirstName: null,
-        userLastName: null,
-        userEmail: null,
-        userPhone: null,
-        userRole: null,
-        userConfirmed: null,
-        userAddressMain: null,
-        userAddressCity: null,
-        userAddressZip: null,
-        userAddressCountry: null,
-        userDateBirth: null,
-        userGender: null
-    }*/
 
     async componentDidMount() {
 
@@ -125,59 +148,49 @@ class UserProfileEdit extends Component {
         } 
     }
 
-
     submitFormAndSend(event) {
+
+        clearMessages();
 
         let id = "148deb3a-a0ae-4f16-bd45-86ffa2bf28a7"
 
         const urlBio = "http://localhost:8080/api/users-bio/update/";
         const urlMain = "http://localhost:8080/api/users/update/";
 
-        /*this.setState({modalLoadingMessage: true});
-        event.preventDefault();*/
-       superagent
+        if (this.state.editUser.firstName == '' ||
+            this.state.editUser.lastName == '' ||
+            this.state.editUser.email == '' ){
+                showErrorBox_Empty();
+                return;
+        }
+
+        superagent
             .put(urlMain + id)
             .set('Content-Type', 'application/json')
             .send(this.state.editUser)
-            /*.then(console.log(this.state.editUser)).then(console.log(this.state.editUserBio)).catch(console.error)*/
             .end((err, res) => {
                 if(err) {
                     if(res.body.message == "Update error - email"){
-                        console.log("ERROR TEST - EMAIL");
-                        /*this.setState({modalLoadingMessage: false});
-                        this.setState({modalFailedShow: true});*/
+                        showErrorBox_Email(); 
                     } else if (res.body.message == "Update error"){
-                        console.log("ERROR TEST");
+                        showErrorBox(); 
                     } else
-                        /*alert("User update failed.");*/
+                        showErrorBox(); 
                     return;
-                } else {
-                    /*this.clearField();
-                    this.setState({modalLoadingMessage: false});
-                    this.setState({modalSuccesShow: true});*/
-                    console.log("SUCCESS TEST");
-
+                } else {   
                     superagent
                     .put(urlBio + id)
                     .set('Content-Type', 'application/json')
                     .send(this.state.editUserBio)
-                    /*.then(console.log(this.state.editUser)).then(console.log(this.state.editUserBio)).catch(console.error)*/
                     .end((err, res) => {
                         if(err) {
                             if(res.body.message == "Update error"){
-                                console.log("ERROR TEST 2");
-                                /*this.setState({modalLoadingMessage: false});
-                                this.setState({modalFailedShow: true});*/
+                                showErrorBox(); 
                             } else
-                                /*alert("User update failed.");*/
+                                showErrorBox(); 
                             return;
                         } else {
-                            /*this.clearField();
-                            this.setState({modalLoadingMessage: false});
-                            this.setState({modalSuccesShow: true});*/
-                            console.log("SUCCESS TEST 2");
-        
-
+                            showSuccessBox(); 
                         }
                     }
                     );
@@ -187,26 +200,46 @@ class UserProfileEdit extends Component {
     }
 
     handleFirstNameChanged(event) {
-        this.state.editUser.firstName = event.target.value;
+        this.state.editUser.firstName = event.target.value.trim();
     }
    
     handleLastNameChanged(event) {
-        this.state.editUser.lastName = event.target.value;
+        this.state.editUser.lastName = event.target.value.trim();
     }
 
     handleEmailChanged(event) {
-        this.state.editUser.email = event.target.value;
+        this.state.editUser.email = event.target.value.trim();
     }
 
     handlePhoneChanged(event) {
-        this.state.editUserBio.phone = event.target.value;
+        this.state.editUserBio.phone = event.target.value.trim();
+    }
+    
+    handleBirthDateChanged(event) {
+        this.state.editUserBio.date_birth = event.target.value.trim();
+    }
+    
+    handleGenderChanged(event) {
+        if(event.target.value == "Mężczyzna") {this.state.editUserBio.gender = "male" ;}
+        if(event.target.value == "Kobieta") {this.state.editUserBio.gender = "female" ;}
+        if(event.target.value == "Nie podano") {this.state.editUserBio.gender = "" ;}
+    }
+    
+    handleAddressMainChanged(event) {
+        this.state.editUserBio.address_main = event.target.value.trim();
     }
 
+    handleAddressCityChanged(event) {
+        this.state.editUserBio.address_city = event.target.value.trim();
+    }
 
-    closeModal() {
-        this.setState({modalSuccesShow: false});
-        this.setState({modalFailedShow: false});
-    } 
+    handleAddressZipChanged(event) {
+        this.state.editUserBio.address_zip = event.target.value.trim();
+    }
+
+    handleAddressCountryChanged(event) {
+        this.state.editUserBio.address_country = event.target.value.trim();
+    }
 
     render() {
 
@@ -236,7 +269,7 @@ class UserProfileEdit extends Component {
                                         <div className="col-12 col-md-6 user-bio-name user-bio-data-container">
 
                                             <Form.Group as={Col} controlId="formGridFirstName">
-                                                <Form.Label><p className="user-firstname-main-label label">Imię</p></Form.Label>
+                                                <Form.Label><p className="user-firstname-main-label label">Imię *</p></Form.Label>
                                                 <span id="form-value-alert-firstname" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
                                                 <Form.Control placeholder={this.state.editUser.firstName} onChange={this.handleFirstNameChanged.bind(this)}/>
                                             </Form.Group>
@@ -245,7 +278,7 @@ class UserProfileEdit extends Component {
                                         <div className="col-12 col-md-6 user-bio-name user-bio-data-container">
 
                                         <Form.Group as={Col} controlId="formGridFirstName">
-                                                <Form.Label><p className="user-lastname-main-label label">Nazwisko</p></Form.Label>
+                                                <Form.Label><p className="user-lastname-main-label label">Nazwisko *</p></Form.Label>
                                                 <span id="form-value-alert-lastname" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
                                                 <Form.Control placeholder={this.state.editUser.lastName} onChange={this.handleLastNameChanged.bind(this)}/>
                                         </Form.Group>
@@ -263,7 +296,7 @@ class UserProfileEdit extends Component {
                                         
                                             <Form.Group as={Col} controlId="formGridBirthDate">
                                                 <Form.Label><p className="user-birth-main-label label">Data urodzenia (<i>dd-mm-rrrr</i>)</p></Form.Label>
-                                                <Form.Control placeholder={this.state.editUserBio.date_birth}/>
+                                                <Form.Control placeholder={this.state.editUserBio.date_birth} onChange={this.handleBirthDateChanged.bind(this)}/>
                                             </Form.Group>
                                             
                                         </div>
@@ -271,9 +304,9 @@ class UserProfileEdit extends Component {
                                         
                                             <Form.Group as={Col} controlId="formGridGender">
                                                 <Form.Label><p className="user-gender-main-label label">Płeć</p></Form.Label>
-                                                    {this.state.editUserBio.gender == '' && <span><Form.Control as="select"><option>Kobieta</option><option>Mężczyzna</option></Form.Control></span>}
-                                                    {this.state.editUserBio.gender == 'female' && <span><Form.Control as="select"><option>Kobieta</option><option>Mężczyzna</option></Form.Control></span>}
-                                                    {this.state.editUserBio.gender == 'male' && <span><Form.Control as="select"><option>Mężczyzna</option><option>Kobieta</option></Form.Control></span>}
+                                                    {this.state.editUserBio.gender == '' && <span><Form.Control as="select" onChange={this.handleGenderChanged.bind(this)}><option>Nie podano</option><option>Kobieta</option><option>Mężczyzna</option></Form.Control></span>}
+                                                    {this.state.editUserBio.gender == 'female' && <span><Form.Control as="select" onChange={this.handleGenderChanged.bind(this)}><option>Kobieta</option><option>Mężczyzna</option><option>Nie podano</option></Form.Control></span>}
+                                                    {this.state.editUserBio.gender == 'male' && <span><Form.Control as="select" onChange={this.handleGenderChanged.bind(this)}><option>Mężczyzna</option><option>Kobieta</option><option>Nie podano</option></Form.Control></span>}
                                             </Form.Group>
 
                                         </div>
@@ -289,7 +322,7 @@ class UserProfileEdit extends Component {
                                         <div className="col-12 col-md-6 user-bio-email user-bio-data-container">
 
                                             <Form.Group as={Col} controlId="formGridEmail">
-                                                <Form.Label><p className="user-email-label label">E-mail</p></Form.Label>
+                                                <Form.Label><p className="user-email-label label">E-mail *</p></Form.Label>
                                                 <span id="form-value-alert-email" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
                                                 <Form.Control placeholder={this.state.editUser.email} onChange={this.handleEmailChanged.bind(this)}/>
                                             </Form.Group>
@@ -321,7 +354,7 @@ class UserProfileEdit extends Component {
                                             <Form.Group as={Col} controlId="formGridAddressMain">
                                                 <Form.Label><p className="user-address-main-label label">Adres</p></Form.Label>
                                                 <span id="form-value-alert-address-main" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
-                                                <Form.Control placeholder={this.state.editUserBio.address_main} />
+                                                <Form.Control placeholder={this.state.editUserBio.address_main} onChange={this.handleAddressMainChanged.bind(this)}/>
                                             </Form.Group>
                                             
                                         </div>
@@ -330,7 +363,7 @@ class UserProfileEdit extends Component {
                                             <Form.Group as={Col} controlId="formGridAddressCity">
                                                 <Form.Label><p className="user-address-city-label label">Miasto</p></Form.Label>
                                                 <span id="form-value-alert-address-city" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
-                                                <Form.Control placeholder={this.state.editUserBio.address_city} />
+                                                <Form.Control placeholder={this.state.editUserBio.address_city} onChange={this.handleAddressCityChanged.bind(this)}/>
                                             </Form.Group>
 
                                         </div>
@@ -340,7 +373,7 @@ class UserProfileEdit extends Component {
                                             <Form.Group as={Col} controlId="formGridAddressZip">
                                                 <Form.Label><p className="user-address-zip-label label">Kod pocztowy</p></Form.Label>
                                                 <span id="form-value-alert-address-zip" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
-                                                <Form.Control placeholder={this.state.editUserBio.address_zip} />
+                                                <Form.Control placeholder={this.state.editUserBio.address_zip} onChange={this.handleAddressZipChanged.bind(this)}/>
                                             </Form.Group>
 
                                         </div>  
@@ -349,7 +382,7 @@ class UserProfileEdit extends Component {
                                             <Form.Group as={Col} controlId="formGridAddressCountry">
                                                 <Form.Label><p className="user-address-country-label label">Kraj</p></Form.Label>
                                                 <span id="form-value-alert-address-country" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
-                                                <Form.Control placeholder={this.state.editUserBio.address_country} />
+                                                <Form.Control placeholder={this.state.editUserBio.address_country} onChange={this.handleAddressCountryChanged.bind(this)}/>
                                             </Form.Group>
                                         
                                         </div>
@@ -357,8 +390,31 @@ class UserProfileEdit extends Component {
                                 </div>
                                 <div className="col-12 user-bio-sumbit-container" id="container-submit">
                                 <hr />  
-                                    <div className="row">
+                                        <div className="row">
                                                                  
+                                            <div className="col-12 user-bio-edit-message">
+                                                
+                                                <div className="col-12 message-success hide" id="msg-suc">
+                                                    <p><b>Sukces!</b> Dane zostały zapisane.</p>
+                                                </div>
+
+                                                <div className="col-12 message-failure hide" id="msg-err-email">
+                                                    <p><b>Błąd!</b> Podany email jest już wykorzystywany.</p>
+                                                </div>
+
+                                                <div className="col-12 message-failure hide" id="msg-err-empty">
+                                                    <p><b>Błąd!</b> Pola oznaczone gwiazdką muszą być uzupełnione.</p>
+                                                </div>
+
+                                                <div className="col-12 message-failure hide" id="msg-err"> 
+                                                    <p><b>Błąd!</b> Edycja danych nie powiodła się.</p>
+                                                </div>
+
+                                            </div>
+    
+                                            </div>
+                                        <div className="row">
+
                                         <div className="col-12 col-md-6 user-bio-submit">
                                             <Button onClick={this.submitFormAndSend.bind(this)} type="button" variant="primary" className="update-button">
                                                     Zapisz
@@ -377,42 +433,6 @@ class UserProfileEdit extends Component {
                         </div>
                     </div>
                 </div>
-                <Modal show={this.state.modalSuccesShow} size="lg" aria-labelledby="contained-modal-title-vcenter"  style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
-                <Modal.Header style={{color: "#31b4cb", backgroundColor: "rgba(49, 180, 203, 0.15)"}}>
-                    <Modal.Title id="contained-modal-title-vcenter">
-                        Konto zostało utworzone!
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body style={{textAlign: "center"}}>
-                    <i className="fas fa-check fa-5x" id="successIconModal"></i>
-                    <p style={{color: "#444"}}>
-                        Tworzenie konta zakończone. Na podany <b>adres email</b> został wysłany <b>link aktywacyjny</b>, potwierdź go aby móc się <b>zalogować</b>.
-                        <br /><b>Link</b> aktywacyjny będzie <b>ważny</b> przez <b>30 min</b>.
-                    </p>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="link" onClick={this.closeModal.bind(this)} className="modal-close-btn">Zamknij</Button>
-                </Modal.Footer>
-                </Modal>
-                <Modal show={this.state.modalFailedShow} size="lg" aria-labelledby="contained-modal-title-vcenter" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
-                <Modal.Header style={{color: "#de473c", backgroundColor: "rgba(222, 71, 60, 0.15)"}}>
-                    <Modal.Title id="contained-modal-title-vcenter">
-                        Konto nie zostało utworzone!
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body style={{textAlign: "center"}}>
-                    <i className="fas fa-exclamation fa-5x" id="successIconModal" style={{color: "#de473c"}}></i>
-                    <p style={{color: "#444"}}>
-                        Konto <b>nie zostało</b> utworzone, ponieważ <b>istnieje</b> użytkownik z podanym adresem email. Spróbuj ponownie z <b>innym</b> adresem email.
-                    </p>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="link" className="modal-close-btn" onClick={this.closeModal.bind(this)}>Zamknij</Button>
-                </Modal.Footer>
-                </Modal>
-                <Modal show={this.state.modalLoadingMessage} id="container-spinner-modal-register-request" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
-                <Spinner animation="grow" variant="light" id="spinner-modal-register-request"/>
-                </Modal>
             </div>
         )
     }

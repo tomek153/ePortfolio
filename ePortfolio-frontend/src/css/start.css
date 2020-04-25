@@ -9,7 +9,7 @@ html, body {
 }
 
 .navbar-my {
-    background-color: rgba(248, 249, 250, 0.9)!important;
+    background-color: #f8f8fa!important;
     box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.8);
     position: fixed;
     width: 100%;

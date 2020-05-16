@@ -3,11 +3,6 @@ import superagent from 'superagent';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Popover from 'react-bootstrap/Popover';
-import InputGroup from 'react-bootstrap/InputGroup';
-import Modal from 'react-bootstrap/Modal';
-import Spinner from 'react-bootstrap/Spinner';
 
 function handleErrors(response) {
     if (!response.ok) {
@@ -241,6 +236,7 @@ class UserProfileEdit extends Component {
         this.state.editUserBio.address_country = event.target.value.trim();
     }
 
+    
     render() {
 
         return (

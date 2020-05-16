@@ -1,7 +1,9 @@
 package com.example.eportfolio.service;
 
+import com.example.eportfolio.dao.UserBioDao;
 import com.example.eportfolio.dao.UserDao;
 import com.example.eportfolio.model.User;
+import com.example.eportfolio.model.UserBio;
 import com.example.eportfolio.smtp.EmailService;
 import com.example.eportfolio.smtp.MailRequestModel;
 import com.example.eportfolio.smtp.MailResponseModel;
@@ -12,7 +14,7 @@ import org.springframework.stereotype.Repository;
 import java.util.*;
 
 @Repository("postgres")
-public class PostgresService implements UserDao {
+public class PostgresService implements UserDao, UserBioDao {
 
     @Autowired
     private EmailService service;
@@ -54,6 +56,12 @@ public class PostgresService implements UserDao {
                         ""+user.isConfirmed()+
                         ")";
                 jdbcTemplate.execute(addUserSQL);
+
+                final String addUserBioSQL = "INSERT INTO users_bio (id, user_uuid, phone, address_main, address_city, address_zip, address_country, date_birth, gender) VALUES (" +
+                        "uuid_generate_v4(), " +
+                        "(SELECT id FROM users WHERE email IN('"+user.getEmail()+"'))," +
+                        "'','','','','','', '')";
+                jdbcTemplate.execute(addUserBioSQL);
 
                 final String addConfirmationEmailSQL = "INSERT INTO confirmation_emails (id, user_uuid, status) VALUES (" +
                     "uuid_generate_v4(), " +
@@ -126,6 +134,7 @@ public class PostgresService implements UserDao {
         return 1;
         }
     }
+
     @Override
     public int resetPasswordRequest(User user){
         final String sqlFirst = "SELECT * FROM users WHERE email = '"+user.getEmail()+"'";
@@ -187,7 +196,6 @@ public class PostgresService implements UserDao {
                 return 0;
             }
     }
-
     @Override
     public List<User> getUsers() {
         final String sql = "SELECT * FROM users";
@@ -228,6 +236,28 @@ public class PostgresService implements UserDao {
     }
 
     @Override
+    public Optional<User> getUserByID(UUID id) {
+        final String sql = "SELECT * FROM users WHERE id = ?";
+
+        User user = jdbcTemplate.queryForObject(
+                sql,
+                new Object[]{id},
+                (resultSet, i) -> {
+                    return new User(
+                            UUID.fromString(resultSet.getString("id")),
+                            resultSet.getString("first_name"),
+                            resultSet.getString("last_name"),
+                            resultSet.getString("email"),
+                            resultSet.getString("password"),
+                            resultSet.getString("role"),
+                            resultSet.getBoolean("confirmed")
+                    );
+                }
+        );
+        return Optional.ofNullable(user);
+    }
+
+    @Override
     public int deleteUser(String email) {
         return 0;
     }
@@ -235,5 +265,28 @@ public class PostgresService implements UserDao {
     @Override
     public int updateUser(String email, User user) {
         return 0;
+    }
+
+    @Override
+    public Optional<UserBio> getUserBioByID(UUID ID) {
+        final String sql = "SELECT user_uuid, phone, address_main, address_city, address_zip, address_country, date_birth, gender FROM users_bio WHERE user_uuid = ?";
+
+        UserBio userBio = jdbcTemplate.queryForObject(
+                sql,
+                new Object[]{ID},
+                (resultSet, i) -> {
+                    return new UserBio(
+                            UUID.fromString(resultSet.getString("user_uuid")),
+                            resultSet.getString("phone"),
+                            resultSet.getString("address_main"),
+                            resultSet.getString("address_city"),
+                            resultSet.getString("address_zip"),
+                            resultSet.getString("address_country"),
+                            resultSet.getString("date_birth"),
+                            resultSet.getString("gender")
+                    );
+                }
+        );
+        return Optional.ofNullable(userBio);
     }
 }

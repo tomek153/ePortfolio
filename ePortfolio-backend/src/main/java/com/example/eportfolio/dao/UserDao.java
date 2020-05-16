@@ -1,7 +1,6 @@
 package com.example.eportfolio.dao;
 
 import com.example.eportfolio.model.User;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -23,9 +22,10 @@ public interface UserDao {
 
     int resetPasswordRequest(User user);
 
+    Optional<User> getUserByID(UUID id);
+
     int deleteUser(String email);
 
     int updateUser(String email, User user);
-
 
 }

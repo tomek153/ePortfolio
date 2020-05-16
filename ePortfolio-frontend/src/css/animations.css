@@ -1,0 +1,174 @@
+.fade-out-helper {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    background-color: #f2f1f1;
+    z-index: 6;
+    display: none;
+}
+
+.page-loading.hidden {
+    animation: fadeOut 0.2s;
+    animation-fill-mode: forwards;
+}
+
+.fade-out {
+    animation: fadeOut 0.2s;
+}
+
+.fade-in {
+    animation: fadeIn 0.2s;
+}
+
+@keyframes fadeOut {
+    100% {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        visibility: hidden;
+    }
+    100% {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+img.loading-page-logo {
+    top: 30%;
+}
+
+div.page-loading {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    background-color: #f2f1f1;
+    z-index: 6;
+}
+
+.spinner {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 150px;
+    height: 150px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.spinner-sector {
+    border-radius: 50%;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 10px solid transparent;
+    mix-blend-mode: multiply;
+}
+
+.spinner-text {
+    animation: loading-opacity 3s ease-in-out infinite;
+    font-size: 17px;
+}
+
+.spinner-sector-blue {
+    animation: rotate 1.5s ease-out infinite;
+    border-top: 10px solid #31b4cb;
+}
+
+.spinner-sector-red {
+    animation: rotate 2.0s ease-in infinite;
+    border-top: 10px solid #eb4a4a;
+}
+
+.spinner-sector-green {
+    animation: rotate 1.0s ease-in-out infinite;
+    border-top: 10px solid #ede576;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes loading-opacity {
+    0%, 100% {
+        opacity: 1;
+    }
+    25%, 75% {
+        opacity: .5;
+    }
+    50% {
+        opacity: .1;
+    }
+}
+
+
+.w3-animate-opacity {
+    animation: opac 1.0s;
+}
+
+@keyframes opac {
+    from {
+        opacity: 0
+    } to {
+        opacity: 1
+    }
+}
+
+.w3-animate-left-registration {
+    position: relative;
+    animation: animateleft .7s;
+}
+
+.w3-animate-left-out-registration {
+    position: relative;
+    animation: animateoutleft .7s;
+}
+
+.w3-animate-right-login {
+    position: relative;
+    animation: animateright .7s;
+}
+
+.w3-animate-right-out-login {
+    position: relative;
+    animation: animateoutright .7s;
+}
+
+.animate-nav-in {
+    animation: animate-nav-in .7s;
+}
+
+.animate-nav-out {
+    animation: animate-nav-out .7s;
+}
+
+.animate-right-carousel {
+    animation: animate-right-carousel .7s;
+} @keyframes animate-right-carousel {from {right: -2%;opacity: 0;} to {right: 8%;opacity: 1;}}
+
+.animate-right-out-carousel {
+    animation: animate-right-out-carousel .7s;
+} @keyframes animate-right-out-carousel {from {right: 8%;opacity: 1;} to {right: -2%;opacity: 0;}}
+
+.animate-left-content{position:relative;animation:animateleftcontent 0.7s}@keyframes animateleftcontent{from{left:-10%;opacity:0} to{left:0;opacity:1}}
+
+.animate-left-out-content{position:relative;animation:animateleftoutcontent 0.7s}@keyframes animateleftoutcontent{from{left:0%;opacity:1} to{left:-10%;opacity:0}}
+
+@keyframes animateright {from {left: 60%;opacity: 0;} to {left: 50%;opacity: 1;}}
+
+@keyframes animateoutright {from {left: 50%;opacity: 1;} to {left: 60%;opacity: 0;}}
+
+@keyframes animate-nav-in {from {top: -96px;opacity: 0} to {top: 0%;opacity: 1}}
+
+@keyframes animate-nav-out {from {top: 0%;opacity: 1;} to {top: -96px;opacity: 0;}}
+
+@keyframes animateleft {from {left: 40%;opacity: 0} to {left: 50%;opacity: 1}}
+
+@keyframes animateoutleft {from {left: 50%;opacity: 1} to {left: 40%;opacity: 0}}

@@ -20,13 +20,13 @@ const ContentRoute = () => (
             <Route exact path="/logowanie" component={LoginContent} />
             <Route exact path="/rejestracja" component={RegisterContent} />
             <Route exact path="/regulamin" component={RegulationsContent} />
-            <Route exact path="/zapomnialem_hasla" component={ResetPasswordRequest} />
             <Route exact path="/moj-profil" component={UserProfile} />
             <Route exact path="/kontakt" component={ContactContent} />
             <Route exact path="/register_link/:idKey/:registerKey" component={ConfirmationLinkSuccess} />
-            <Route exact path="/reset_password_link/:idKey/:registerKey" component={ResetPasswordLinkSuccess} />
             <Route exact path="/test-user" component={TestUser} />
-            <Route path='*' component={NotFoundContent}/>
+            <Route exact path="/reset_password_link/:idKey/:registerKey" component={ResetPasswordLinkSuccess} />
+            <Route exact path="/zapomnialem_hasla" component={ResetPasswordRequest} />
+<Route path='*' component={NotFoundContent}/>
         </Switch>
     </BrowserRouter>
 )

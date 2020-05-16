@@ -37,6 +37,8 @@ public class UserService {
         return userDao.getUserByEmail(email);
     }
 
+    public Optional<User> getUserByID(UUID id) { return userDao.getUserByID(id); }
+
     public int deleteUser(String email) {
         return userDao.deleteUser(email);
     }

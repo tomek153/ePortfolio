@@ -65,6 +65,23 @@ public class PostgresUserBioService implements UserBioDao {
         }
     }
 
+    @Override
+    public int deleteUserBioByID(UUID id) {
+
+        try {
+            final String deleteUserBioSQL = "DELETE from USERS_BIO where user_uuid='" +
+                   id +"';";
+
+            jdbcTemplate.execute(deleteUserBioSQL);
+            return 1;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Update user error.");
+            return 0;
+        }
+    }
+
 }
 
 

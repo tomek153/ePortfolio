@@ -1,8 +1,8 @@
 /* START | CSS CODE: USER_PROFILE | AUTHOR: MICHAŁ STANCELEWSKI */
 
 .disabled{ 
-    cursor: not-allowed;
-    pointer-events: auto;
+    cursor: not-allowed !important;
+    pointer-events: auto !important;
 }
 .user-profile-error-box-outter{
     padding: 0px 20px;
@@ -145,6 +145,25 @@
 }
 .user-bio-edit-message .message-failure{
     background-color: #dd3d3d;
+}
+
+.user-bio-delete{
+    float: right;
+}
+
+.user-bio-delete-link{
+    color: #eb4a4a;
+    font-size: 28px;
+}
+
+.user-bio-delete-link:hover{
+    color: #3a3a3a;
+}
+
+.user-delete-info p{
+    text-align: justify;
+    font-size: 14px;
+    padding-bottom: 20px;
 }
 
 /* END | CSS CODE: USER_PROFILE | AUTHOR: MICHAŁ STANCELEWSKI */

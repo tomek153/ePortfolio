@@ -12,4 +12,6 @@ public interface UserBioDao {
 
     int updateUserBioByID(UUID ID, UserBio user);
 
+    int deleteUserBioByID(UUID ID);
+
 }

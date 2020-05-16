@@ -42,4 +42,15 @@ public class UserBioController {
             System.out.println("Aktualizacja użytkownika pomyślna. (BIO)");
         }
     }
+
+    @RequestMapping (value = "/api/users-bio/delete/{uuid}", method = GET)
+    public void deleteUserBioById (@Valid @NonNull @PathVariable("uuid") UUID id, HttpServletResponse response) throws IOException {
+        int status = userBioService.deleteUserBioById(id);
+        if (status == 0) {
+            System.out.println ("Błąd usuwania użytkownika! (BIO)");
+            response.sendError (405, "Delete error");
+        } else {
+            System.out.println("Usunięcie użytkownika pomyślne. (BIO)");
+        }
+    }
 }

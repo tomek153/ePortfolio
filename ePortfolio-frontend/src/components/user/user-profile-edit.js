@@ -416,10 +416,13 @@ class UserProfileEdit extends Component {
                                                     Zapisz
                                             </Button>
                                         </div>
-                                        <div className="col-12 col-md-6 user-bio-exit">
+                                        <div className="col-12 col-md-4 user-bio-exit">
                                             <Button onClick={event =>  window.location.href='/moj-profil'} type="button" variant="primary" className="exit-button">
                                                     Cofnij
                                             </Button>
+                                        </div>
+                                        <div className="col-12 col-md-2 user-bio-delete">
+                                            <a href="/moj-profil/usun" className="user-bio-delete-link" title="Usuń konto"> <i className="fa fa-trash" aria-hidden="true"></i></a>
                                         </div>
 
                                     </div>

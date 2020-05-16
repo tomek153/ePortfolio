@@ -9,6 +9,7 @@ import RegulationsContent from '../components/home/home-regulations-content';
 import ConfirmationLinkSuccess from '../components/home/home-register-confirmation-link';
 import UserProfile from '../components/user/user-profile';
 import UserProfileEdit from '../components/user/user-profile-edit';
+import UserProfileDelete from '../components/user/user-profile-delete';
 
 const ContentRoute = () => (
     <BrowserRouter>
@@ -19,6 +20,7 @@ const ContentRoute = () => (
             <Route exact path="/regulamin" component={RegulationsContent} />
             <Route exact path="/moj-profil" component={UserProfile} />
             <Route exact path="/moj-profil/edytuj" component={UserProfileEdit} />
+            <Route exact path="/moj-profil/usun" component={UserProfileDelete} />
             <Route exact path="/register_link/:idKey/:registerKey" component={ConfirmationLinkSuccess} />
             <Route path='*' component={NotFoundContent}/>
         </Switch>

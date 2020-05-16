@@ -206,4 +206,28 @@ public class PostgresService implements UserDao {
         }
     }
 
+    @Override
+    public int deleteUser(UUID id) {
+
+        final String checkUser = "SELECT * FROM users WHERE id= '"+ id +"'";
+
+        if (true) {
+
+            try {
+                final String deleteUserSQL = "DELETE from USERS where id='" +
+                        id +"';";
+
+                jdbcTemplate.execute(deleteUserSQL);
+                return 1;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.err.println("delete user error");
+                return 0;
+            }
+        } else {
+            System.out.println("delete error - password");
+            return -1;
+        }
+    }
 }

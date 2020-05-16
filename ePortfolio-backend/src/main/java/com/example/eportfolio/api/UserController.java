@@ -76,4 +76,19 @@ public class UserController {
             System.out.println("Aktualizacja użytkownika pomyślna.");
         }
     }
+
+    @RequestMapping (value = "/api/users/delete/{uuid}", method = GET)
+    public void deleteUser (@Valid @NonNull @PathVariable("uuid") UUID id, HttpServletResponse response) throws IOException {
+        int status = userService.deleteUser(id);
+        if (status == 0) {
+            System.out.println ("Błąd aktualizacji użytkownika!");
+            response.sendError (405, "Delete error");
+        } else if(status == -1) {
+            System.out.println ("Błąd aktualizacji użytkownika! - Password");
+            response.sendError (405, "Delete error - password");
+        } else {
+            System.out.println("Usunięcie użytkownika pomyślne.");
+        }
+    }
+
 }

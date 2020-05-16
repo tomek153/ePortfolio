@@ -39,4 +39,6 @@ public class UserService {
     public int updateUser(UUID id, User user) {
         return userDao.updateUser(id, user);
     }
+
+    public int deleteUser(UUID id) { return userDao.deleteUser(id); }
 }

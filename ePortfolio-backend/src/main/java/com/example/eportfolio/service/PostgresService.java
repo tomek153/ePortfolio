@@ -117,7 +117,9 @@ public class PostgresService implements UserDao {
             return 0;
         } else{
             //System.out.println(user.getId() + " =? " + listFind.get(0).getId());
-            sqlChangePassword = "UPDATE users SET password = '"+user.getPassword()+"' where id ='"+ listFind.get(0).getId() +"'";
+            sqlChangePassword = "UPDATE users SET password = "+
+                    "md5('"+user.getPassword()+"')"+
+                    "where id ='"+ listFind.get(0).getId() +"'";
             jdbcTemplate.execute(sqlChangePassword);
             jdbcTemplate.execute("UPDATE reset_password_emails SET status = true WHERE user_uuid IN('"+user.getId()+"');");
 

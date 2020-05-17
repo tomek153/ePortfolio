@@ -5,7 +5,8 @@ import Modal from 'react-bootstrap/Modal';
 import Spinner from 'react-bootstrap/Spinner';
 import ImageLogo from '../../images/logo.png';
 import superagent from 'superagent';
-
+import PageLoading from '../page-loading';
+import '../../css/login.css'
 class LoginContent extends Component {
     constructor() {
         super();
@@ -22,7 +23,10 @@ class LoginContent extends Component {
             },
             modalSuccesShow: false,
             modalFailedShow: false,
-            modalLoadingMessage: false
+            modalLoadingMessage: false,
+            userId: "",
+            redirectExpired: false,
+            redirectBad_token: false
         }
     }
 
@@ -136,14 +140,73 @@ class LoginContent extends Component {
         this.setState({modalSuccesShow: false});
         this.setState({modalFailedShow: false});
     }
+
+    homeRedirect() {
+        const helper = document.querySelector(".fade-out-helper");
+        const logTab = document.querySelector(".box-container-shadow");
+
+        logTab.classList.remove("w3-animate-right-login");
+        logTab.classList.add("w3-animate-right-out-login");
+
+        setTimeout(function() {
+            logTab.style = "display: none";
+            helper.style = "display: block";
+            helper.classList.add("fade-in");
+
+            setTimeout(function() {
+                window.location.href = "/";
+            }, 200);
+        }, 600);
+    }
+
+    setBadTokenState = () => {
+        this.setState({redirectBad_token: true})
+    }
+
+    setExpiredState = () => {
+        this.setState({redirectExpired: true})
+    }
+
+    componentDidMount() {
+        let token = localStorage.getItem("token");
+        if (token != null && this.props.location.search != "?token=bad_token" && this.props.location.search != "?token=expired") {
+            this.userRedirect();
+        } else {
+            this.checkFormDataValid();
+            const loader = document.querySelector(".page-loading");
+
+            window.onload = () => {
+                window.setTimeout(function() {
+                    loader.classList.add("hidden");
+                    this.setTimeout(function() {
+                        const regTab = document.querySelector(".home-right-container-my");
+                        regTab.style = "display: block";
+                    }, 200);
+                }, 600);
+                if (this.props.location.search == "?token=bad_token") {
+                    window.setTimeout(this.setBadTokenState, 1200);
+                    localStorage.removeItem("token");
+                } else if (this.props.location.search == "?token=expired") {
+                    window.setTimeout(this.setExpiredState, 1200);
+                    localStorage.removeItem("token");
+                }
+            }
+        }
+    }
+
     render() {
         return (
             <>
+            <div className="fade-out-helper"></div>
+            <PageLoading />
             <div className="home-right-container-my">
-                <a href="/"><img
-                    className="login-logo-my"
-                    src={ImageLogo}
-                /></a>
+                <div className="box-container-shadow w3-animate-right-login" style={{width: '720px', height: '670px'}}>
+                        <i className="fas fa-arrow-left home-link-register" onClick={this.homeRedirect.bind(this)}></i>
+                        <a href="/"><img
+                            className="login-logo-my"
+                            src={ImageLogo}
+                            style={{top: '18%'}}
+                        /></a>
                 <div className="login-form-my">
                     <Form>
                         <h3>Witaj !</h3>
@@ -201,7 +264,8 @@ class LoginContent extends Component {
                 <Modal show={this.state.modalLoadingMessage} id="container-spinner-modal-register-request" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
                     <Spinner animation="grow" variant="light" id="spinner-modal-register-request"/>
                 </Modal>
-                </>
+            </div>
+        </>
         )
     }
 }

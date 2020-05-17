@@ -109,6 +109,24 @@ class LoginContent extends Component {
         }, 600);
     }
 
+    remindPasswordRedirect() {
+        const helper = document.querySelector(".fade-out-helper");
+        const logTab = document.querySelector(".box-container-shadow");
+
+        logTab.classList.remove("w3-animate-right-login");
+        logTab.classList.add("w3-animate-right-out-login");
+
+        setTimeout(function() {
+            logTab.style = "display: none";
+            helper.style = "display: block";
+            helper.classList.add("fade-in");
+
+            setTimeout(function() {
+                window.location.href = "/zapomnialem_hasla";
+            }, 200);
+        }, 600);
+    }
+
     userRedirect() {
         const helper = document.querySelector(".fade-out-helper");
         const logTab = document.querySelector(".box-container-shadow");
@@ -381,7 +399,7 @@ class LoginContent extends Component {
                                     Zaloguj się
                                 </Button>
                                 <Button variant="link" style={{float: 'right'}} className="login-links">
-                                    Nie pamiętasz hasła?
+                                   <a onClick={this.remindPasswordRedirect.bind(this)}>Nie pamiętasz hasła?</a> 
                                 </Button>
                             </Form>
                         </div>

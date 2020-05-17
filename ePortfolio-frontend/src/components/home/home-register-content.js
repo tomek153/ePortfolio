@@ -287,13 +287,13 @@ class LoginContent extends Component {
 
         regTab.classList.remove("w3-animate-left-registration");
         regTab.classList.add("w3-animate-left-out-registration");
-        
+
         setTimeout(function() {
             regTab.style = "display: none";
             helper.style = "display: block";
             helper.classList.add("fade-in");
 
-            
+
             setTimeout(function() {
                 window.location.href = "/";
             }, 200);
@@ -311,7 +311,7 @@ class LoginContent extends Component {
             regTab.style = "display: none";
             helper.style = "display: block";
             helper.classList.add("fade-in");
-            
+
             setTimeout(function() {
                 window.location.href = "/logowanie";
             }, 200);
@@ -342,7 +342,7 @@ class LoginContent extends Component {
                 <div className="register-container-my" onLoad={this.changeBackground}>
                     <div className="box-container-shadow w3-animate-left-registration">
                         <i className="fas fa-arrow-left home-link-register" onClick={this.homeRedirect.bind(this)}></i>
-                        <img 
+                        <img
                             className="register-logo-my"
                             src={ImageLogo}
                         />

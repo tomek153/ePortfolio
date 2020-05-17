@@ -16,7 +16,13 @@ public interface UserDao {
 
     List<User> getUsers();
 
+    int changePassword(User user);
+
     Optional<User> getUserByEmail(String email);
+
+
+
+    int resetPasswordRequest(User user);
 
     Optional<User> getUserByID(UUID id);
 

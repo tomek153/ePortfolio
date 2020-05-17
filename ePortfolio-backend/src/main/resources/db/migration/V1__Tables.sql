@@ -29,3 +29,10 @@ CREATE TABLE IF NOT EXISTS users_bio (
     date_birth VARCHAR(60) NOT NULL,
     gender VARCHAR(30) NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS reset_password_emails (
+	ID UUID PRIMARY KEY NOT NULL,
+    user_uuid UUID NOT NULL,
+    status boolean NOT NULL,
+    time_stamp timestamp NOT NULL DEFAULT now()
+);

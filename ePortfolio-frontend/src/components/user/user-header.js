@@ -19,14 +19,14 @@ class HomeHeader extends Component {
 
         nav.classList.remove("animate-nav-in");
         nav.classList.add("animate-nav-out");
-        /*regTab.classList.remove("w3-animate-right-login");
-        regTab.classList.add("w3-animate-right-out-login");*/ //TODO wywala error
+        regTab.classList.remove("w3-animate-right-login");
+        regTab.classList.add("w3-animate-right-out-login");
 
         setTimeout(function() {
-            /*nav.style = "display: none";
+            nav.style = "display: none";
             regTab.style = "display: none";
             helper.style = "display: block";
-            helper.classList.add("fade-in");*/  //TODO wywala error
+            helper.classList.add("fade-in");
             
             setTimeout(function() {
                 window.location.href = "/";

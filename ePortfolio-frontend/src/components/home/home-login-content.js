@@ -76,7 +76,7 @@ class LoginContent extends Component {
     homeRedirect() {
         const helper = document.querySelector(".fade-out-helper");
         const logTab = document.querySelector(".box-container-shadow");
-        
+
         logTab.classList.remove("w3-animate-right-login");
         logTab.classList.add("w3-animate-right-out-login");
 
@@ -84,7 +84,7 @@ class LoginContent extends Component {
             logTab.style = "display: none";
             helper.style = "display: block";
             helper.classList.add("fade-in");
-        
+
             setTimeout(function() {
                 window.location.href = "/";
             }, 200);
@@ -102,9 +102,27 @@ class LoginContent extends Component {
             logTab.style = "display: none";
             helper.style = "display: block";
             helper.classList.add("fade-in");
-            
+
             setTimeout(function() {
                 window.location.href = "/rejestracja";
+            }, 200);
+        }, 600);
+    }
+
+    remindPasswordRedirect() {
+        const helper = document.querySelector(".fade-out-helper");
+        const logTab = document.querySelector(".box-container-shadow");
+
+        logTab.classList.remove("w3-animate-right-login");
+        logTab.classList.add("w3-animate-right-out-login");
+
+        setTimeout(function() {
+            logTab.style = "display: none";
+            helper.style = "display: block";
+            helper.classList.add("fade-in");
+
+            setTimeout(function() {
+                window.location.href = "/zapomnialem_hasla";
             }, 200);
         }, 600);
     }
@@ -120,9 +138,9 @@ class LoginContent extends Component {
             logTab.style = "display: none";
             helper.style = "display: block";
             helper.classList.add("fade-in");
-            
+
             setTimeout(function() {
-                window.location.href = "/moj-profil";
+                window.location.href = "/test-user";
             }, 200);
         }, 600);
     }
@@ -152,7 +170,7 @@ class LoginContent extends Component {
     }
     checkEmailRegex(text, regex, messageRegexViolation, element, from, to, length, messageShort, messageLong) {
         let wronCharRegex = /[^a-zA-Z0-9@_.-]/;
-        
+
         if (text.match(regex) != null) {
             if (text.match(wronCharRegex) != null) {
                 element.style.display = "block";
@@ -202,7 +220,7 @@ class LoginContent extends Component {
                     element.style.display = "block";
                     this.state.formControll.password = false;
                     this.checkFormDataValid();
-                } 
+                }
             } else {
                 element.style.display = "block";
                 this.state.formControll.password = false;
@@ -246,10 +264,10 @@ class LoginContent extends Component {
         myHeaders.append('Content-Type', 'application/json');
 
         const request = new Request(
-            'http://localhost:8080/api/login', 
+            'http://localhost:8080/api/login',
             {
-                method: 'POST', 
-                headers: myHeaders, 
+                method: 'POST',
+                headers: myHeaders,
                 body: JSON.stringify(this.state.form)
             }
         );
@@ -342,7 +360,7 @@ class LoginContent extends Component {
                 <div className="home-right-container-my">
                     <div className="box-container-shadow w3-animate-right-login" style={{width: '720px', height: '670px'}}>
                         <i className="fas fa-arrow-left home-link-register" onClick={this.homeRedirect.bind(this)}></i>
-                        <a href="/"><img 
+                        <a href="/"><img
                             className="login-logo-my"
                             src={ImageLogo}
                             style={{top: '18%'}}
@@ -381,7 +399,7 @@ class LoginContent extends Component {
                                     Zaloguj się
                                 </Button>
                                 <Button variant="link" style={{float: 'right'}} className="login-links">
-                                    Nie pamiętasz hasła?
+                                   <a onClick={this.remindPasswordRedirect.bind(this)}>Nie pamiętasz hasła?</a> 
                                 </Button>
                             </Form>
                         </div>

@@ -48,31 +48,6 @@ public class UserController {
         }
     }
 
-    @RequestMapping (value = "/api/reset-password", method = POST)
-    public void resetPasswordRequest (@Valid @NonNull @RequestBody User user, HttpServletResponse response) throws IOException {
-        int status = userService.resetPasswordRequest(user);
-
-        if (status == 0) {
-            System.out.println ("Blad! User nie istnieje!");
-            response.sendError (405, "User_does_not_exist");
-        } else {
-            System.out.println("Mail wysłany.");
-        }
-    }
-
-    @RequestMapping (value = "/api/change-password", method = POST)
-    public void changePasswordForUser(@Valid @NonNull @RequestBody User user, HttpServletResponse response) throws IOException {
-        System.out.println ("Zmiana hasła");
-        int status = userService.changePassword(user);
-
-        if (status == 0) {
-            System.out.println ("Hasło nie zostało zmienione!");
-            response.sendError (405, "User_does_not_exist");
-        } else {
-            System.out.println("Password_changed");
-        }
-    }
-
     @RequestMapping (value = "/api/users", method = GET)
     @ResponseBody
     public List<User> getUsers () {

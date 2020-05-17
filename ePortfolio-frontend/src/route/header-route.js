@@ -11,6 +11,7 @@ const HeaderRoute = () => (
             <Route exact path="/moj-profil" component={UserHeader} />
             <Route path="/logowanie" />
             <Route path="/rejestracja" />
+            <Route exact path="/test-user" component={UserHeader} />
             <Route path='*' component={HomeHeader}/>
         </Switch>
     </BrowserRouter>

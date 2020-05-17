@@ -15,7 +15,6 @@ public class User {
     private final String email;
     @NotBlank
     private final String password;
-    @NotBlank
     private final String role;
     private final boolean confirmed;
 

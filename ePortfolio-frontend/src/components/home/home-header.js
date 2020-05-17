@@ -29,7 +29,7 @@ class HomeHeader extends Component {
             carousel.style = "display: none";
             helper.style = "display: block";
             helper.classList.add("fade-in");
-
+            
             setTimeout(function() {
                 window.location.href = href;
             }, 200);
@@ -43,7 +43,7 @@ class HomeHeader extends Component {
     loginRedirect() {
         this.redirectAnimation("/logowanie");
     }
-
+    
     contactRedirect() {
         this.redirectAnimation("/kontakt");
     }

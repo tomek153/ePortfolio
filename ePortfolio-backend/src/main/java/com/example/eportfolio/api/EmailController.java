@@ -40,9 +40,4 @@ public class EmailController {
     public MailResponseModel checkConfirmationLink(@RequestBody LinkMailRequestModel request) {
         return service.checkConfirmationLink(request);
     }
-
-    @RequestMapping(value = "/email/check-reset-password-link", method = POST)
-    public MailResponseModel checkResetPasswordLink(@RequestBody LinkMailRequestModel request) {
-        return service.checkResetPasswordLink(request);
-    }
 }

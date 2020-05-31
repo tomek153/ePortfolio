@@ -133,9 +133,48 @@ public class UserController {
         userService.deleteUser (email);
     }
 
+
+    @RequestMapping (value = "/api/login", method = POST)
+    public void userLogin (@RequestBody Map body, HttpServletResponse response, HttpServletRequest request) throws IOException{
+        int status = login.authenticate(body.get("email").toString(), body.get("password").toString());
+        Map<String, Object> responseMap = new HashMap<>();
+
+        if (status == 1)
+            responseMap.put("message", "Authentication failed.");
+        else if (status == 2) {
+            responseMap.put("message", "User unconfirmed.");
+            responseMap.put("userId", login.getUser().getId());
+        } else if (status == 0) {
+            String token = login.createToken();
+            if (!token.equals("Create token error.")) {
+
+                responseMap.put("message", "Authentication success.");
+                responseMap.put("token", token);
+            } else
+                responseMap.put("message", "Token error.");
+        }
+
+        String responseString = this.gson.toJson(responseMap);
+
+        PrintWriter out = response.getWriter();
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        out.print(responseString);
+        out.flush();
+    }
+
     @RequestMapping (value = "/api/users/{email}", method = PUT)
-    public void updateUser (@PathVariable ("email") String email, @Valid @NonNull @RequestBody User user) {
-        userService.updateUser (email, user);
+    public void updateUser (@PathVariable ("email") String email, @Valid @RequestBody User user, HttpServletResponse response) throws IOException {
+        int status = userService.updateUser (email, user);
+        if (status == 0) {
+            System.out.println ("Błąd aktualizacji użytkownika!");
+            response.sendError (405, "Update error");
+        } else if(status == -1) {
+            System.out.println ("Błąd aktualizacji użytkownika! - Email");
+            response.sendError (405, "Update error - email");
+        } else {
+            System.out.println("Aktualizacja użytkownika pomyślna.");
+        }
     }
 
     @RequestMapping (value = "/api/login", method = POST)
@@ -167,3 +206,4 @@ public class UserController {
         out.flush();
     }
 }
+

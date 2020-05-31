@@ -15,13 +15,13 @@ public class UserBio {
     private final String date_birth;
     private final String gender;
 
-    public UserBio(@JsonProperty("user_uuid") UUID id,
+    public UserBio(@JsonProperty("id") UUID id,
                    @JsonProperty("phone") String phone,
-                   @JsonProperty("address_main") String address_main,
-                   @JsonProperty("address_city") String address_city,
-                   @JsonProperty("address_zip") String address_zip,
-                   @JsonProperty("address_country") String address_country,
-                   @JsonProperty("date_birth") String date_birth,
+                   @JsonProperty("address") String address_main,
+                   @JsonProperty("city") String address_city,
+                   @JsonProperty("zip") String address_zip,
+                   @JsonProperty("country") String address_country,
+                   @JsonProperty("dateBirth") String date_birth,
                    @JsonProperty("gender") String gender) {
         this.id = id;
         this.phone = phone;

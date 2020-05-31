@@ -258,12 +258,96 @@ public class PostgresService implements UserDao, UserBioDao {
     }
 
     @Override
-    public int deleteUser(String email) {
-        return 0;
+    public Optional<UserBio> getUserBioByID(UUID ID) {
+        final String sql = "SELECT user_uuid, phone, address_main, address_city, address_zip, address_country, date_birth, gender FROM users_bio WHERE user_uuid = ?";
+
+        UserBio userBio = jdbcTemplate.queryForObject(
+                sql,
+                new Object[]{ID},
+                (resultSet, i) -> {
+                    return new UserBio(
+                            UUID.fromString(resultSet.getString("user_uuid")),
+                            resultSet.getString("phone"),
+                            resultSet.getString("address_main"),
+                            resultSet.getString("address_city"),
+                            resultSet.getString("address_zip"),
+                            resultSet.getString("address_country"),
+                            resultSet.getString("date_birth"),
+                            resultSet.getString("gender")
+                    );
+                }
+        );
+        return Optional.ofNullable(userBio);
     }
 
     @Override
     public int updateUser(String email, User user) {
+
+        final String checkEmail = "SELECT * FROM users WHERE email = '"+user.getEmail()+"'";
+
+        List<User> listFind = jdbcTemplate.query(checkEmail, (resultSet, i) -> {
+            return new User(
+                    UUID.fromString(resultSet.getString("id")),
+                    resultSet.getString("first_name"),
+                    resultSet.getString("last_name"),
+                    resultSet.getString("email"),
+                    resultSet.getString("password"),
+                    resultSet.getString("role"),
+                    resultSet.getBoolean("confirmed")
+            );
+        });
+
+        if (listFind.isEmpty() || listFind.get(0).getId().toString().equals(user.getId().toString())) {
+
+            try {
+                final String updateUserSQL = "UPDATE users SET" +
+                        " first_name = '" + user.getFirstName() +
+                        "', last_name = '" + user.getLastName() +
+                        "', email = '" + user.getEmail()
+                        + "' WHERE id = '" + user.getId() + "';";
+
+                jdbcTemplate.execute(updateUserSQL);
+                return 1;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.err.println("Update user error.");
+                return 0;
+            }
+
+
+        } else {
+            System.out.println("Email error.");
+            return -1;
+        }
+    }
+
+    @Override
+    public int updateUserBio(UUID id, UserBio userBio) {
+
+        try {
+            final String updateUserBioSQL = "UPDATE users_bio SET" +
+                    " phone = '" + userBio.getPhone() +
+                    "', address_main = '" + userBio.getAddress_main() +
+                    "', address_city = '" + userBio.getAddress_city() +
+                    "', address_country = '" + userBio.getAddress_country() +
+                    "', address_zip = '" + userBio.getAddress_zip() +
+                    "', gender = '" + userBio.getGender() +
+                    "', date_birth = '" + userBio.getDate_birth() +
+                    "' WHERE user_uuid = '" + userBio.getUserBioId() + "';";
+
+            jdbcTemplate.execute(updateUserBioSQL);
+            return 1;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Update user error.");
+            return 0;
+        }
+    }
+
+    @Override
+    public int deleteUser(String email) {
         return 0;
     }
 

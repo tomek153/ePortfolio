@@ -113,7 +113,7 @@ class UserProfile extends Component {
                                             </div>
                                             <div className="col-2 user-bio-edit">
 
-                                                <a href="#" className="user-bio-edit-link disabled"> <i className="fa fa-cog" aria-hidden="true"></i></a>
+                                                <a href="/moj-profil/edytuj" className="user-bio-edit-link" title="Edytuj"> <i className="fa fa-cog" aria-hidden="true"></i></a>
 
                                             </div>
                                         </div>

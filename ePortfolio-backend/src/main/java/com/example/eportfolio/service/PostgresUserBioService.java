@@ -41,4 +41,28 @@ public class PostgresUserBioService implements UserBioDao {
         return Optional.ofNullable(userBio);
     }
 
+    @Override
+    public int updateUserBio(UUID id, UserBio userBio) {
+
+        try {
+            final String updateUserBioSQL = "UPDATE users_bio SET" +
+                    " phone = '" + userBio.getPhone() +
+                    "', address_main = '" + userBio.getAddress_main() +
+                    "', address_city = '" + userBio.getAddress_city() +
+                    "', address_country = '" + userBio.getAddress_country() +
+                    "', address_zip = '" + userBio.getAddress_zip() +
+                    "', gender = '" + userBio.getGender() +
+                    "', date_birth = '" + userBio.getDate_birth() +
+                    "' WHERE user_uuid = '" + userBio.getUserBioId() + "';";
+
+            jdbcTemplate.execute(updateUserBioSQL);
+            return 1;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Update user error.");
+            return 0;
+        }
+    }
+
 }

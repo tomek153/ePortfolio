@@ -7,8 +7,11 @@ import java.util.UUID;
 
 public class User {
     private final UUID id;
+    @NotBlank
     private final String firstName;
+    @NotBlank
     private final String lastName;
+    @NotBlank
     private final String email;
     private final String password;
     private final String role;

@@ -1,5 +1,6 @@
 html, body {
     height: 100%;
+    background-color: #f2f1f1;
 }
 
 .header-image-logo {
@@ -8,22 +9,27 @@ html, body {
 }
 
 .navbar-my {
-    background-color: rgba(248, 249, 250, 0.9)!important;
+    background-color: #f8f8fa!important;
     box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.8);
+    position: fixed;
+    width: 100%;
+    z-index: 5;
+    visibility: hidden;
 }
 
 #root {
-    background-color: rgba(248, 249, 250, 0.8);
+    background-color: #f2f1f1;
     background-image: url("../images/home-background.png");
     background-position: left;
     background-size: contain;
     background-repeat: no-repeat;
     background-attachment: fixed;
-    min-height: 100%;
+    height: 100%;
 }
 
 .container-my {
     width: 100%;
+    height: 100%;
 }
 
 .header-btn-my {
@@ -46,6 +52,7 @@ html, body {
 
 .header-btn-register-my:hover {
     color: #20a3ba;
+    cursor: pointer;
 }
 
 .slider-container-my {
@@ -59,6 +66,7 @@ html, body {
     position: fixed;
     right: 8%;
     bottom: 10%;
+    display: none;
 }
 
 .home-description-my {
@@ -66,7 +74,8 @@ html, body {
     min-height: 230px;
     float: right;
     margin-right: 10%;
-    margin-top: 100px;
+    margin-top: 200px;
+    display: none;
 }
 
 .home-description-my > hr {
@@ -102,6 +111,11 @@ html, body {
     height: 100%;
     float: right;
     position: relative;
+    display: none;
+}
+
+.login-register-redirect:hover {
+    cursor: pointer;
 }
 
 .login-form-my {
@@ -109,7 +123,7 @@ html, body {
     height: 300px;
     margin: 0;
     position: absolute;
-    top: 48%;
+    top: 55%;
     left: 50%;
     transform: translate(-50%, -50%);
 }
@@ -150,6 +164,15 @@ html, body {
     color: #1092a9;
 }
 
+a.login-links {
+    color: #31b4cb;
+}
+
+a.login-links:hover {
+    color: #1092a9;
+    text-decoration: underline;
+}
+
 .login-button-my {
     background-color: #eb4a4a;
     border-color: #eb4a4a;
@@ -188,6 +211,12 @@ html, body {
     background-color: #da3939;
     border-color: #da3939;
     box-shadow:  0 0 8px 0px  rgb(0,0,0);
+    cursor: pointer;
+}
+
+a.register-login-btn:hover {
+    cursor: pointer;
+    text-decoration: underline;
 }
 
 .register-container-my {
@@ -195,6 +224,32 @@ html, body {
     height: 100%;
     float: left;
     position: relative;
+    display: none;
+}
+
+i.home-link-register {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    font-size: 25px;
+    color: rgba(0, 0, 0, 0.4);
+    transition: ease-in-out .3s;
+}
+
+i.home-link-register:hover {
+    color: rgba(0, 0, 0, 0.7);
+    cursor: pointer;
+}
+
+.box-container-shadow {
+    background-color: rgba(255, 255, 255, 0.9);
+    width: 900px;
+    height: 600px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
 }
 
 .register-form-my {
@@ -202,7 +257,7 @@ html, body {
     height: 300px;
     margin: 0;
     position: absolute;
-    top: 52%;
+    top: 60%;
     left: 50%;
     transform: translate(-50%, -50%);
 }
@@ -212,7 +267,7 @@ html, body {
     height: 93px;
     margin: 0;
     position: absolute;
-    top: 24%;
+    top: 18%;
     left: 50%;
     transform: translate(-50%, -50%);
     transition: ease-in-out .5s;

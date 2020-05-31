@@ -1,0 +1,169 @@
+/* START | CSS CODE: USER_PROFILE | AUTHOR: MICHAŁ STANCELEWSKI */
+
+.disabled{ 
+    cursor: not-allowed !important;
+    pointer-events: auto !important;
+}
+.user-profile-error-box-outter{
+    padding: 0px 20px;
+    display: none;
+}
+
+.user-profile-error-box{
+    border: 2px solid #ff2222;
+    padding: 15px 20px 2px 20px;
+    color: #4f4f4f;
+    background-color: #ff222259;
+}
+.user-profile-error-box h3{
+    font-size: 13px;
+}
+.user-profile-error-box p{
+    font-size: 12px;
+}
+
+.show {
+    display: block;
+}
+
+.hide {
+    display: none;
+}
+
+.page-title{
+    padding-top: 20px;
+}
+
+.user-bio-edit-link{
+    color: #31b4cb;
+    font-size: 26px;
+    text-align: center;
+}
+.user-bio-edit-link:hover{
+    color: #20a3ba;
+}
+
+.user-bio-name .user-name{
+    font-size: 26px;
+    padding-bottom: 10px;
+}
+
+.user-profile-description-my .user-bio-contact-title .subtitle,
+.user-profile-description-my .user-bio-personal-title .subtitle,
+.user-profile-description-my .user-bio-address-title .subtitle{
+    background-color: #ededed;
+    padding: 10px 15px;
+    border-radius: 12px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    font-size: 17px;
+}
+
+.user-profile-description-my .page-content .label{
+    font-size: 13px;
+    color: #ababab;
+    font-style: italic;
+    margin-bottom: 0px;
+    padding-bottom: 3px;
+}
+
+.user-profile-description-my .background-container{
+    margin: 8vh 0;
+    padding: 2% 3% 4% 3%;
+    background-color: rgba(248, 249, 250, 0.8);
+    border-radius: 30px;
+    border: 2px solid #31b4cb;
+}
+
+.user-bio-contact-container,
+.user-bio-address-container,
+.user-bio-personal-container{
+    padding-top: 10px;
+}
+
+.user-bio-data-container{
+    padding: 0px 25px 0px 25px;
+}
+
+.user-bio-submit,
+.user-bio-exit{
+    padding: 5px 40px 10px 40px;
+}
+
+.user-profile-description-my .user-bio-data{
+    font-size: 17px;
+}
+
+.update-button:hover{
+    background-color: #31b4cb;
+    border: 1px solid #31b4cb;
+}
+
+.update-button{
+    background-color: #20a3bc;
+    border: 1px solid #20a3bc;
+    float: left;
+    min-width: 85px;
+}
+
+.exit-button:hover{
+    background-color: #eb4a4a;
+    border: 1px solid #eb4a4a;
+    color: #ffffff;
+}
+
+.exit-button{
+    background-color: rgba(255, 255, 255, 0);
+    border: 1px solid #eb4a4a;
+    color: #eb4a4a;
+    float: left;
+    min-width: 85px;
+}
+
+.user-profile-description-my .form-group.col{
+    padding-left: 0 !important;
+    padding-right: 0 !important; 
+}
+
+.user-bio-edit-message{
+    color: #fff;
+    font-size: 14px;
+}
+
+.user-bio-edit-message .message-success,
+.user-bio-edit-message .message-failure{
+    border-radius: 8px;
+}
+
+.user-bio-edit-message .message-success p,
+.user-bio-edit-message .message-failure p{
+    padding: 15px 10px 15px 10px;
+}
+
+.user-bio-edit-message .message-success{
+    background-color: rgb(7, 173, 7);
+}
+.user-bio-edit-message .message-failure{
+    background-color: #dd3d3d;
+}
+
+.user-bio-delete{
+    float: right;
+}
+
+.user-bio-delete-link{
+    color: #eb4a4a;
+    font-size: 28px;
+}
+
+.user-bio-delete-link:hover{
+    color: #3a3a3a;
+}
+
+.user-delete-info p{
+    text-align: justify;
+    font-size: 14px;
+    padding-bottom: 20px;
+}
+
+/* END | CSS CODE: USER_PROFILE | AUTHOR: MICHAŁ STANCELEWSKI */

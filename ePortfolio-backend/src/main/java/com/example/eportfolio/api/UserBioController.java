@@ -1,10 +1,9 @@
 package com.example.eportfolio.api;
 
+import com.example.eportfolio.model.User;
 import com.example.eportfolio.model.UserBio;
 import com.example.eportfolio.service.UserBioService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -32,25 +31,14 @@ public class UserBioController {
         return userBioService.getUserBioByID(id);
     }
 
-    @RequestMapping (value = "/api/users-bio/update/{uuid}", method = PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = { MediaType.APPLICATION_JSON_VALUE})
-    public void updateUserBioById (@Valid @NonNull @PathVariable("uuid") UUID id, @RequestBody UserBio userBio, HttpServletResponse response) throws IOException {
-        int status = userBioService.updateUserBioById(id, userBio);
+    @RequestMapping (value = "/api/users-bio/{id}", method = PUT)
+    public void updateUser (@PathVariable ("id") UUID id, @Valid @RequestBody UserBio userBio, HttpServletResponse response) throws IOException {
+        int status = userBioService.updateUserBio (id, userBio);
         if (status == 0) {
-            System.out.println ("Błąd aktualizacji użytkownika! (BIO)");
+            System.out.println ("Błąd aktualizacji użytkownika! [BIO]");
             response.sendError (405, "Update error");
         } else {
-            System.out.println("Aktualizacja użytkownika pomyślna. (BIO)");
-        }
-    }
-
-    @RequestMapping (value = "/api/users-bio/delete/{uuid}", method = GET)
-    public void deleteUserBioById (@Valid @NonNull @PathVariable("uuid") UUID id, HttpServletResponse response) throws IOException {
-        int status = userBioService.deleteUserBioById(id);
-        if (status == 0) {
-            System.out.println ("Błąd usuwania użytkownika! (BIO)");
-            response.sendError (405, "Delete error");
-        } else {
-            System.out.println("Usunięcie użytkownika pomyślne. (BIO)");
+            System.out.println("Aktualizacja użytkownika pomyślna. [BIO]");
         }
     }
 }

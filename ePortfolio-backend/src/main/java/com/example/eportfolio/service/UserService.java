@@ -26,6 +26,13 @@ public class UserService {
         return userDao.getUsers();
     }
 
+    public int changePassword(User user){
+        return userDao.changePassword(user);
+    }
+
+    public int resetPasswordRequest(User user){
+        return userDao.resetPasswordRequest(user);
+    }
     public Optional<User> getUserByEmail(String email) {
         return userDao.getUserByEmail(email);
     }
@@ -36,9 +43,7 @@ public class UserService {
         return userDao.deleteUser(email);
     }
 
-    public int updateUser(UUID id, User user) {
-        return userDao.updateUser(id, user);
+    public int updateUser(String email, User user) {
+        return userDao.updateUser(email, user);
     }
-
-    public int deleteUser(UUID id) { return userDao.deleteUser(id); }
 }

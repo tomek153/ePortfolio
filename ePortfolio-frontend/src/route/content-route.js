@@ -5,7 +5,10 @@ import HomeContent from '../components/home/home-content';
 import NotFoundContent from '../components/page-not-found';
 import LoginContent from '../components/home/home-login-content';
 import RegisterContent from '../components/home/home-register-content';
+import ResetPasswordRequest from '../components/home/home-reset-password-request';
+import ResetPasswordLinkSuccess from '../components/home/home-reset-password-link';
 import RegulationsContent from '../components/home/home-regulations-content';
+import ContactContent from '../components/home/home-contact-content';
 import ConfirmationLinkSuccess from '../components/home/home-register-confirmation-link';
 import UserProfile from '../components/user/user-profile';
 import UserProfileEdit from '../components/user/user-profile-edit';
@@ -21,8 +24,11 @@ const ContentRoute = () => (
             <Route exact path="/moj-profil" component={UserProfile} />
             <Route exact path="/moj-profil/edytuj" component={UserProfileEdit} />
             <Route exact path="/moj-profil/usun" component={UserProfileDelete} />
+            <Route exact path="/kontakt" component={ContactContent} />
             <Route exact path="/register_link/:idKey/:registerKey" component={ConfirmationLinkSuccess} />
-            <Route path='*' component={NotFoundContent}/>
+            <Route exact path="/reset_password_link/:idKey/:registerKey" component={ResetPasswordLinkSuccess} />
+            <Route exact path="/zapomnialem_hasla" component={ResetPasswordRequest} />
+<Route path='*' component={NotFoundContent}/>
         </Switch>
     </BrowserRouter>
 )

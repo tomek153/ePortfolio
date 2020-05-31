@@ -4,6 +4,7 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import md5 from 'md5-hash'
+import PageLoading from '../page-loading';
 
 function handleErrors(response) {
     if (!response.ok) {
@@ -57,23 +58,87 @@ function showErrorBox_Empty(){
 
 class UserProfileDelete extends Component {
 
-    state = {
-        id: null,
-        passwordStart: '',
-        passwordCheck: '',
-        checkbox: 'off'
+    constructor() {
+        super();
+        this.state = {
+            user: {
+                id: '',               
+                firstName: "",
+                lastName: "",
+                email: "",
+                phone: "",
+                address: "",
+                city: "",
+                zip: "",
+                country: "",
+                dateBirth: "",
+                gender: "",
+                password: '',
+                passwordCheck: '',
+                checkbox: 'off'
+            },
+            tokenExpired: false
+        }
     }
 
+    componentDidMount() {
+        var myHeaders = new Headers();
+        myHeaders.append('Content-Type', 'application/json');
+        myHeaders.append('Authorization', localStorage.getItem("token"));
+
+        const request = new Request(
+            'http://localhost:8080/api/users/profile', 
+            {
+                method: 'GET', 
+                headers: myHeaders
+            }
+        );
+
+        fetch(request)
+            .then(response => {
+                if (response.status === 200) {
+                    response.json()
+                        .then(data => {
+                            this.setState({user: data});
+                        });
+                } else if (response.status === 400) {
+                    response.json()
+                        .then(data => {
+                            if (data.message == "Token expired") {
+                                window.location.replace("/logowanie?token=expired");
+                            } else {
+                                window.location.replace("/logowanie?token=bad_token");
+                            }
+                        });
+                } else {
+                    window.location.replace("/logowanie?token=bad_token");
+                }
+            });
+
+        const loader = document.querySelector(".page-loading");
+        const nav = document.querySelector(".navbar-my");
+        window.onload = function() {
+            this.setTimeout(function() {
+                loader.classList.add("hidden");
+                this.setTimeout(function() {
+                    nav.style = "visibility: visible";
+                    nav.classList.add("animate-nav-in");
+                }, 200);
+            }, 600);
+        };
+    }
+
+/*
     async componentDidMount() {
 
         let connectionError = false;
 
-        {/*
+        {
             DOSTĘPNE ID:
             1a1d1d84-be02-4184-a26f-565302a0a9ab | uzupełnione
             67d37b2e-428f-4ec4-9525-668383def1db | nowy user
             148deb3a-a0ae-4f16-bd45-86ffa2bf28a7 | user do edycji
-        */}
+        }
 
         let id = "148deb3a-a0ae-4f16-bd45-86ffa2bf28a7"
         const urlMain = "http://localhost:8080/api/users/id/";
@@ -98,22 +163,22 @@ class UserProfileDelete extends Component {
             this.setState({passwordStart: dataUserMain.password})
 
         } 
-    }
+    }*/
 
     submitFormAndSend(event) {
 
         clearMessages();
 
-        let id = "148deb3a-a0ae-4f16-bd45-86ffa2bf28a7"
+        let id = this.state.user.id;
 
         const urlMain = "http://localhost:8080/api/users/delete/";
         const urlBio = "http://localhost:8080/api/users-bio/delete/";
 
-        let pass = md5(this.state.passwordCheck);
+        let pass = md5(this.state.user.passwordCheck);
 
-        if(pass != this.state.passwordStart) {
+        if(pass != this.state.user.passwordStart) {
             showErrorBox_Password();
-        } else if(this.state.checkbox != 'on') {
+        } else if(this.state.user.checkbox != 'on') {
             showErrorBox_Empty();
         } 
         else {
@@ -149,116 +214,119 @@ class UserProfileDelete extends Component {
     }
 
     handlePasswordChanged(event) {
-        this.state.passwordCheck = event.target.value.trim();
+        this.state.user.passwordCheck = event.target.value.trim();
     }
 
     handleCheckboxChanged(event) {
-        if(this.state.checkbox == 'off'){ this.setState({checkbox: 'on'})}
-        if(this.state.checkbox == 'on'){ this.setState({checkbox: 'off'})}
+        if(this.state.user.checkbox == 'off'){ this.setState({checkbox: 'on'})}
+        if(this.state.user.checkbox == 'on'){ this.setState({checkbox: 'off'})}
     }
 
 
 render() {
 
     return (
-        <div className="container-my container">
-            <div className="row">
-                <div className="col-md-12 col-lg-6">
+        <div>
+            <PageLoading />
+                <div className="container-my container">
+                    <div className="row">
+                        <div className="col-md-12 col-lg-6">
 
-                </div>
-
-                <div className="col-md-12 col-lg-6 user-profile-description-my">
-                    <div className="row background-container">
-                        <div className="col-md-12 page-header">
-                            <h1 className="page-title">Usunięcie konta</h1>
-                            <hr />
                         </div>
-                        <div className="col-md-12 user-profile-error-box-outter" id="error-box-523">
-                            <div className="col-md-12 user-profile-error-box">
-                                <h3 className="error-title">Wystąpił błąd!</h3>
-                                <p className="error-text">Dane nie mogły zostać pobrane. Spróbuj za chwilę ponownie. Jeśli problem będzie się powtarzał skontaktuj się z pomocą techniczną.</p>
-                            </div>
-                        </div>
-                        <div className="col-md-12 page-content">
-                        <Form>   
-                            <div className="col-12 user-bio-personal-container" id="container-delete-form">
-                                <div className="row">
-                                    <div className="col-12 user-delete-info delete-info-container">
-                                        <p>Uwaga! Usunięcie konta w serwisie ePortfolio jest nieodwracalne. Wszystkie Twoje dane zostaną usunięte z naszych baz danych bez możliwości ich przywrócenia. 
-                                            Kliknięcie na przycisk "Usuń" jest ostatecznym potwierdzeniem zlecenia usunięcia konta.</p>
+
+                        <div className="col-md-12 col-lg-6 user-profile-description-my">
+                            <div className="row background-container">
+                                <div className="col-md-12 page-header">
+                                    <h1 className="page-title">Usunięcie konta</h1>
+                                    <hr />
+                                </div>
+                                <div className="col-md-12 user-profile-error-box-outter" id="error-box-523">
+                                    <div className="col-md-12 user-profile-error-box">
+                                        <h3 className="error-title">Wystąpił błąd!</h3>
+                                        <p className="error-text">Dane nie mogły zostać pobrane. Spróbuj za chwilę ponownie. Jeśli problem będzie się powtarzał skontaktuj się z pomocą techniczną.</p>
                                     </div>
                                 </div>
+                                <div className="col-md-12 page-content">
+                                <Form>   
+                                    <div className="col-12 user-bio-personal-container" id="container-delete-form">
+                                        <div className="row">
+                                            <div className="col-12 user-delete-info delete-info-container">
+                                                <p>Uwaga! Usunięcie konta w serwisie ePortfolio jest nieodwracalne. Wszystkie Twoje dane zostaną usunięte z naszych baz danych bez możliwości ich przywrócenia. 
+                                                    Kliknięcie na przycisk "Usuń" jest ostatecznym potwierdzeniem zlecenia usunięcia konta.</p>
+                                            </div>
+                                        </div>
 
-                                <div className="row">
-                                    <div className="col-12 col-md-12 user-delete-checkbox delete-info-checkbox">
-                                    
-                                        <Form.Group controlId="formCheckbox">
-                                            <Form.Check type="checkbox" label="Rozumiem, że usunięcie konta jest nieodwracalne i potwierdzam chęć usunięcia. *" onClick={this.handleCheckboxChanged.bind(this)}/>
-                                        </Form.Group>
-
-                                    </div>
-                                </div>
-
-                                <div className="row">
-                                    <div className="col-12 col-md-6 user-delete-password delete-password-checkbox">
-                                    
-                                        <Form.Group as={Col} controlId="formPassword">
-                                            <Form.Control type="password" placeholder="Hasło..." onChange={this.handlePasswordChanged.bind(this)}/>
-                                        </Form.Group>
-                                        
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div className="col-12 user-bio-sumbit-container" id="container-submit">
-                            <hr />  
-                                    <div className="row">
-                                                             
-                                        <div className="col-12 user-bio-edit-message">
+                                        <div className="row">
+                                            <div className="col-12 col-md-12 user-delete-checkbox delete-info-checkbox">
                                             
-                                            <div className="col-12 message-success hide" id="msg-suc">
-                                                <p><b>Operacja zakończona powodzeniem!</b> Konto zostało usunięte. Za chwilę zostaniesz przekierowany...</p>
-                                            </div>
+                                                <Form.Group controlId="formCheckbox">
+                                                    <Form.Check type="checkbox" label="Rozumiem, że usunięcie konta jest nieodwracalne i potwierdzam chęć usunięcia. *" onClick={this.handleCheckboxChanged.bind(this)}/>
+                                                </Form.Group>
 
-                                            <div className="col-12 message-failure hide" id="msg-err-password">
-                                                <p><b>Błąd!</b> Podane hasło jest niepoprawne.</p>
                                             </div>
+                                        </div>
 
-                                            <div className="col-12 message-failure hide" id="msg-err-empty">
-                                                <p><b>Błąd!</b> Pola oznaczone gwiazdką muszą być uzupełnione.</p>
+                                        <div className="row">
+                                            <div className="col-12 col-md-6 user-delete-password delete-password-checkbox">
+                                            
+                                                <Form.Group as={Col} controlId="formPassword">
+                                                    <Form.Control type="password" placeholder="Hasło..." onChange={this.handlePasswordChanged.bind(this)}/>
+                                                </Form.Group>
+                                                
                                             </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="col-12 user-bio-sumbit-container" id="container-submit">
+                                    <hr />  
+                                            <div className="row">
+                                                                    
+                                                <div className="col-12 user-bio-edit-message">
+                                                    
+                                                    <div className="col-12 message-success hide" id="msg-suc">
+                                                        <p><b>Operacja zakończona powodzeniem!</b> Konto zostało usunięte. Za chwilę zostaniesz przekierowany...</p>
+                                                    </div>
 
-                                            <div className="col-12 message-failure hide" id="msg-err"> 
-                                                <p><b>Błąd!</b> Edycja danych nie powiodła się.</p>
+                                                    <div className="col-12 message-failure hide" id="msg-err-password">
+                                                        <p><b>Błąd!</b> Podane hasło jest niepoprawne.</p>
+                                                    </div>
+
+                                                    <div className="col-12 message-failure hide" id="msg-err-empty">
+                                                        <p><b>Błąd!</b> Pola oznaczone gwiazdką muszą być uzupełnione.</p>
+                                                    </div>
+
+                                                    <div className="col-12 message-failure hide" id="msg-err"> 
+                                                        <p><b>Błąd!</b> Edycja danych nie powiodła się.</p>
+                                                    </div>
+
+                                                </div>
+
+                                                </div>
+                                            <div className="row">
+
+                                            <div className="col-12 col-md-6 user-bio-submit">
+                                                <Button onClick={this.submitFormAndSend.bind(this)} type="button" variant="primary" className="update-button" id="submit-button">
+                                                        Usuń
+                                                </Button>
+                                            </div>
+                                            <div className="col-12 col-md-4 user-bio-exit">
+                                                <Button onClick={event =>  window.location.href='/moj-profil/edytuj'} type="button" variant="primary" className="exit-button">
+                                                        Cofnij
+                                                </Button>
+                                            </div>
+                                            <div className="col-12 col-md-2 user-bio-empty">
+
                                             </div>
 
                                         </div>
-
-                                        </div>
-                                    <div className="row">
-
-                                    <div className="col-12 col-md-6 user-bio-submit">
-                                        <Button onClick={this.submitFormAndSend.bind(this)} type="button" variant="primary" className="update-button" id="submit-button">
-                                                Usuń
-                                        </Button>
                                     </div>
-                                    <div className="col-12 col-md-4 user-bio-exit">
-                                        <Button onClick={event =>  window.location.href='/moj-profil/edytuj'} type="button" variant="primary" className="exit-button">
-                                                Cofnij
-                                        </Button>
-                                    </div>
-                                    <div className="col-12 col-md-2 user-bio-empty">
-
-                                    </div>
-
+                                </Form>     
                                 </div>
                             </div>
-                        </Form>     
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+        </div>        
     )
 }
 

@@ -1,0 +1,19 @@
+version: "3"
+services:
+  postgres:
+    image: ${postgres_image}
+    ports:
+      - "5432:5432/tcp"
+    network_mode: host
+    volumes:
+      - pgdata:/pgdata
+    environment:
+      - POSTGRES_PASSWORD=mysecretpassword
+      - PGDATA=/pgdata
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20000k"
+        max-file: "1"
+volumes:
+  pgdata:

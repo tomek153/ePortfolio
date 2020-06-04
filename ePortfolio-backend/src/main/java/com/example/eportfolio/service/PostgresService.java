@@ -347,30 +347,25 @@ public class PostgresService implements UserDao, UserBioDao {
     }
 
     @Override
-    public int deleteUser(String email) {
-        return 0;
+    public int deleteUser(UUID id) {
+
+        final String checkUser = "SELECT * FROM users WHERE id= '"+ id +"'";
+
+            try {
+                final String deleteUserSQL = "DELETE from USERS where id='" +
+                        id +"';";
+                final String deleteUserBIOSQL = "DELETE from USERS_BIO where user_uuid='" +
+                        id +"';";
+                jdbcTemplate.execute(deleteUserSQL);
+                jdbcTemplate.execute(deleteUserBIOSQL);
+                return 1;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.err.println("delete user error");
+                return 0;
+            }
+
     }
 
-    @Override
-    public Optional<UserBio> getUserBioByID(UUID ID) {
-        final String sql = "SELECT user_uuid, phone, address_main, address_city, address_zip, address_country, date_birth, gender FROM users_bio WHERE user_uuid = ?";
-
-        UserBio userBio = jdbcTemplate.queryForObject(
-                sql,
-                new Object[]{ID},
-                (resultSet, i) -> {
-                    return new UserBio(
-                            UUID.fromString(resultSet.getString("user_uuid")),
-                            resultSet.getString("phone"),
-                            resultSet.getString("address_main"),
-                            resultSet.getString("address_city"),
-                            resultSet.getString("address_zip"),
-                            resultSet.getString("address_country"),
-                            resultSet.getString("date_birth"),
-                            resultSet.getString("gender")
-                    );
-                }
-        );
-        return Optional.ofNullable(userBio);
-    }
 }

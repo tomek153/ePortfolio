@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import superagent from 'superagent';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import Col from 'react-bootstrap/Col';
-import md5 from 'md5-hash'
 import PageLoading from '../page-loading';
 
 function handleErrors(response) {
@@ -20,15 +18,12 @@ function sleep (time) {
 function clearMessages(){
     var e1 = document.getElementById("msg-err");
     var e2 = document.getElementById("msg-suc");
-    var e3 = document.getElementById("msg-err-password"); 
     var e4 = document.getElementById("msg-err-empty");
     e1.classList.remove("show");
     e2.classList.remove("show");
-    e3.classList.remove("show");
     e4.classList.remove("show");
     e1.classList.add("hide");
     e2.classList.add("hide");
-    e3.classList.add("hide");
     e4.classList.add("hide");
 }
 
@@ -40,12 +35,6 @@ function showErrorBox(){
 
 function showSuccessBox(){
     var e = document.getElementById("msg-suc"); 
-    e.classList.remove("hide");
-    e.className += " show"; 
-}
-
-function showErrorBox_Password(){
-    var e = document.getElementById("msg-err-password"); 
     e.classList.remove("hide");
     e.className += " show"; 
 }
@@ -73,10 +62,11 @@ class UserProfileDelete extends Component {
                 country: "",
                 dateBirth: "",
                 gender: "",
-                password: '',
-                passwordCheck: '',
-                checkbox: 'off'
+                password: "",
+                passwordCheck: "",
+                
             },
+            checkbox: "off",
             tokenExpired: false
         }
     }
@@ -128,43 +118,6 @@ class UserProfileDelete extends Component {
         };
     }
 
-/*
-    async componentDidMount() {
-
-        let connectionError = false;
-
-        {
-            DOSTĘPNE ID:
-            1a1d1d84-be02-4184-a26f-565302a0a9ab | uzupełnione
-            67d37b2e-428f-4ec4-9525-668383def1db | nowy user
-            148deb3a-a0ae-4f16-bd45-86ffa2bf28a7 | user do edycji
-        }
-
-        let id = "148deb3a-a0ae-4f16-bd45-86ffa2bf28a7"
-        const urlMain = "http://localhost:8080/api/users/id/";
-
-        const responseUserMain = await fetch(urlMain + id).catch(error => error);
-
-        if(responseUserMain != "[object Response]"){
-            connectionError = true;
-        }
-
-        if (connectionError){
-            var h1 = document.getElementById("container-delete-form"); 
-            var h2 = document.getElementById("submit-button");
-            h1.className += " hide"; 
-            h2.className += " disabled"; 
-            var s = document.getElementById("error-box-523"); 
-            s.className += " show"; 
-            return;
-        } else {
-            const dataUserMain = await responseUserMain.json();
-            this.setState({id: dataUserMain.id})
-            this.setState({passwordStart: dataUserMain.password})
-
-        } 
-    }*/
-
     submitFormAndSend(event) {
 
         clearMessages();
@@ -172,15 +125,11 @@ class UserProfileDelete extends Component {
         let id = this.state.user.id;
 
         const urlMain = "http://localhost:8080/api/users/delete/";
-        const urlBio = "http://localhost:8080/api/users-bio/delete/";
 
-        let pass = md5(this.state.user.passwordCheck);
-
-        if(pass != this.state.user.passwordStart) {
-            showErrorBox_Password();
-        } else if(this.state.user.checkbox != 'on') {
+        if(this.state.checkbox != 'on') {
             showErrorBox_Empty();
         } 
+        
         else {
             superagent
                 .get(urlMain + id)
@@ -193,19 +142,11 @@ class UserProfileDelete extends Component {
 
                         return;
                     } else{
-                        superagent
-                        .get(urlBio + id)
-                        .set('Content-Type', 'application/json')
-                        .send('')
-                        .end((err, res) => {
-                            if(err) {
-                                showErrorBox(); 
-                                return;
-                            } else {
-                                showSuccessBox();
-                                sleep(4000).then(() => { window.location.href='/';});
-                            }
-                        }); 
+                        showSuccessBox();
+                        localStorage.removeItem('token');
+                        sleep(4000).then(() => {                            
+                            window.location.href='/';
+                        });
                     }
                 }
                 );   
@@ -218,8 +159,8 @@ class UserProfileDelete extends Component {
     }
 
     handleCheckboxChanged(event) {
-        if(this.state.user.checkbox == 'off'){ this.setState({checkbox: 'on'})}
-        if(this.state.user.checkbox == 'on'){ this.setState({checkbox: 'off'})}
+        if(this.state.checkbox == 'off'){ this.setState({checkbox: 'on'})}
+        if(this.state.checkbox == 'on'){ this.setState({checkbox: 'off'})}
     }
 
 
@@ -265,16 +206,6 @@ render() {
 
                                             </div>
                                         </div>
-
-                                        <div className="row">
-                                            <div className="col-12 col-md-6 user-delete-password delete-password-checkbox">
-                                            
-                                                <Form.Group as={Col} controlId="formPassword">
-                                                    <Form.Control type="password" placeholder="Hasło..." onChange={this.handlePasswordChanged.bind(this)}/>
-                                                </Form.Group>
-                                                
-                                            </div>
-                                        </div>
                                     </div>
                                     
                                     <div className="col-12 user-bio-sumbit-container" id="container-submit">
@@ -285,10 +216,6 @@ render() {
                                                     
                                                     <div className="col-12 message-success hide" id="msg-suc">
                                                         <p><b>Operacja zakończona powodzeniem!</b> Konto zostało usunięte. Za chwilę zostaniesz przekierowany...</p>
-                                                    </div>
-
-                                                    <div className="col-12 message-failure hide" id="msg-err-password">
-                                                        <p><b>Błąd!</b> Podane hasło jest niepoprawne.</p>
                                                     </div>
 
                                                     <div className="col-12 message-failure hide" id="msg-err-empty">

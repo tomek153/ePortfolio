@@ -39,8 +39,8 @@ public class UserService {
 
     public Optional<User> getUserByID(UUID id) { return userDao.getUserByID(id); }
 
-    public int deleteUser(String email) {
-        return userDao.deleteUser(email);
+    public int deleteUser(UUID id) {
+        return userDao.deleteUser(id);
     }
 
     public int updateUser(String email, User user) {

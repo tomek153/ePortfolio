@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-
+import Modal from 'react-bootstrap/Modal';
+import Spinner from 'react-bootstrap/Spinner';
 import ImageLogo from '../../images/logo.png';
 import PageLoading from '../page-loading';
 import superagent from 'superagent';
@@ -13,11 +14,13 @@ constructor() {
         this.state = {
             newMail: {
                 firstName: "",
-                email: ""
+                email: "",
+                message: ""
             },
             formControll: {
                 firstName: false,
-                email: false
+                email: false,
+                message: false
             },
             modalSuccesShow: false,
             modalFailedShow: false,
@@ -100,43 +103,49 @@ handleEmailChanged(event) {
         this.checkEmailRegex(event.target.value, regex, messageRegexViolation, element,
             8, 40, length, messageShort, messageLong);
     }
-    checkEmailRegex(text, regex, messageRegexViolation, element, from, to, length, messageShort, messageLong) {
-        let wronCharRegex = /[^a-zA-Z0-9@_.-]/;
 
-        if (text.match(regex) != null) {
-            if (text.match(wronCharRegex) != null) {
-                element.style.display = "block";
-                element.innerHTML = "<sub>Podano niepoprawny znak.</sub>";
-                this.state.formControll.email = false;
-                this.checkFormDataValid();
-            } else {
-                element.style.display = "none";
-                this.checkMessageState(from, to, length, messageShort, messageLong, element);
-                this.state.formControll.email = true;
-                this.checkFormDataValid();
-            }
-        } else {
+
+handleMessageChanged(event){
+    this.state.newMail.message = event.target.value;
+}
+
+checkEmailRegex(text, regex, messageRegexViolation, element, from, to, length, messageShort, messageLong) {
+    let wronCharRegex = /[^a-zA-Z0-9@_.-]/;
+
+    if (text.match(regex) != null) {
+        if (text.match(wronCharRegex) != null) {
             element.style.display = "block";
-            element.innerHTML = messageRegexViolation;
+            element.innerHTML = "<sub>Podano niepoprawny znak.</sub>";
             this.state.formControll.email = false;
             this.checkFormDataValid();
+        } else {
+            element.style.display = "none";
+            this.checkMessageState(from, to, length, messageShort, messageLong, element);
+            this.state.formControll.email = true;
+            this.checkFormDataValid();
         }
+    } else {
+        element.style.display = "block";
+        element.innerHTML = messageRegexViolation;
+        this.state.formControll.email = false;
+        this.checkFormDataValid();
     }
+}
 
 
-    clearField() {
-            document.getElementById("formGridFirstName").value = "";
-            document.getElementById("formGridEmail").value = "";
-            this.state.newMail.firstName = "";
-            this.state.newMail.email = "";
-        }
+clearField() {
+        document.getElementById("formGridFirstName").value = "";
+        document.getElementById("formGridEmail").value = "";
+        this.state.newMail.firstName = "";
+        this.state.newMail.email = "";
+    }
 
 
 submitFormAndSend(event) {
         this.setState({modalLoadingMessage: true});
         event.preventDefault();
         superagent
-            .post('http://localhost:8080/api/users')
+            .post('http://localhost:8080/email/contact-message')
             .send(this.state.newMail)
             .end((err, res) => {
                 if(err) {
@@ -244,7 +253,7 @@ submitFormAndSend(event) {
 
                                                             <Form.Group controlId="formBasicText">
                                                                 <Form.Label>Wiadomość</Form.Label><br/>
-                                                                <textarea rows="2" placeholder="Wprowadź tekst..." id="message-text-my" style={{width:600}}></textarea>
+                                                                <Form.Control id="message-text-my" placeholder="Wprowadź wiadomość..." onChange={this.handleMessageChanged.bind(this)}/>
                                                             </Form.Group>
                                                             <Button onClick={this.submitFormAndSend.bind(this)} variant="primary" type="button" className="login-button-my" style={{float: 'right'}}>
                                                                 Wyślij
@@ -253,6 +262,41 @@ submitFormAndSend(event) {
                                         </div>
 
                     </div>
+                    <Modal show={this.state.modalSuccesShow} size="lg" aria-labelledby="contained-modal-title-vcenter"  style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
+                    <Modal.Header style={{color: "#31b4cb", backgroundColor: "rgba(49, 180, 203, 0.15)"}}>
+                        <Modal.Title id="contained-modal-title-vcenter">
+                          Udało się!
+                        </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body style={{textAlign: "center"}}>
+                        <i className="fas fa-check fa-5x" id="successIconModal"></i>
+                        <p style={{color: "#444"}}>
+                            Na adres mailowy została wysłana kopia wiadomości. Postaramy odpowiedzieć się na nią wkrótce.
+                        </p>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="link" onClick={this.closeModal.bind(this)} className="modal-close-btn">Zamknij</Button>
+                    </Modal.Footer>
+                </Modal>
+                <Modal show={this.state.modalFailedShow} size="lg" aria-labelledby="contained-modal-title-vcenter" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
+                    <Modal.Header style={{color: "#de473c", backgroundColor: "rgba(222, 71, 60, 0.15)"}}>
+                        <Modal.Title id="contained-modal-title-vcenter">
+                            Konto nie istnieje!
+                        </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body style={{textAlign: "center"}}>
+                        <i className="fas fa-exclamation fa-5x" id="successIconModal" style={{color: "#de473c"}}></i>
+                        <p style={{color: "#444"}}>
+                            Mail <b>nie został</b> wysłany. Spróbuj ponownie później.
+                        </p>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="link" className="modal-close-btn" onClick={this.closeModal.bind(this)}>Zamknij</Button>
+                    </Modal.Footer>
+                </Modal>
+                <Modal show={this.state.modalLoadingMessage} id="container-spinner-modal-register-request" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
+                    <Spinner animation="grow" variant="light" id="spinner-modal-register-request"/>
+                </Modal>
                 </div>
             </>
         )

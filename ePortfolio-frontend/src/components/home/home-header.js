@@ -48,12 +48,12 @@ class HomeHeader extends Component {
                     <Navbar.Brand href="/" className="mr-auto">
                         <Image src={LogoImage} fluid className="header-image-logo"/>
                     </Navbar.Brand>
-                    <Button variant="link" className="header-btn-my header-home-links" onClick={this.contactRedirect.bind(this)}>Kontakt</Button>
+                    <Button variant="link" className="header-btn-my header-home-links header-btn-shadow" onClick={this.contactRedirect.bind(this)}>Kontakt</Button>
                     <div className="header-divider"></div>
                     <Form inline>
                         <FormControl type="text" placeholder="Search" className="mr-sm-2 search-header" style={{backgroundColor: "rgba(248, 248, 250, 0.3)", color: "#fff"}}/>
                         <Button variant="outline-primary" className="header-btn-my header-btn-login-my" onClick={this.loginRedirect.bind(this)}>Zaloguj</Button>
-                        <Button variant="link" className="header-btn-my header-btn-register-my" onClick={this.registerRedirect.bind(this)} style={{marginRight: "0"}}>Rejestracja</Button>
+                        <Button variant="link" className="header-btn-my header-btn-register-my header-btn-shadow" onClick={this.registerRedirect.bind(this)} style={{marginRight: "0"}}>Rejestracja</Button>
                     </Form>
                 </Navbar>
             </>

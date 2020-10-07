@@ -8,7 +8,7 @@ import superagent from 'superagent';
 
 class ContactContent extends Component {
 
-constructor() {
+    constructor() {
         super();
         this.state = {
             newMail: {
@@ -36,7 +36,7 @@ constructor() {
         }
     }
 
-handleFirstNameChanged(event) {
+    handleFirstNameChanged(event) {
         this.state.newMail.firstName = event.target.value;
 
         let length = event.target.value.length;
@@ -51,7 +51,7 @@ handleFirstNameChanged(event) {
             2, 15, length, messageShort, messageLong, "firstName");
     }
 
-checkRegex(text, regex, messageRegexViolation, element, from, to, length, messageShort, messageLong, name) {
+    checkRegex(text, regex, messageRegexViolation, element, from, to, length, messageShort, messageLong, name) {
         if (text.match(regex) != null) {
             element.style.display = "block";
             element.innerHTML = messageRegexViolation;
@@ -83,11 +83,7 @@ checkRegex(text, regex, messageRegexViolation, element, from, to, length, messag
         this.checkFormDataValid();
     }
 
-changeBackground() {
-        document.getElementsByClassName("login-button-my")[0].disabled = true;
-    }
-
-handleEmailChanged(event) {
+    handleEmailChanged(event) {
         this.state.newMail.email = event.target.value;
 
         let length = event.target.value.length;
@@ -125,14 +121,14 @@ handleEmailChanged(event) {
 
 
     clearField() {
-            document.getElementById("formGridFirstName").value = "";
-            document.getElementById("formGridEmail").value = "";
-            this.state.newMail.firstName = "";
-            this.state.newMail.email = "";
-        }
+        document.getElementById("formGridFirstName").value = "";
+        document.getElementById("formGridEmail").value = "";
+        this.state.newMail.firstName = "";
+        this.state.newMail.email = "";
+    }
 
 
-submitFormAndSend(event) {
+    submitFormAndSend(event) {
         this.setState({modalLoadingMessage: true});
         event.preventDefault();
         superagent
@@ -152,109 +148,97 @@ submitFormAndSend(event) {
     }
 
     closeModal() {
-            this.setState({modalSuccesShow: false});
-            this.setState({modalFailedShow: false});
-        }
+        this.setState({modalSuccesShow: false});
+        this.setState({modalFailedShow: false});
+    }
 
     showPassword() {
         var x = document.getElementById("login-password-my");
         if (x.type === "password")
-          x.type = "text";
+            x.type = "text";
         else
-          x.type = "password";
+            x.type = "password";
     }
 
     componentDidMount() {
         const loader = document.querySelector(".page-loading");
+        document.querySelector(".login-button-my").disabled = true;
+
         window.onload = function() {
             this.setTimeout(function() {
                 loader.classList.add("hidden");
                 this.setTimeout(function() {
-                    const regTab = document.querySelector(".home-right-container-my");
-                    regTab.style = "display: block";
+                    document.querySelector(".login-form-my").style = "display: block";
+                    document.querySelector("#login-back-button").style = "display: block";
+                    document.querySelector(".login-header-container").style = "display: block";
                 }, 200);
             }, 600);
         }
     }
 
-    homeRedirect() {
-        const helper = document.querySelector(".fade-out-helper");
-        const logTab = document.querySelector(".box-container-shadow");
-
-        logTab.classList.remove("w3-animate-right-login");
-        logTab.classList.add("w3-animate-right-out-login");
+    userRedirect(url) {
+        const form = document.querySelector(".login-form-my");
+        const backButton = document.querySelector("#login-back-button");
+        const header = document.querySelector(".login-header-container");
+        
+        form.classList.remove("w3-animate-right-login-container");
+        form.classList.add("w3-animate-left-login-container");
+        backButton.classList.add("w3-animate-left-login-back-button");
+        backButton.classList.add("w3-animate-right-login-back-button");
+        header.classList.add("w3-animate-left-login-header");
+        header.classList.add("w3-animate-right-login-header");
 
         setTimeout(function() {
-            logTab.style = "display: none";
-            helper.style = "display: block";
-            helper.classList.add("fade-in");
-
+            form.style = "display: none";
+            backButton.style = "display: none";
+            header.style = "display: none";
+        
             setTimeout(function() {
-                window.location.href = "/";
+                window.location.href = url;
             }, 200);
         }, 600);
     }
 
-    registerRedirect() {
-        const helper = document.querySelector(".fade-out-helper");
-        const logTab = document.querySelector(".box-container-shadow");
-
-        logTab.classList.remove("w3-animate-right-login");
-        logTab.classList.add("w3-animate-right-out-login");
-
-        setTimeout(function() {
-            logTab.style = "display: none";
-            helper.style = "display: block";
-            helper.classList.add("fade-in");
-
-            setTimeout(function() {
-                window.location.href = "/rejestracja";
-            }, 200);
-        }, 600);
+    homeRedirect() {
+        this.userRedirect("/");
     }
 
     render() {
         return (
-            <>
-                <div className="fade-out-helper"></div>
+            <div className="background-image-container">
                 <PageLoading />
-                <div className="home-right-container-my">
-                    <div className="box-container-shadow w3-animate-right-login" style={{width: '720px', height: '670px'}}>
-                        <i className="fas fa-arrow-left home-link-register" onClick={this.homeRedirect.bind(this)}></i>
-                        <a href="/"><img
-                            className="login-logo-my"
-                            src={ImageLogo}
-                            style={{top: '18%'}}
-                        /></a>
-                        <div className="login-form-my">
-                                            <Form>
-                                                <h3>Masz wątpliwości? Zapytaj!</h3>
-                                                            <p>Wypełnij poniższy formularz, aby się z nami skontaktować.</p>
-                                                            <hr />
-                                                            <Form.Group controlId="formGridFirstName">
-                                                                                            <Form.Label>Imię</Form.Label><span id="form-value-alert-name" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
-                                                                                            <Form.Control placeholder="Wprowadź imię..." onChange={this.handleFirstNameChanged.bind(this)}/>
-                                                                                        </Form.Group>
-                                                            <Form.Group controlId="formGridEmail">
-                                                                <Form.Label>Email</Form.Label><span id="form-value-alert-email" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
-                                                                <Form.Control placeholder="Wprowadź email..." onChange={this.handleEmailChanged.bind(this)}/>
-                                                                <Form.Text className="text-muted">Na ten email otrzymasz wiadomość od ePortfolio.</Form.Text>
-                                                            </Form.Group>
-
-
-                                                            <Form.Group controlId="formBasicText">
-                                                                <Form.Label>Wiadomość</Form.Label><br/>
-                                                                <textarea rows="2" placeholder="Wprowadź tekst..." id="message-text-my" style={{width:600}}></textarea>
-                                                            </Form.Group>
-                                                            <Button onClick={this.submitFormAndSend.bind(this)} variant="primary" type="button" className="login-button-my" style={{float: 'right'}}>
-                                                                Wyślij
-                                                            </Button>
-                                            </Form>
-                                        </div>
-
+                <div className="background-opcaity-container">
+                    <div className="login-header-container w3-animate-left-login-header"><span className="gradient-text">Kontakt</span></div>
+                    <i className="fas fa-arrow-left home-link-register w3-animate-left-login-back-button" id="login-back-button" onClick={this.homeRedirect.bind(this)}></i>
+                    <img 
+                        className="login-logo-my"
+                        src={ImageLogo}
+                    />
+                    <div className="login-form-my w3-animate-right-login-container">
+                        <Form>
+                            <h3 className="gradient-text">Masz wątpliwości? Zapytaj!</h3>
+                            <p>Wypełnij poniższy formularz, aby się z nami skontaktować.</p>
+                            <hr />
+                            <Form.Group controlId="formGridFirstName">
+                                <Form.Label>Imię</Form.Label><span id="form-value-alert-name" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
+                                <Form.Control placeholder="Wprowadź imię..." onChange={this.handleFirstNameChanged.bind(this)}/>
+                            </Form.Group>
+                            <Form.Group controlId="formGridEmail">
+                                <Form.Label>Email</Form.Label><span id="form-value-alert-email" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
+                                <Form.Control placeholder="Wprowadź email..." onChange={this.handleEmailChanged.bind(this)}/>
+                                <Form.Text className="text-muted">Na ten email otrzymasz wiadomość od ePortfolio.</Form.Text>
+                            </Form.Group>
+                            <Form.Group controlId="exampleForm.ControlTextarea1">
+                                <Form.Label>Wiadomość</Form.Label>
+                                <Form.Control as="textarea" rows="3" placeholder="Wprowadź tekst..."/>
+                            </Form.Group>
+                            <Button onClick={this.submitFormAndSend.bind(this)} variant="primary" type="button" className="login-button-my" style={{float: 'right'}}>
+                                Wyślij
+                            </Button>
+                        </Form>
                     </div>
                 </div>
-            </>
+            </div>
         )
     }
 }

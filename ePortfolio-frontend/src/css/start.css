@@ -9,8 +9,8 @@ html, body {
 }
 
 .navbar-my {
-    background-color: #f8f8fa!important;
-    box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.8);
+    background-color: unset!important;
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.3), rgba(0,0,0,0.001));
     position: fixed;
     width: 100%;
     z-index: 5;
@@ -18,18 +18,9 @@ html, body {
 }
 
 #root {
-    background-color: #f2f1f1;
-    background-image: url("../images/home-background.png");
-    background-position: left;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    height: 100%;
-}
-
-.container-my {
     width: 100%;
-    height: 100%;
+    min-height: 100%;
+    position: static;
 }
 
 .header-btn-my {
@@ -37,21 +28,23 @@ html, body {
 }
 
 .header-btn-login-my {
-    color: #eb4a4a;
-    border-color: #eb4a4a;
+    color: #c92828;
+    border: 1.3px solid #c92828;
+    margin-left: 10px;
 }
 
 .header-btn-login-my:hover {
-    background-color: #eb4a4a;
-    border-color: #eb4a4a;
+    background-color: #c92828;
+    border-color: #c92828;
+    color: #ff8e8e;
 }
 
 .header-btn-register-my {
-    color: #31b4cb;
+    color: #42c5dc;
 }
 
 .header-btn-register-my:hover {
-    color: #20a3ba;
+    color: #53d6ed;
     cursor: pointer;
 }
 
@@ -66,7 +59,6 @@ html, body {
     position: fixed;
     right: 8%;
     bottom: 10%;
-    display: none;
 }
 
 .home-description-my {
@@ -75,7 +67,6 @@ html, body {
     float: right;
     margin-right: 10%;
     margin-top: 200px;
-    display: none;
 }
 
 .home-description-my > hr {
@@ -116,32 +107,6 @@ html, body {
 
 .login-register-redirect:hover {
     cursor: pointer;
-}
-
-.login-form-my {
-    width: 600px;
-    height: 300px;
-    margin: 0;
-    position: absolute;
-    top: 55%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-.login-logo-my {
-    width: 200px;
-    height: 93px;
-    margin: 0;
-    position: absolute;
-    top: 20%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    transition: ease-in-out .5s;
-}
-
-.login-logo-my:hover {
-    width: 220px;
-    height: 102px;
 }
 
 .login-form-my > form > h3, .register-form-my > form > h3 {
@@ -219,14 +184,6 @@ a.register-login-btn:hover {
     text-decoration: underline;
 }
 
-.register-container-my {
-    width: 60%;
-    height: 100%;
-    float: left;
-    position: relative;
-    display: none;
-}
-
 i.home-link-register {
     position: absolute;
     left: 20px;
@@ -239,43 +196,6 @@ i.home-link-register {
 i.home-link-register:hover {
     color: rgba(0, 0, 0, 0.7);
     cursor: pointer;
-}
-
-.box-container-shadow {
-    background-color: rgba(255, 255, 255, 0.9);
-    width: 900px;
-    height: 600px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
-}
-
-.register-form-my {
-    width: 800px;
-    height: 300px;
-    margin: 0;
-    position: absolute;
-    top: 60%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-.register-logo-my {
-    width: 200px;
-    height: 93px;
-    margin: 0;
-    position: absolute;
-    top: 18%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    transition: ease-in-out .5s;
-}
-
-.register-logo-my:hover {
-    width: 220px;
-    height: 102px;
 }
 
 .register-have-account {
@@ -457,4 +377,109 @@ i.fas.fa-eye-slash {
     margin-left: 37px;
     margin-right: 37px;
     color: #31b4cb!important;
+}
+
+.loading-page-logo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.background-image-container {
+    width: 100%;
+    min-height: 100%;
+    background-image: url(../images/background.jpg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: absolute;
+}
+
+.header-home-links {
+    color: #eee;
+    margin-right: 10px;
+}
+.header-home-links:hover {
+    color: #eee;
+}
+
+.header-divider {
+    width: 50px;
+    height: 40px;
+    box-shadow: -8px 0px 8px -8px rgba(0,0,0,0.8);
+}
+
+.search-header::placeholder {
+    color: #fff;
+}
+
+.home-info-container {
+    width: 60%;
+    min-height: 550px;
+    top: 510px;
+    background-color: rgba(250, 250, 250, 0.75);
+    position: fixed;
+}
+
+.middle {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.carousel-home-content {
+    width: 100%;
+    height: 200px;
+    background-color: #fff;
+    position: fixed;
+    top: 100%;
+    left: 0;
+}
+
+.gradient-text {
+    background: -webkit-linear-gradient( #444, #555, #888);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+@media (max-width: 1500px) {
+    .home-info-container { width: 80%; }
+    .w3-animate-right-home-container { animation: animateright80percent .7s; }
+    .w3-animate-left-home-container { animation: animateright80percentback .7s; }
+}
+
+@media (max-width: 1100px) {
+    .home-info-container { width: 100%; border-radius: 0px; }
+    .w3-animate-right-home-container { animation: animateright100percent .7s; }
+    .w3-animate-left-home-container { animation: animateright100percentback .7s; }
+}
+
+@media (max-width: 870px) {
+    .home-info-container.w3-animate-right-home-container > div {
+        float: none!important;
+        width: 100%!important;
+        min-height: 150px!important;
+    }
+    .home-info-container.w3-animate-right-home-container > div:nth-child(2) > div {
+        min-height: 150px!important;
+    }
+    .home-info-container.w3-animate-right-home-container > div:nth-child(2) > div:nth-child(2) {
+        width: 60%!important;
+        text-align: left!important;
+        padding-left: 10px;
+    }
+    .home-info-container.w3-animate-right-home-container > div:nth-child(2) > div:nth-child(1) {
+        width: 40%!important;
+    }
+    .home-info-container {
+        top: 55%;
+        padding: 30px;
+    }
+}
+
+@media (max-width: 580px) {
+    .home-info-container.w3-animate-right-home-container > div:nth-child(2) {
+        display: none;
+    }
+    .home-info-container { top: 60%; }
 }

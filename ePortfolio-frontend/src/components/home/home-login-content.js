@@ -58,8 +58,9 @@ class LoginContent extends Component {
                 window.setTimeout(function() {
                     loader.classList.add("hidden");
                     this.setTimeout(function() {
-                        const regTab = document.querySelector(".home-right-container-my");
-                        regTab.style = "display: block";
+                        document.querySelector(".login-form-my").style = "display: block";
+                        document.querySelector("#login-back-button").style = "display: block";
+                        document.querySelector(".login-header-container").style = "display: block";
                     }, 200);
                 }, 600);
                 if (this.props.location.search == "?token=bad_token") {
@@ -73,58 +74,35 @@ class LoginContent extends Component {
         }
     }
 
-    homeRedirect() {
-        const helper = document.querySelector(".fade-out-helper");
-        const logTab = document.querySelector(".box-container-shadow");
+    userRedirect(url) {
+        const form = document.querySelector(".login-form-my");
+        const backButton = document.querySelector("#login-back-button");
+        const header = document.querySelector(".login-header-container");
         
-        logTab.classList.remove("w3-animate-right-login");
-        logTab.classList.add("w3-animate-right-out-login");
+        form.classList.remove("w3-animate-right-login-container");
+        form.classList.add("w3-animate-left-login-container");
+        backButton.classList.add("w3-animate-left-login-back-button");
+        backButton.classList.add("w3-animate-right-login-back-button");
+        header.classList.add("w3-animate-left-login-header");
+        header.classList.add("w3-animate-right-login-header");
 
         setTimeout(function() {
-            logTab.style = "display: none";
-            helper.style = "display: block";
-            helper.classList.add("fade-in");
+            form.style = "display: none";
+            backButton.style = "display: none";
+            header.style = "display: none";
         
             setTimeout(function() {
-                window.location.href = "/";
+                window.location.href = url;
             }, 200);
         }, 600);
+    }
+
+    homeRedirect() {
+        this.userRedirect("/");
     }
 
     registerRedirect() {
-        const helper = document.querySelector(".fade-out-helper");
-        const logTab = document.querySelector(".box-container-shadow");
-
-        logTab.classList.remove("w3-animate-right-login");
-        logTab.classList.add("w3-animate-right-out-login");
-
-        setTimeout(function() {
-            logTab.style = "display: none";
-            helper.style = "display: block";
-            helper.classList.add("fade-in");
-            
-            setTimeout(function() {
-                window.location.href = "/rejestracja";
-            }, 200);
-        }, 600);
-    }
-
-    userRedirect() {
-        const helper = document.querySelector(".fade-out-helper");
-        const logTab = document.querySelector(".box-container-shadow");
-
-        logTab.classList.remove("w3-animate-right-login");
-        logTab.classList.add("w3-animate-right-out-login");
-
-        setTimeout(function() {
-            logTab.style = "display: none";
-            helper.style = "display: block";
-            helper.classList.add("fade-in");
-            
-            setTimeout(function() {
-                window.location.href = "/test-user";
-            }, 200);
-        }, 600);
+        this.userRedirect("/rejestracja");
     }
 
     checkFormDataValid() {
@@ -267,7 +245,7 @@ class LoginContent extends Component {
                     this.setState({modalUnconfirmed: true});
                 } else if (data.message == "Authentication success.") {
                     localStorage.setItem('token', data.token);
-                    this.userRedirect();
+                    this.userRedirect("/test-user");
                 } else {
                     console.log(data);
                     alert("Uknown error.");
@@ -336,146 +314,143 @@ class LoginContent extends Component {
         );
 
         return (
-            <>
-                <div className="fade-out-helper"></div>
+            <div class="background-image-container">
                 <PageLoading />
-                <div className="home-right-container-my">
-                    <div className="box-container-shadow w3-animate-right-login" style={{width: '720px', height: '670px'}}>
-                        <i className="fas fa-arrow-left home-link-register" onClick={this.homeRedirect.bind(this)}></i>
-                        <a href="/"><img 
-                            className="login-logo-my"
-                            src={ImageLogo}
-                            style={{top: '18%'}}
-                        /></a>
-                        <div className="login-form-my">
-                            <Form>
-                                <h3>Witaj !</h3>
-                                <p>Tutaj możesz zalogować się do swojego konta.</p>
-                                <p>Nie posiadasz jeszcze konta? <a className="login-links login-register-redirect" onClick={this.registerRedirect.bind(this)}>Zarejestruj się</a>
-                                </p>
-                                <hr />
-                                <Form.Group controlId="formBasicEmail">
-                                        <Form.Label>Email</Form.Label><span id="form-value-alert-email" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
-                                        <Form.Control type="email" placeholder="Wprowadź email..." onChange={this.handleEmailChanged.bind(this)}/>
-                                        <Form.Text className="text-muted">
-                                            We'll never share your email with anyone else.
-                                        </Form.Text>
-                                </Form.Group>
+                <div className="background-opcaity-container">
+                    <div className="login-header-container w3-animate-left-login-header"><span className="gradient-text">Logowanie</span></div>
+                    <i className="fas fa-arrow-left home-link-register w3-animate-left-login-back-button" id="login-back-button" onClick={this.homeRedirect.bind(this)}></i>
+                    <img 
+                        className="login-logo-my"
+                        src={ImageLogo}
+                    />
+                    <div className="login-form-my w3-animate-right-login-container">
+                        <Form>
+                            <h3 className="gradient-text">Witaj !</h3>
+                            <p>Tutaj możesz zalogować się do swojego konta.</p>
+                            <p>Nie posiadasz jeszcze konta? <a className="login-links login-register-redirect" onClick={this.registerRedirect.bind(this)}>Zarejestruj się</a>
+                            </p>
+                            <hr />
+                            <Form.Group controlId="formBasicEmail">
+                                    <Form.Label>Email</Form.Label><span id="form-value-alert-email" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
+                                    <Form.Control type="email" placeholder="Wprowadź email..." onChange={this.handleEmailChanged.bind(this)}/>
+                                    <Form.Text className="text-muted">
+                                        We'll never share your email with anyone else.
+                                    </Form.Text>
+                            </Form.Group>
 
-                                <Form.Group controlId="formBasicPassword" style={{marginBottom: '45px'}}>
-                                    <Form.Label>Hasło</Form.Label>
-                                    <span id="form-value-alert-password" className="form-value-alert">
-                                        <sub>Podano niepoprawne hasło. </sub>
-                                        <OverlayTrigger trigger="hover" placement="top" overlay={popoverPassword}>
-                                            <sub variant="success" id="register-password-tooltip"><i className="fas fa-question-circle"></i></sub>
-                                        </OverlayTrigger>
-                                    </span>
-                                    <InputGroup id="div-password-login">
-                                        <Form.Control type="password" placeholder="Wprowadź hasło..." onChange={this.handlePasswordChanged.bind(this)} onFocus={this.changePasswordInputStyleIn} onBlur={this.changePasswordInputStyleOut}/>
-                                        <InputGroup.Prepend>
-                                            <InputGroup.Text id="inputGroupPrepend" onClick={this.showPassword}><i className="fas fa-eye w3-animate-opacity"></i><i className="fas fa-eye-slash w3-animate-opacity"></i></InputGroup.Text>
-                                        </InputGroup.Prepend>
-                                    </InputGroup>
-                                </Form.Group>
-                                <Button onClick={this.submitFormAndSend.bind(this)} variant="primary" className="login-button-my" style={{float: 'right'}}>
-                                    Zaloguj się
-                                </Button>
-                                <Button variant="link" style={{float: 'right'}} className="login-links">
-                                    Nie pamiętasz hasła?
-                                </Button>
-                            </Form>
-                        </div>
+                            <Form.Group controlId="formBasicPassword" style={{marginBottom: '45px'}}>
+                                <Form.Label>Hasło</Form.Label>
+                                <span id="form-value-alert-password" className="form-value-alert">
+                                    <sub>Podano niepoprawne hasło. </sub>
+                                    <OverlayTrigger trigger="hover" placement="top" overlay={popoverPassword}>
+                                        <sub variant="success" id="register-password-tooltip"><i className="fas fa-question-circle"></i></sub>
+                                    </OverlayTrigger>
+                                </span>
+                                <InputGroup id="div-password-login">
+                                    <Form.Control type="password" placeholder="Wprowadź hasło..." onChange={this.handlePasswordChanged.bind(this)} onFocus={this.changePasswordInputStyleIn} onBlur={this.changePasswordInputStyleOut}/>
+                                    <InputGroup.Prepend>
+                                        <InputGroup.Text id="inputGroupPrepend" onClick={this.showPassword}><i className="fas fa-eye w3-animate-opacity"></i><i className="fas fa-eye-slash w3-animate-opacity"></i></InputGroup.Text>
+                                    </InputGroup.Prepend>
+                                </InputGroup>
+                            </Form.Group>
+                            <Button onClick={this.submitFormAndSend.bind(this)} variant="primary" className="login-button-my" style={{float: 'right'}}>
+                                Zaloguj się
+                            </Button>
+                            <Button variant="link" style={{float: 'right'}} className="login-links">
+                                Nie pamiętasz hasła?
+                            </Button>
+                        </Form>
                     </div>
-                    <Modal show={this.state.modalLoadingMessage} id="container-spinner-modal-register-request" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
-                        <Spinner animation="grow" variant="light" id="spinner-modal-register-request"/>
-                    </Modal>
-                    <Modal show={this.state.modalFailedShow} size="lg" aria-labelledby="contained-modal-title-vcenter" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
-                        <Modal.Header style={{color: "#de473c", backgroundColor: "rgba(222, 71, 60, 0.15)"}}>
-                            <Modal.Title id="contained-modal-title-vcenter">
-                                Błąd logowania!
-                            </Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body style={{textAlign: "center"}}>
-                            <i className="fas fa-exclamation fa-5x" id="successIconModal" style={{color: "#de473c"}}></i>
-                            <p style={{color: "#444"}}>
-                                Wprowadzono błedny login lub hasło. Spróbuj ponownie.
-                            </p>
-                        </Modal.Body>
-                        <Modal.Footer>
-                            <Button variant="link" className="modal-close-btn" onClick={this.closeModal.bind(this)}>Zamknij</Button>
-                        </Modal.Footer>
-                    </Modal>
-                    <Modal show={this.state.modalUnconfirmed} size="lg" aria-labelledby="contained-modal-title-vcenter" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
-                        <Modal.Header style={{color: "#31b4cb", backgroundColor: "rgba(49, 180, 203, 0.15)"}}>
-                            <Modal.Title id="contained-modal-title-vcenter">
-                                Konto nie zostało potwierdzone.
-                            </Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body style={{textAlign: "center"}}>
-                            <i className="fas fa-exclamation fa-5x" id="successIconModal" style={{color: "#31b4cb"}}></i>
-                            <p style={{color: "#444"}}>
-                                <b>Potwerdz</b> swoje konto aby móc się zalogować. <br />
-                                Jeśli Twój link aktywacyjny <b>stracił ważność</b>, kliknij przycisk poniżej aby <b>wygenerować</b> nowy.
-                            </p>
-                        </Modal.Body>
-                        <Modal.Footer style={{display: this.state.reSendLinkSuccess}}>
-                            <Modal.Body style={{textAlign: "center"}}>
-                                <i className="fas fa-check fa-5x" id="successIconModal"></i>
-                                <p style={{color: "#444"}}>
-                                    <b>Nowy</b> link aktywacyjny został <b>wysłany</b> na Twój adres email. Będzie <b>ważny</b> przez kolejne <b>30 min</b>.
-                                    <br /><b>Pozdrawiamy ePortfolio team!</b>
-                                </p>
-                            </Modal.Body>
-                        </Modal.Footer>
-                        <Modal.Footer style={{display: this.state.reSendLinkFailed}}>
-                            <Modal.Body style={{textAlign: "center"}}>
-                                <i className="fas fa-exclamation fa-5x" id="successIconModal" style={{color: "#de473c"}}></i>
-                                <p style={{color: "#444"}}>
-                                    Z nieznanych powodów <b>nie udało</b> się wysłać nowego linku. Prosimy spróbować <b>później</b>.
-                                    <br /><b>Pozdrawiamy Zespół ePortfolio</b>
-                                </p>
-                            </Modal.Body>
-                        </Modal.Footer>
-                        <Modal.Footer>
-                            <Button variant="link" className="modal-close-btn" onClick={this.closeModal.bind(this)}>Zamknij</Button>
-                            <Button className="resend-link-button" onClick={this.reSendConfirmationLink.bind(this)}>Wyslij link</Button>
-                            <Spinner style={{display: this.state.reSendLinkSpinner}} id="resend-link-spinner" animation="border" variant="primary" />
-                        </Modal.Footer>
-                    </Modal>
-                    <Modal show={this.state.redirectExpired} size="lg" aria-labelledby="contained-modal-title-vcenter" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
-                        <Modal.Header style={{color: "#de473c", backgroundColor: "rgba(222, 71, 60, 0.15)"}}>
-                            <Modal.Title id="contained-modal-title-vcenter">
-                                Sesja wygasła!
-                            </Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body style={{textAlign: "center"}}>
-                            <i className="fas fa-exclamation fa-5x" id="successIconModal" style={{color: "#de473c"}}></i>
-                            <p style={{color: "#444"}}>
-                                Twoja sesja wygasła. Zaloguj się ponownie aby wejść na swoje konto.
-                            </p>
-                        </Modal.Body>
-                        <Modal.Footer>
-                            <Button variant="link" className="modal-close-btn" onClick={this.closeModal.bind(this)}>Zamknij</Button>
-                        </Modal.Footer>
-                    </Modal>
-                    <Modal show={this.state.redirectBad_token} size="lg" aria-labelledby="contained-modal-title-vcenter" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
-                        <Modal.Header style={{color: "#de473c", backgroundColor: "rgba(222, 71, 60, 0.15)"}}>
-                            <Modal.Title id="contained-modal-title-vcenter">
-                                Brak autoryzacji!
-                            </Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body style={{textAlign: "center"}}>
-                            <i className="fas fa-exclamation fa-5x" id="successIconModal" style={{color: "#de473c"}}></i>
-                            <p style={{color: "#444"}}>
-                                Zaloguj się aby móc wejść do serwisu.
-                            </p>
-                        </Modal.Body>
-                        <Modal.Footer>
-                            <Button variant="link" className="modal-close-btn" onClick={this.closeModal.bind(this)}>Zamknij</Button>
-                        </Modal.Footer>
-                    </Modal>
                 </div>
-            </>
+                <Modal show={this.state.modalLoadingMessage} id="container-spinner-modal-register-request" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
+                    <Spinner animation="grow" variant="light" id="spinner-modal-register-request"/>
+                </Modal>
+                <Modal show={this.state.modalFailedShow} size="lg" aria-labelledby="contained-modal-title-vcenter" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
+                    <Modal.Header style={{color: "#de473c", backgroundColor: "rgba(222, 71, 60, 0.15)"}}>
+                        <Modal.Title id="contained-modal-title-vcenter">
+                            Błąd logowania!
+                        </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body style={{textAlign: "center"}}>
+                        <i className="fas fa-exclamation fa-5x" id="successIconModal" style={{color: "#de473c"}}></i>
+                        <p style={{color: "#444"}}>
+                            Wprowadzono błedny login lub hasło. Spróbuj ponownie.
+                        </p>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="link" className="modal-close-btn" onClick={this.closeModal.bind(this)}>Zamknij</Button>
+                    </Modal.Footer>
+                </Modal>
+                <Modal show={this.state.modalUnconfirmed} size="lg" aria-labelledby="contained-modal-title-vcenter" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
+                    <Modal.Header style={{color: "#31b4cb", backgroundColor: "rgba(49, 180, 203, 0.15)"}}>
+                        <Modal.Title id="contained-modal-title-vcenter">
+                            Konto nie zostało potwierdzone.
+                        </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body style={{textAlign: "center"}}>
+                        <i className="fas fa-exclamation fa-5x" id="successIconModal" style={{color: "#31b4cb"}}></i>
+                        <p style={{color: "#444"}}>
+                            <b>Potwerdz</b> swoje konto aby móc się zalogować. <br />
+                            Jeśli Twój link aktywacyjny <b>stracił ważność</b>, kliknij przycisk poniżej aby <b>wygenerować</b> nowy.
+                        </p>
+                    </Modal.Body>
+                    <Modal.Footer style={{display: this.state.reSendLinkSuccess}}>
+                        <Modal.Body style={{textAlign: "center"}}>
+                            <i className="fas fa-check fa-5x" id="successIconModal"></i>
+                            <p style={{color: "#444"}}>
+                                <b>Nowy</b> link aktywacyjny został <b>wysłany</b> na Twój adres email. Będzie <b>ważny</b> przez kolejne <b>30 min</b>.
+                                <br /><b>Pozdrawiamy ePortfolio team!</b>
+                            </p>
+                        </Modal.Body>
+                    </Modal.Footer>
+                    <Modal.Footer style={{display: this.state.reSendLinkFailed}}>
+                        <Modal.Body style={{textAlign: "center"}}>
+                            <i className="fas fa-exclamation fa-5x" id="successIconModal" style={{color: "#de473c"}}></i>
+                            <p style={{color: "#444"}}>
+                                Z nieznanych powodów <b>nie udało</b> się wysłać nowego linku. Prosimy spróbować <b>później</b>.
+                                <br /><b>Pozdrawiamy Zespół ePortfolio</b>
+                            </p>
+                        </Modal.Body>
+                    </Modal.Footer>
+                    <Modal.Footer>
+                        <Button variant="link" className="modal-close-btn" onClick={this.closeModal.bind(this)}>Zamknij</Button>
+                        <Button className="resend-link-button" onClick={this.reSendConfirmationLink.bind(this)}>Wyslij link</Button>
+                        <Spinner style={{display: this.state.reSendLinkSpinner}} id="resend-link-spinner" animation="border" variant="primary" />
+                    </Modal.Footer>
+                </Modal>
+                <Modal show={this.state.redirectExpired} size="lg" aria-labelledby="contained-modal-title-vcenter" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
+                    <Modal.Header style={{color: "#de473c", backgroundColor: "rgba(222, 71, 60, 0.15)"}}>
+                        <Modal.Title id="contained-modal-title-vcenter">
+                            Sesja wygasła!
+                        </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body style={{textAlign: "center"}}>
+                        <i className="fas fa-exclamation fa-5x" id="successIconModal" style={{color: "#de473c"}}></i>
+                        <p style={{color: "#444"}}>
+                            Twoja sesja wygasła. Zaloguj się ponownie aby wejść na swoje konto.
+                        </p>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="link" className="modal-close-btn" onClick={this.closeModal.bind(this)}>Zamknij</Button>
+                    </Modal.Footer>
+                </Modal>
+                <Modal show={this.state.redirectBad_token} size="lg" aria-labelledby="contained-modal-title-vcenter" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
+                    <Modal.Header style={{color: "#de473c", backgroundColor: "rgba(222, 71, 60, 0.15)"}}>
+                        <Modal.Title id="contained-modal-title-vcenter">
+                            Brak autoryzacji!
+                        </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body style={{textAlign: "center"}}>
+                        <i className="fas fa-exclamation fa-5x" id="successIconModal" style={{color: "#de473c"}}></i>
+                        <p style={{color: "#444"}}>
+                            Zaloguj się aby móc wejść do serwisu.
+                        </p>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="link" className="modal-close-btn" onClick={this.closeModal.bind(this)}>Zamknij</Button>
+                    </Modal.Footer>
+                </Modal>
+            </div>
         )
     }
 }

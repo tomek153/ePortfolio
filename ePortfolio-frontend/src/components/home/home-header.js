@@ -11,24 +11,17 @@ import LogoImage from '../../images/logo.png';
 class HomeHeader extends Component {
 
     redirectAnimation(href) {
-        const helper = document.querySelector(".fade-out-helper");
         const nav = document.querySelector(".navbar-my");
-        const description = document.querySelector(".home-description-my");
-        const carousel = document.querySelector(".slider-container-my");
+        const form = document.querySelector(".home-info-container");
 
         nav.classList.remove("animate-nav-in");
         nav.classList.add("animate-nav-out");
-        description.classList.remove("animate-left-content");
-        description.classList.add("animate-left-out-content");
-        carousel.classList.remove("animate-right-carousel");
-        carousel.classList.add("animate-right-out-carousel");
+        form.classList.remove("w3-animate-right-home-container");
+        form.classList.add("w3-animate-left-home-container");
 
         setTimeout(function() {
             nav.style = "display: none";
-            description.style = "display: none";
-            carousel.style = "display: none";
-            helper.style = "display: block";
-            helper.classList.add("fade-in");
+            form.style = "display: none";
             
             setTimeout(function() {
                 window.location.href = href;
@@ -55,10 +48,10 @@ class HomeHeader extends Component {
                     <Navbar.Brand href="/" className="mr-auto">
                         <Image src={LogoImage} fluid className="header-image-logo"/>
                     </Navbar.Brand>
-                    <Button variant="link" className="header-btn-my header-btn-register-my" onClick={this.contactRedirect.bind(this)} style={{color: "#555", marginRight: "10px"}}>Kontakt</Button>
-                    <div style={{width: "50px", height: "50px", boxShadow: "-8px 0px 8px -8px rgba(0,0,0,0.75)"}}></div>
+                    <Button variant="link" className="header-btn-my header-home-links" onClick={this.contactRedirect.bind(this)}>Kontakt</Button>
+                    <div className="header-divider"></div>
                     <Form inline>
-                        <FormControl type="text" placeholder="Search" className="mr-sm-2" />
+                        <FormControl type="text" placeholder="Search" className="mr-sm-2 search-header" style={{backgroundColor: "rgba(248, 248, 250, 0.3)", color: "#fff"}}/>
                         <Button variant="outline-primary" className="header-btn-my header-btn-login-my" onClick={this.loginRedirect.bind(this)}>Zaloguj</Button>
                         <Button variant="link" className="header-btn-my header-btn-register-my" onClick={this.registerRedirect.bind(this)} style={{marginRight: "0"}}>Rejestracja</Button>
                     </Form>

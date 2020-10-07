@@ -11,7 +11,6 @@ import Spinner from 'react-bootstrap/Spinner';
 import superagent from 'superagent';
 
 import ImageLogo from '../../images/logo.png';
-import BackgroundLogo from '../../images/home-background-revert.png';
 import PageLoading from '../page-loading';
 
 class LoginContent extends Component {
@@ -39,7 +38,7 @@ class LoginContent extends Component {
     }
 
     checkFormDataValid() {
-        if (this.state.formControll.firstName && 
+        if (this.state.formControll.firstName &&
             this.state.formControll.lastName &&
             this.state.formControll.email &&
             this.state.formControll.password &&
@@ -63,7 +62,7 @@ class LoginContent extends Component {
         let messageLong = '<sub>Max 15 znaków.</sub>';
         let messageRegexViolation = '<sub>Podano niedozwolony znak.</sub>';
 
-        
+
         this.checkRegex(event.target.value, regex, messageRegexViolation, element,
             2, 15, length, messageShort, messageLong, "firstName");
     }
@@ -77,7 +76,7 @@ class LoginContent extends Component {
         let messageLong = '<sub>Max 20 znaków.</sub>';
         let messageRegexViolation = '<sub>Podano niedozwolony znak.</sub>';
 
-        
+
         this.checkRegex(event.target.value, regex, messageRegexViolation, element,
             2, 20, length, messageShort, messageLong, "lastName");
     }
@@ -109,7 +108,7 @@ class LoginContent extends Component {
             this.state.formControll.firstName = bool;
         else
             this.state.formControll.lastName = bool;
-        
+
         this.checkFormDataValid();
     }
 
@@ -129,7 +128,7 @@ class LoginContent extends Component {
     }
     checkEmailRegex(text, regex, messageRegexViolation, element, from, to, length, messageShort, messageLong) {
         let wronCharRegex = /[^a-zA-Z0-9@_.-]/;
-        
+
         if (text.match(regex) != null) {
             if (text.match(wronCharRegex) != null) {
                 element.style.display = "block";
@@ -173,7 +172,7 @@ class LoginContent extends Component {
                     element.style.display = "block";
                     this.state.formControll.password = false;
                     this.checkFormDataValid();
-                } 
+                }
             } else {
                 element.style.display = "block";
                 this.state.formControll.password = false;
@@ -196,14 +195,6 @@ class LoginContent extends Component {
             element.style.display = "block";
             x.type = "password";
         }
-    }
-
-    changeBackground() {
-        var root = document.getElementById("root");
-        root.style.backgroundPosition = "right";
-        root.style.backgroundImage = "url("+BackgroundLogo+")";
-
-        document.getElementsByClassName("login-button-my")[0].disabled = true;
     }
 
     changePasswordInputStyleIn() {
@@ -270,52 +261,48 @@ class LoginContent extends Component {
 
     componentDidMount() {
         const loader = document.querySelector(".page-loading");
+        document.querySelector(".login-button-my.register-button-my").disabled = true;
         window.onload = function() {
             this.setTimeout(function() {
                 loader.classList.add("hidden");
                 this.setTimeout(function() {
-                    const regTab = document.querySelector(".register-container-my");
-                    regTab.style = "display: block";
+                    document.querySelector(".login-form-my").style = "display: block";
+                    document.querySelector("#login-back-button").style = "display: block";
+                    document.querySelector(".login-header-container").style = "display: block";
                 }, 200);
             }, 600);
         }
     }
 
-    homeRedirect() {
-        const helper = document.querySelector(".fade-out-helper");
-        const regTab = document.querySelector(".box-container-shadow");
+    userRedirect(url) {
+        const form = document.querySelector(".login-form-my");
+        const backButton = document.querySelector("#login-back-button");
+        const header = document.querySelector(".login-header-container");
 
-        regTab.classList.remove("w3-animate-left-registration");
-        regTab.classList.add("w3-animate-left-out-registration");
-        
+        form.classList.remove("w3-animate-right-login-container");
+        form.classList.add("w3-animate-left-login-container");
+        backButton.classList.add("w3-animate-left-login-back-button");
+        backButton.classList.add("w3-animate-right-login-back-button");
+        header.classList.add("w3-animate-left-login-header");
+        header.classList.add("w3-animate-right-login-header");
+
         setTimeout(function() {
-            regTab.style = "display: none";
-            helper.style = "display: block";
-            helper.classList.add("fade-in");
+            form.style = "display: none";
+            backButton.style = "display: none";
+            header.style = "display: none";
 
-            
             setTimeout(function() {
-                window.location.href = "/";
+                window.location.href = url;
             }, 200);
         }, 600);
     }
 
+    homeRedirect() {
+        this.userRedirect("/");
+    }
+
     loginRedirect() {
-        const helper = document.querySelector(".fade-out-helper");
-        const regTab = document.querySelector(".box-container-shadow");
-
-        regTab.classList.remove("w3-animate-left-registration");
-        regTab.classList.add("w3-animate-left-out-registration");
-
-        setTimeout(function() {
-            regTab.style = "display: none";
-            helper.style = "display: block";
-            helper.classList.add("fade-in");
-            
-            setTimeout(function() {
-                window.location.href = "/logowanie";
-            }, 200);
-        }, 600);
+        this.userRedirect("/logowanie");
     }
 
     render() {
@@ -336,69 +323,67 @@ class LoginContent extends Component {
           );
 
         return (
-            <>
-                <div className="fade-out-helper"></div>
+            <div class="background-image-container">
                 <PageLoading />
-                <div className="register-container-my" onLoad={this.changeBackground}>
-                    <div className="box-container-shadow w3-animate-left-registration">
-                        <i className="fas fa-arrow-left home-link-register" onClick={this.homeRedirect.bind(this)}></i>
-                        <img 
-                            className="register-logo-my"
-                            src={ImageLogo}
-                        />
-                        <div className="register-form-my">
-                            <Form>
-                                <h3>Witaj!</h3>
-                                <p>Utworzenie konta zajmie Ci tylko <b>kilka sekund</b>.</p>
-                                <hr />
-                                <Form.Row>
-                                    <Form.Group as={Col} controlId="formGridFirstName">
-                                        <Form.Label>Imię</Form.Label><span id="form-value-alert-name" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
-                                        <Form.Control placeholder="Wprowadź imię..." onChange={this.handleFirstNameChanged.bind(this)}/>
-                                    </Form.Group>
-
-                                    <Form.Group as={Col} controlId="formGridLastName">
-                                        <Form.Label>Nazwisko</Form.Label><span id="form-value-alert-lastName" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
-                                        <Form.Control placeholder="Wprowadź nazwisko..." onChange={this.handleLastNameChanged.bind(this)}/>
-                                    </Form.Group>
-                                </Form.Row>
-
-                                <Form.Row>
-                                    <Form.Group as={Col} controlId="formGridEmail">
-                                        <Form.Label>Email</Form.Label><span id="form-value-alert-email" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
-                                        <Form.Control placeholder="Wprowadź email..." onChange={this.handleEmailChanged.bind(this)}/>
-                                    </Form.Group>
-
-                                    <Form.Group as={Col} controlId="formGridPassword">
-                                        <Form.Label>Hasło</Form.Label>
-                                        <span id="form-value-alert-password" className="form-value-alert">
-                                            <sub>Podano niepoprawne hasło. </sub>
-                                            <OverlayTrigger trigger="hover" placement="right" overlay={popover}>
-                                                <sub variant="success" id="register-password-tooltip"><i className="fas fa-question-circle"></i></sub>
-                                            </OverlayTrigger>
-                                        </span>
-                                        <InputGroup>
-                                            <Form.Control type="password" placeholder="Wprowadź hasło..." onChange={this.handlePasswordChanged.bind(this)} onFocus={this.changePasswordInputStyleIn} onBlur={this.changePasswordInputStyleOut}/>
-                                            <InputGroup.Prepend>
-                                                <InputGroup.Text id="inputGroupPrepend" onClick={this.showPassword}><i className="fas fa-eye w3-animate-opacity"></i><i className="fas fa-eye-slash w3-animate-opacity"></i></InputGroup.Text>
-                                            </InputGroup.Prepend>
-                                        </InputGroup>
-                                    </Form.Group>
-                                </Form.Row>
-                                <Form.Group controlId="formBasicCheckbox">
-                                    <Form.Check>
-                                        <Form.Check.Input type="checkbox" onClick={this.checkRegulations.bind(this)}/>
-                                        <Form.Check.Label>Zapoznałem się z <a id="checkbox-regulations-link" href="/regulamin" target="_blank">regulaminem</a> serwisu, oraz akceptuje jego warunki.</Form.Check.Label>
-                                    </Form.Check>
+                <div className="background-opcaity-container">
+                    <div className="login-header-container w3-animate-left-login-header"><span className="gradient-text">Rejestracja</span></div>
+                    <i className="fas fa-arrow-left home-link-register w3-animate-left-login-back-button" id="login-back-button" onClick={this.homeRedirect.bind(this)}></i>
+                    <img
+                        className="login-logo-my"
+                        src={ImageLogo}
+                    />
+                    <div className="login-form-my w3-animate-right-login-container register-form-my">
+                        <Form>
+                            <h3 className="gradient-text">Witaj!</h3>
+                            <p>Utworzenie konta zajmie Ci tylko <b>kilka sekund</b>.</p>
+                            <hr />
+                            <Form.Row>
+                                <Form.Group as={Col} controlId="formGridFirstName">
+                                    <Form.Label>Imię</Form.Label><span id="form-value-alert-name" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
+                                    <Form.Control placeholder="Wprowadź imię..." onChange={this.handleFirstNameChanged.bind(this)}/>
                                 </Form.Group>
 
-                                <Button onClick={this.submitFormAndSend.bind(this)} type="button" variant="primary" className="login-button-my" style={{float: 'right'}} >
-                                    Utwórz konto
-                                </Button>
+                                <Form.Group as={Col} controlId="formGridLastName">
+                                    <Form.Label>Nazwisko</Form.Label><span id="form-value-alert-lastName" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
+                                    <Form.Control placeholder="Wprowadź nazwisko..." onChange={this.handleLastNameChanged.bind(this)}/>
+                                </Form.Group>
+                            </Form.Row>
 
-                                <p className="register-have-account">Posiadasz już konto? <a onClick={this.loginRedirect.bind(this)} className="register-login-btn">Zaloguj się</a></p>
-                            </Form>
-                        </div>
+                            <Form.Row>
+                                <Form.Group as={Col} controlId="formGridEmail">
+                                    <Form.Label>Email</Form.Label><span id="form-value-alert-email" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
+                                    <Form.Control placeholder="Wprowadź email..." onChange={this.handleEmailChanged.bind(this)}/>
+                                </Form.Group>
+
+                                <Form.Group as={Col} controlId="formGridPassword">
+                                    <Form.Label>Hasło</Form.Label>
+                                    <span id="form-value-alert-password" className="form-value-alert">
+                                        <sub>Podano niepoprawne hasło. </sub>
+                                        <OverlayTrigger trigger="hover" placement="right" overlay={popover}>
+                                            <sub variant="success" id="register-password-tooltip"><i className="fas fa-question-circle"></i></sub>
+                                        </OverlayTrigger>
+                                    </span>
+                                    <InputGroup>
+                                        <Form.Control type="password" placeholder="Wprowadź hasło..." onChange={this.handlePasswordChanged.bind(this)} onFocus={this.changePasswordInputStyleIn} onBlur={this.changePasswordInputStyleOut}/>
+                                        <InputGroup.Prepend>
+                                            <InputGroup.Text id="inputGroupPrepend" onClick={this.showPassword}><i className="fas fa-eye w3-animate-opacity"></i><i className="fas fa-eye-slash w3-animate-opacity"></i></InputGroup.Text>
+                                        </InputGroup.Prepend>
+                                    </InputGroup>
+                                </Form.Group>
+                            </Form.Row>
+                            <Form.Group controlId="formBasicCheckbox">
+                                <Form.Check>
+                                    <Form.Check.Input type="checkbox" onClick={this.checkRegulations.bind(this)}/>
+                                    <Form.Check.Label>Zapoznałem się z <a id="checkbox-regulations-link" href="/regulamin" target="_blank">regulaminem</a> serwisu, oraz akceptuje jego warunki.</Form.Check.Label>
+                                </Form.Check>
+                            </Form.Group>
+
+                            <Button onClick={this.submitFormAndSend.bind(this)} type="button" variant="primary" className="login-button-my register-button-my" style={{float: 'right'}}>
+                                Utwórz konto
+                            </Button>
+
+                            <p className="register-have-account">Posiadasz już konto? <a onClick={this.loginRedirect.bind(this)} className="register-login-btn">Zaloguj się</a></p>
+                        </Form>
                     </div>
                     <Modal show={this.state.modalSuccesShow} size="lg" aria-labelledby="contained-modal-title-vcenter"  style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
                         <Modal.Header style={{color: "#31b4cb", backgroundColor: "rgba(49, 180, 203, 0.15)"}}>
@@ -437,7 +422,7 @@ class LoginContent extends Component {
                         <Spinner animation="grow" variant="light" id="spinner-modal-register-request"/>
                     </Modal>
                 </div>
-            </>
+            </div>
         )
     }
 }

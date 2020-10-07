@@ -48,6 +48,31 @@ public class UserController {
         }
     }
 
+    @RequestMapping (value = "/api/reset-password", method = POST)
+    public void resetPasswordRequest (@Valid @NonNull @RequestBody User user, HttpServletResponse response) throws IOException {
+        int status = userService.resetPasswordRequest(user);
+
+        if (status == 0) {
+            System.out.println ("Blad! User nie istnieje!");
+            response.sendError (405, "User_does_not_exist");
+        } else {
+            System.out.println("Mail wysłany.");
+        }
+    }
+
+    @RequestMapping (value = "/api/change-password", method = POST)
+    public void changePasswordForUser(@Valid @NonNull @RequestBody User user, HttpServletResponse response) throws IOException {
+        System.out.println ("Zmiana hasła");
+        int status = userService.changePassword(user);
+
+        if (status == 0) {
+            System.out.println ("Hasło nie zostało zmienione!");
+            response.sendError (405, "User_does_not_exist");
+        } else {
+            System.out.println("Password_changed");
+        }
+    }
+
     @RequestMapping (value = "/api/users", method = GET)
     @ResponseBody
     public List<User> getUsers () {
@@ -103,16 +128,6 @@ public class UserController {
         out.flush();
     }
 
-    @RequestMapping (value = "/api/users/{email}", method = DELETE)
-    public void deleteUser (@PathVariable ("email") String email) {
-        userService.deleteUser (email);
-    }
-
-    @RequestMapping (value = "/api/users/{email}", method = PUT)
-    public void updateUser (@PathVariable ("email") String email, @Valid @NonNull @RequestBody User user) {
-        userService.updateUser (email, user);
-    }
-
     @RequestMapping (value = "/api/login", method = POST)
     public void userLogin (@RequestBody Map body, HttpServletResponse response, HttpServletRequest request) throws IOException{
         int status = login.authenticate(body.get("email").toString(), body.get("password").toString());
@@ -141,4 +156,35 @@ public class UserController {
         out.print(responseString);
         out.flush();
     }
+
+    @RequestMapping (value = "/api/users/{email}", method = PUT)
+    public void updateUser (@PathVariable ("email") String email, @Valid @RequestBody User user, HttpServletResponse response) throws IOException {
+        int status = userService.updateUser (email, user);
+        if (status == 0) {
+            System.out.println ("Błąd aktualizacji użytkownika!");
+            response.sendError (405, "Update error");
+        } else if(status == -1) {
+            System.out.println ("Błąd aktualizacji użytkownika! - Email");
+            response.sendError (405, "Update error - email");
+        } else {
+            System.out.println("Aktualizacja użytkownika pomyślna.");
+        }
+    }
+
+    @RequestMapping (value = "/api/users/delete/{uuid}", method = GET)
+    public void deleteUser (@Valid @NonNull @PathVariable("uuid") UUID id, HttpServletResponse response) throws IOException {
+        int status = userService.deleteUser(id);
+        if (status == 0) {
+            System.out.println ("Błąd aktualizacji użytkownika!");
+            response.sendError (405, "Delete error");
+        } else if(status == -1) {
+            System.out.println ("Błąd aktualizacji użytkownika! - Password");
+            response.sendError (405, "Delete error - password");
+        } else {
+            System.out.println("Usunięcie użytkownika pomyślne.");
+        }
+    }
+
+
 }
+

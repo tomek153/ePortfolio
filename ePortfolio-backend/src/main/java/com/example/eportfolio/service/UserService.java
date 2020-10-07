@@ -26,14 +26,21 @@ public class UserService {
         return userDao.getUsers();
     }
 
+    public int changePassword(User user){
+        return userDao.changePassword(user);
+    }
+
+    public int resetPasswordRequest(User user){
+        return userDao.resetPasswordRequest(user);
+    }
     public Optional<User> getUserByEmail(String email) {
         return userDao.getUserByEmail(email);
     }
 
     public Optional<User> getUserByID(UUID id) { return userDao.getUserByID(id); }
 
-    public int deleteUser(String email) {
-        return userDao.deleteUser(email);
+    public int deleteUser(UUID id) {
+        return userDao.deleteUser(id);
     }
 
     public int updateUser(String email, User user) {

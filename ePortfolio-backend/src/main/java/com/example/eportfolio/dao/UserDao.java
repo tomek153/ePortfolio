@@ -16,11 +16,17 @@ public interface UserDao {
 
     List<User> getUsers();
 
+    int changePassword(User user);
+
     Optional<User> getUserByEmail(String email);
+
+
+
+    int resetPasswordRequest(User user);
 
     Optional<User> getUserByID(UUID id);
 
-    int deleteUser(String email);
+    int deleteUser(UUID id);
 
     int updateUser(String email, User user);
 

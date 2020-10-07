@@ -4,6 +4,7 @@ import com.example.eportfolio.smtp.EmailService;
 import com.example.eportfolio.smtp.MailRequestModel;
 import com.example.eportfolio.smtp.MailResponseModel;
 import com.example.eportfolio.smtp.LinkMailRequestModel;
+import com.example.eportfolio.model.ContactMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,5 +40,19 @@ public class EmailController {
     @RequestMapping(value = "/email/check-confirmation-link", method = POST)
     public MailResponseModel checkConfirmationLink(@RequestBody LinkMailRequestModel request) {
         return service.checkConfirmationLink(request);
+    }
+
+    @RequestMapping(value = "/email/check-reset-password-link", method = POST)
+    public MailResponseModel checkResetPasswordLink(@RequestBody LinkMailRequestModel request) {
+        return service.checkResetPasswordLink(request);
+    }
+
+    @RequestMapping(value = "/email/contact-message", method = POST)
+    public MailResponseModel sendContactMessageEmail(@RequestBody ContactMessage request) {
+        Map<String, Object> model = new HashMap<>();
+        model.put("Name", request.getFirstName());
+        model.put("email", request.getEmail());
+        model.put("message", request.getMessage());
+        return service.sendContactMessageEmail(request, model);
     }
 }

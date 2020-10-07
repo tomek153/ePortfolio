@@ -1,13 +1,14 @@
 /* START | CSS CODE: USER_PROFILE | AUTHOR: MICHAŁ STANCELEWSKI */
 
 .disabled{ 
-    cursor: not-allowed;
-    pointer-events: auto;
+    cursor: not-allowed !important;
+    pointer-events: auto !important;
 }
 .user-profile-error-box-outter{
     padding: 0px 20px;
     display: none;
 }
+
 .user-profile-error-box{
     border: 2px solid #ff2222;
     padding: 15px 20px 2px 20px;
@@ -84,8 +85,85 @@
     padding: 0px 25px 0px 25px;
 }
 
+.user-bio-submit,
+.user-bio-exit{
+    padding: 5px 40px 10px 40px;
+}
+
 .user-profile-description-my .user-bio-data{
     font-size: 17px;
+}
+
+.update-button:hover{
+    background-color: #31b4cb;
+    border: 1px solid #31b4cb;
+}
+
+.update-button{
+    background-color: #20a3bc;
+    border: 1px solid #20a3bc;
+    float: left;
+    min-width: 85px;
+}
+
+.exit-button:hover{
+    background-color: #eb4a4a;
+    border: 1px solid #eb4a4a;
+    color: #ffffff;
+}
+
+.exit-button{
+    background-color: rgba(255, 255, 255, 0);
+    border: 1px solid #eb4a4a;
+    color: #eb4a4a;
+    float: left;
+    min-width: 85px;
+}
+
+.user-profile-description-my .form-group.col{
+    padding-left: 0 !important;
+    padding-right: 0 !important; 
+}
+
+.user-bio-edit-message{
+    color: #fff;
+    font-size: 14px;
+}
+
+.user-bio-edit-message .message-success,
+.user-bio-edit-message .message-failure{
+    border-radius: 8px;
+}
+
+.user-bio-edit-message .message-success p,
+.user-bio-edit-message .message-failure p{
+    padding: 15px 10px 15px 10px;
+}
+
+.user-bio-edit-message .message-success{
+    background-color: rgb(7, 173, 7);
+}
+.user-bio-edit-message .message-failure{
+    background-color: #dd3d3d;
+}
+
+.user-bio-delete{
+    float: right;
+}
+
+.user-bio-delete-link{
+    color: #eb4a4a;
+    font-size: 28px;
+}
+
+.user-bio-delete-link:hover{
+    color: #3a3a3a;
+}
+
+.user-delete-info p{
+    text-align: justify;
+    font-size: 14px;
+    padding-bottom: 20px;
 }
 
 /* END | CSS CODE: USER_PROFILE | AUTHOR: MICHAŁ STANCELEWSKI */

@@ -78,7 +78,7 @@ class LoginContent extends Component {
         const form = document.querySelector(".login-form-my");
         const backButton = document.querySelector("#login-back-button");
         const header = document.querySelector(".login-header-container");
-        
+
         form.classList.remove("w3-animate-right-login-container");
         form.classList.add("w3-animate-left-login-container");
         backButton.classList.add("w3-animate-left-login-back-button");
@@ -90,7 +90,7 @@ class LoginContent extends Component {
             form.style = "display: none";
             backButton.style = "display: none";
             header.style = "display: none";
-        
+
             setTimeout(function() {
                 window.location.href = url;
             }, 200);
@@ -130,7 +130,7 @@ class LoginContent extends Component {
     }
     checkEmailRegex(text, regex, messageRegexViolation, element, from, to, length, messageShort, messageLong) {
         let wronCharRegex = /[^a-zA-Z0-9@_.-]/;
-        
+
         if (text.match(regex) != null) {
             if (text.match(wronCharRegex) != null) {
                 element.style.display = "block";
@@ -180,7 +180,7 @@ class LoginContent extends Component {
                     element.style.display = "block";
                     this.state.formControll.password = false;
                     this.checkFormDataValid();
-                } 
+                }
             } else {
                 element.style.display = "block";
                 this.state.formControll.password = false;
@@ -224,10 +224,10 @@ class LoginContent extends Component {
         myHeaders.append('Content-Type', 'application/json');
 
         const request = new Request(
-            'http://localhost:8080/api/login', 
+            'http://localhost:8080/api/login',
             {
-                method: 'POST', 
-                headers: myHeaders, 
+                method: 'POST',
+                headers: myHeaders,
                 body: JSON.stringify(this.state.form)
             }
         );
@@ -319,7 +319,7 @@ class LoginContent extends Component {
                 <div className="background-opcaity-container">
                     <div className="login-header-container w3-animate-left-login-header"><span className="gradient-text">Logowanie</span></div>
                     <i className="fas fa-arrow-left home-link-register w3-animate-left-login-back-button" id="login-back-button" onClick={this.homeRedirect.bind(this)}></i>
-                    <img 
+                    <img
                         className="login-logo-my"
                         src={ImageLogo}
                     />

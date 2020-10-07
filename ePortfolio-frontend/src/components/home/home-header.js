@@ -22,7 +22,7 @@ class HomeHeader extends Component {
         setTimeout(function() {
             nav.style = "display: none";
             form.style = "display: none";
-            
+
             setTimeout(function() {
                 window.location.href = href;
             }, 200);
@@ -36,7 +36,7 @@ class HomeHeader extends Component {
     loginRedirect() {
         this.redirectAnimation("/logowanie");
     }
-    
+
     contactRedirect() {
         this.redirectAnimation("/kontakt");
     }

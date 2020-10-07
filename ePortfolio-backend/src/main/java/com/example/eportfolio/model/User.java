@@ -13,7 +13,6 @@ public class User {
     private final String lastName;
     @NotBlank
     private final String email;
-    @NotBlank
     private final String password;
     private final String role;
     private final boolean confirmed;

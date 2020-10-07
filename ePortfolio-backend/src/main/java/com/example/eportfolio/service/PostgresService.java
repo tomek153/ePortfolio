@@ -101,6 +101,101 @@ public class PostgresService implements UserDao, UserBioDao {
             return 0;
     }
 
+    public int changePassword(User user){
+
+        final String sqlFirst = "SELECT * FROM users WHERE id ='" + user.getId() + "'";
+        String sqlChangePassword;
+        String emailKey;
+        String idKey;
+
+        List<User> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
+            return new User(
+                    UUID.fromString(resultSet.getString("id")),
+                    resultSet.getString("first_name"),
+                    resultSet.getString("last_name"),
+                    resultSet.getString("email"),
+                    resultSet.getString("password"),
+                    resultSet.getString("role"),
+                    resultSet.getBoolean("confirmed")
+            );
+        });
+
+        if (listFind.isEmpty()) {
+            System.out.println("User");
+            return 0;
+        } else{
+            //System.out.println(user.getId() + " =? " + listFind.get(0).getId());
+            sqlChangePassword = "UPDATE users SET password = "+
+                    "md5('"+user.getPassword()+"')"+
+                    "where id ='"+ listFind.get(0).getId() +"'";
+            jdbcTemplate.execute(sqlChangePassword);
+            jdbcTemplate.execute("UPDATE reset_password_emails SET status = true WHERE user_uuid IN('"+user.getId()+"');");
+
+        return 1;
+        }
+    }
+
+    @Override
+    public int resetPasswordRequest(User user){
+        final String sqlFirst = "SELECT * FROM users WHERE email = '"+user.getEmail()+"'";
+        String emailKey;
+        String idKey;
+
+        List<User> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
+            return new User(
+                    UUID.fromString(resultSet.getString("id")),
+                    resultSet.getString("first_name"),
+                    resultSet.getString("last_name"),
+                    resultSet.getString("email"),
+                    resultSet.getString("password"),
+                    resultSet.getString("role"),
+                    resultSet.getBoolean("confirmed")
+            );
+        });
+
+        if (listFind.isEmpty()) {
+           return 0;
+        } else
+            try {
+                final String deactivateExistingResetPasswordLinks = "UPDATE reset_password_emails SET status = true WHERE" +
+                        " user_uuid = (SELECT id FROM users WHERE email IN('" +user.getEmail()+"') limit 1)";
+                jdbcTemplate.execute(deactivateExistingResetPasswordLinks);
+
+                final String addResetPasswordEmailSQL = "INSERT INTO reset_password_emails (id, user_uuid, status) VALUES (" +
+                        "uuid_generate_v4(), " +
+                        "(SELECT id FROM users WHERE email IN('"+user.getEmail()+"')), "+
+                        "false )";
+                jdbcTemplate.execute(addResetPasswordEmailSQL);
+
+                String getEmailKey = "SELECT id FROM reset_password_emails WHERE user_uuid IN (SELECT id FROM users WHERE email = '"+user.getEmail()+"') ORDER BY time_stamp desc limit 1";
+                emailKey = jdbcTemplate.queryForObject(getEmailKey, new Object[]{}, (resultSet, i) -> {
+                    return new String (resultSet.getString("id"));
+                });
+                String getIdKey = "SELECT id FROM users WHERE email IN ('"+user.getEmail()+"')";
+                idKey = jdbcTemplate.queryForObject(getIdKey, new Object[]{}, (resultSet, i) -> {
+                    return new String (resultSet.getString("id"));
+                });
+
+                Map<String, Object> model = new HashMap<>();
+                model.put("Name", listFind.get(0).getFirstName());
+                model.put("location", "Poznań, Polska");
+                model.put( "idKey", idKey);
+                model.put( "linkKey", emailKey);
+
+                MailRequestModel request = new MailRequestModel(user.getFirstName(), user.getEmail(), "ePortfolio", "ePortfolio | Resetowanie hasła");
+                MailResponseModel response =  service.sendResetPasswordEmail(request, model);
+
+                if (response.isStatus())
+                    return 1;
+                else
+                    return 0;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.err.println("Problem na etapie wysyłania maila resetowania hasła");
+                return 0;
+            }
+    }
     @Override
     public List<User> getUsers() {
         final String sql = "SELECT * FROM users";
@@ -163,16 +258,6 @@ public class PostgresService implements UserDao, UserBioDao {
     }
 
     @Override
-    public int deleteUser(String email) {
-        return 0;
-    }
-
-    @Override
-    public int updateUser(String email, User user) {
-        return 0;
-    }
-
-    @Override
     public Optional<UserBio> getUserBioByID(UUID ID) {
         final String sql = "SELECT user_uuid, phone, address_main, address_city, address_zip, address_country, date_birth, gender FROM users_bio WHERE user_uuid = ?";
 
@@ -194,4 +279,93 @@ public class PostgresService implements UserDao, UserBioDao {
         );
         return Optional.ofNullable(userBio);
     }
+
+    @Override
+    public int updateUser(String email, User user) {
+
+        final String checkEmail = "SELECT * FROM users WHERE email = '"+user.getEmail()+"'";
+
+        List<User> listFind = jdbcTemplate.query(checkEmail, (resultSet, i) -> {
+            return new User(
+                    UUID.fromString(resultSet.getString("id")),
+                    resultSet.getString("first_name"),
+                    resultSet.getString("last_name"),
+                    resultSet.getString("email"),
+                    resultSet.getString("password"),
+                    resultSet.getString("role"),
+                    resultSet.getBoolean("confirmed")
+            );
+        });
+
+        if (listFind.isEmpty() || listFind.get(0).getId().toString().equals(user.getId().toString())) {
+
+            try {
+                final String updateUserSQL = "UPDATE users SET" +
+                        " first_name = '" + user.getFirstName() +
+                        "', last_name = '" + user.getLastName() +
+                        "', email = '" + user.getEmail()
+                        + "' WHERE id = '" + user.getId() + "';";
+
+                jdbcTemplate.execute(updateUserSQL);
+                return 1;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.err.println("Update user error.");
+                return 0;
+            }
+
+
+        } else {
+            System.out.println("Email error.");
+            return -1;
+        }
+    }
+
+    @Override
+    public int updateUserBio(UUID id, UserBio userBio) {
+
+        try {
+            final String updateUserBioSQL = "UPDATE users_bio SET" +
+                    " phone = '" + userBio.getPhone() +
+                    "', address_main = '" + userBio.getAddress_main() +
+                    "', address_city = '" + userBio.getAddress_city() +
+                    "', address_country = '" + userBio.getAddress_country() +
+                    "', address_zip = '" + userBio.getAddress_zip() +
+                    "', gender = '" + userBio.getGender() +
+                    "', date_birth = '" + userBio.getDate_birth() +
+                    "' WHERE user_uuid = '" + userBio.getUserBioId() + "';";
+
+            jdbcTemplate.execute(updateUserBioSQL);
+            return 1;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Update user error.");
+            return 0;
+        }
+    }
+
+    @Override
+    public int deleteUser(UUID id) {
+
+        final String checkUser = "SELECT * FROM users WHERE id= '"+ id +"'";
+
+            try {
+                final String deleteUserSQL = "DELETE from USERS where id='" +
+                        id +"';";
+                final String deleteUserBIOSQL = "DELETE from USERS_BIO where user_uuid='" +
+                        id +"';";
+                jdbcTemplate.execute(deleteUserSQL);
+                jdbcTemplate.execute(deleteUserBIOSQL);
+                return 1;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.err.println("delete user error");
+                return 0;
+            }
+
+    }
+
 }

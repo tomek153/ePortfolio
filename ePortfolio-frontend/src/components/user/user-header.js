@@ -41,6 +41,7 @@ class HomeHeader extends Component {
                     <Navbar.Brand href="/home" className="mr-auto">
                         <Image src={LogoImage} fluid className="header-image-logo"/>
                     </Navbar.Brand>
+                    
                     <Form inline>
                         <FormControl type="text" placeholder="Search" className="mr-sm-2" />
                         <Button variant="outline-primary" className="header-btn-my header-btn-usersettings-my" href="/moj-profil">Moje dane</Button>

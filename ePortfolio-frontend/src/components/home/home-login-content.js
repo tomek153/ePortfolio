@@ -49,7 +49,7 @@ class LoginContent extends Component {
     componentDidMount() {
         let token = localStorage.getItem("token");
         if (token != null && this.props.location.search != "?token=bad_token" && this.props.location.search != "?token=expired") {
-            this.userRedirect();
+            this.userRedirect("/moj-profil");
         } else {
             this.checkFormDataValid();
             const loader = document.querySelector(".page-loading");
@@ -245,10 +245,10 @@ class LoginContent extends Component {
                     this.setState({modalUnconfirmed: true});
                 } else if (data.message == "Authentication success.") {
                     localStorage.setItem('token', data.token);
-                    this.userRedirect("/test-user");
+                    this.userRedirect("/moj-profil");
                 } else {
                     console.log(data);
-                    alert("Uknown error.");
+                    alert("Unknown error.");
                 }
             }
         );

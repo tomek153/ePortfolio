@@ -9,6 +9,8 @@ import com.example.eportfolio.smtp.MailRequestModel;
 import com.example.eportfolio.smtp.MailResponseModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.mail.MailAuthenticationException;
+import org.springframework.mail.MailException;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -84,13 +86,17 @@ public class PostgresService implements UserDao, UserBioDao {
                 model.put( "idKey", idKey);
                 model.put( "linkKey", emailKey);
 
-                MailRequestModel request = new MailRequestModel(user.getFirstName(), user.getEmail(), "ePortfolio", "ePortfolio | Potwierdzenie rejestracji");
-                MailResponseModel response =  service.sendRegisterEmail(request, model);
-
-                if (response.isStatus())
-                    return 1;
-                else
-                    return 0;
+                try {
+                    MailRequestModel request = new MailRequestModel(user.getFirstName(), user.getEmail(), "ePortfolio", "ePortfolio | Potwierdzenie rejestracji");
+                    MailResponseModel response = service.sendRegisterEmail(request, model);
+                } catch (MailAuthenticationException mae) {
+                    mae.printStackTrace();
+                    return 3;
+                } catch (MailException me) {
+                    me.printStackTrace();
+                    return 2;
+                }
+                return 1;
 
             } catch (Exception e) {
                 e.printStackTrace();

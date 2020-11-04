@@ -229,6 +229,12 @@ class LoginContent extends Component {
         this.state.newUser.lastName = "";
         this.state.newUser.email = "";
         this.state.newUser.password = "";
+        this.state.formControll.firstName = false;
+        this.state.formControll.lastName = false;
+        this.state.formControll.email = false;
+        this.state.formControll.password = false;
+        this.state.formControll.regulations = false;
+        document.getElementsByClassName("login-button-my")[0].disabled = true;
     }
 
     submitFormAndSend(event) {
@@ -244,6 +250,7 @@ class LoginContent extends Component {
                         this.setState({modalFailedShow: true});
                     } else
                         alert("Registration failed");
+                        this.setState({modalLoadingMessage: false});
                     return;
                 } else {
                     this.clearField();

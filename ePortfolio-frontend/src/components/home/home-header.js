@@ -10,6 +10,17 @@ import LogoImage from '../../images/logo.png';
 
 class HomeHeader extends Component {
 
+    componentDidMount() {
+        var header = document.getElementsByClassName("navbar-header")[0];
+        window.onscroll = function() {
+          if (window.pageYOffset > 0) {
+            header.classList.add("navbar-header-dark");
+          } else {
+            header.classList.remove("navbar-header-dark");
+          }
+        }
+    }
+
     redirectAnimation(href) {
         const nav = document.querySelector(".navbar-my");
         const form = document.querySelector(".home-info-container");
@@ -44,21 +55,41 @@ class HomeHeader extends Component {
     render() {
         return (
             <>
-                <Navbar bg="light" variant="light" className="navbar-my">
-                    <Navbar.Brand href="/" className="mr-auto">
-                        <Image src={LogoImage} fluid className="header-image-logo"/>
-                    </Navbar.Brand>
-                    <Button variant="link" className="header-btn-my header-home-links header-btn-shadow" onClick={this.contactRedirect.bind(this)}>Kontakt</Button>
-                    <div className="header-divider"></div>
-                    <Form inline>
-                        <FormControl type="text" placeholder="Search" className="mr-sm-2 search-header" style={{backgroundColor: "rgba(248, 248, 250, 0.3)", color: "#fff"}}/>
-                        <Button variant="outline-primary" className="header-btn-my header-btn-login-my" onClick={this.loginRedirect.bind(this)}>Zaloguj</Button>
-                        <Button variant="link" className="header-btn-my header-btn-register-my header-btn-shadow" onClick={this.registerRedirect.bind(this)} style={{marginRight: "0"}}>Rejestracja</Button>
-                    </Form>
-                </Navbar>
+                <div className="navbar-header">
+                    <div className="width-divider">
+                        <Image src={LogoImage} className="header-image-logo"/>
+                        <div className="navbar-links">
+                            <a>Czym jest?</a>
+                            <a>Oferta</a>
+                            <a>Kontakt</a>
+                            <a>Szukaj</a>
+
+                        </div>
+                        <div className="navbar-buttons">
+                            <a>Załóż konto</a>
+                            <a id="login-button">Zaloguj się</a>
+                        </div>
+                    </div>
+                </div>
             </>
         )
     }
 }
 
 export default HomeHeader;
+
+// <a>Kontakt</a>
+// <a>Logowanie</a>
+// <a>Rejestracja</a>
+
+// <Navbar bg="light" variant="light">
+//     <div className="width-content">
+//         <Navbar.Brand href="/" className="mr-auto">
+//             <Image src={LogoImage} fluid className="header-image-logo"/>
+//         </Navbar.Brand>
+//         <Button variant="link" className="header-btn-my header-home-links header-btn-shadow" onClick={this.contactRedirect.bind(this)}>Kontakt</Button>
+//         <div className="header-divider"></div>
+//         <Button variant="link" className="header-btn-my header-btn-login-my" onClick={this.loginRedirect.bind(this)}>Zaloguj</Button>
+//         <Button variant="link" className="header-btn-my header-btn-register-my header-btn-shadow" onClick={this.registerRedirect.bind(this)} style={{marginRight: "0"}}>Rejestracja</Button>
+//     </div>
+// </Navbar>

@@ -41,8 +41,14 @@ public class UserController {
         int status = userService.addUser(user);
 
         if (status == 0) {
-            System.out.println ("Blad! User istnieje!");
+            System.out.println ("User istnieje!");
             response.sendError (405, "User exist.");
+        } else if (status == 2) {
+            System.out.println ("Niepoprawne dzialanie servisu smtp!");
+            response.sendError (405, "SMTP error.");
+        } else if (status == 3) {
+            System.out.println ("Blad autoryzacji google smtp!");
+            response.sendError (405, "SMTP error.");
         } else {
             System.out.println("User dodany.");
         }

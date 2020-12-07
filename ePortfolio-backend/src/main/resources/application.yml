@@ -1,6 +1,6 @@
 app:
   datasource:
     jdbc-url: jdbc:postgresql://localhost:5432/eportfolio_db
-    username: eportfolio_user
-    password: Test123!
+    username: postgres
+    password: admin1
     pool-size: 30

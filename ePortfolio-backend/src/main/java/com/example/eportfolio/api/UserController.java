@@ -94,7 +94,7 @@ public class UserController {
 
     @RequestMapping (value = "/api/users/profile", method = GET)
     public void getUser (HttpServletResponse response, HttpServletRequest request) throws IOException {
-        Map<String, String> profile = new HashMap<>();
+        Map<String, Object> profile = new HashMap<>();
         String token = request.getHeader("Authorization");
         String responseString = "";
         int decryptionStatus = Login.checkJWT(token);
@@ -107,16 +107,21 @@ public class UserController {
             profile.put("lastName", claims.get("last_name").asString());
             profile.put("email", claims.get("email").asString());
 
-            Optional<UserBio> userBio = userBioService.getUserBioByID(UUID.fromString(profile.get("id")));
+            Optional<UserBio> userBio = userBioService.getUserBioByID(UUID.fromString(claims.get("id").asString()));
             if (userBio.isPresent()) {
-                profile.put("phone", userBio.get().getPhone());
-                profile.put("address", userBio.get().getAddress_main());
-                profile.put("city", userBio.get().getAddress_city());
-                profile.put("zip", userBio.get().getAddress_zip());
-                profile.put("country", userBio.get().getAddress_country());
-                profile.put("dateBirth", userBio.get().getDate_birth());
-                profile.put("gender", userBio.get().getGender());
+                Map<String, Object> userBioData = new HashMap<>();
+
+                userBioData.put("phone", userBio.get().getPhone());
+                userBioData.put("address", userBio.get().getAddress_main());
+                userBioData.put("city", userBio.get().getAddress_city());
+                userBioData.put("zip", userBio.get().getAddress_zip());
+                userBioData.put("country", userBio.get().getAddress_country());
+                userBioData.put("dateBirth", userBio.get().getDate_birth());
+                userBioData.put("gender", userBio.get().getGender());
+
+                profile.put("userBio", userBioData);
             }
+            System.out.println(profile);
 
             responseString = this.gson.toJson(profile);
         } else if (decryptionStatus == 2) {

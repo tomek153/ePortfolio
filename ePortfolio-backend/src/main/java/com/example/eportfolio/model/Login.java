@@ -18,7 +18,7 @@ import java.util.UUID;
 @Service
 public class Login {
     private static final String KEY = "{%-<Oz#@,EHb0V%qQ#.)g;}B5ONr{L";
-    private final int EXPIRATION_TIME_MINUTES = 30;
+    private final int EXPIRATION_TIME_MINUTES = 3000;
 
     @Autowired
     private final JdbcTemplate jdbcTemplate;
@@ -45,7 +45,7 @@ public class Login {
                         resultSet.getBoolean("confirmed")
                 );
             });
-        } catch (EmptyResultDataAccessException excepion) {
+        } catch (EmptyResultDataAccessException exception) {
             return 1;
         }
 
@@ -85,10 +85,10 @@ public class Login {
                     .build();
             DecodedJWT jwt = verifier.verify(token);
 
-            long exiprationTime = jwt.getClaim("expiration_date").asLong();
+            long expirationTime = jwt.getClaim("expiration_date").asLong();
             long actualTime = System.currentTimeMillis();
 
-            if (exiprationTime < actualTime) {
+            if (expirationTime < actualTime) {
                 return 2;
             } else {
                 claims = jwt.getClaims();

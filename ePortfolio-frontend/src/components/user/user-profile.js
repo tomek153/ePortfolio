@@ -44,6 +44,7 @@ class UserProfile extends Component {
                 headers: myHeaders
             }
         );
+        console.log("Token: " + localStorage.getItem("token"));
 
         fetch(request)
             .then(response => {
@@ -78,7 +79,7 @@ class UserProfile extends Component {
             }, 600);
         };
     }
-
+   
     render() {
 
         return (

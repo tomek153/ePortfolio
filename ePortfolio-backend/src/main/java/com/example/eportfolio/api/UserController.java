@@ -4,7 +4,7 @@ import com.auth0.jwt.interfaces.Claim;
 import com.example.eportfolio.model.Login;
 import com.example.eportfolio.model.User;
 import com.example.eportfolio.model.UserBio;
-import com.example.eportfolio.service.UserBioService;
+import com.example.eportfolio.model.UserWork;
 import com.example.eportfolio.service.UserService;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Array;
 import java.util.*;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
@@ -26,14 +27,12 @@ public class UserController {
 
     private Gson gson = new Gson();
     private final UserService userService;
-    private final UserBioService userBioService;
     @Autowired
     private Login login;
 
     @Autowired
-    public UserController(UserService userService, UserBioService userBioService) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.userBioService = userBioService;
     }
 
     @RequestMapping (value = "/api/users", method = POST)
@@ -107,7 +106,7 @@ public class UserController {
             profile.put("lastName", claims.get("last_name").asString());
             profile.put("email", claims.get("email").asString());
 
-            Optional<UserBio> userBio = userBioService.getUserBioByID(UUID.fromString(claims.get("id").asString()));
+            Optional<UserBio> userBio = userService.getUserBioByID(UUID.fromString(claims.get("id").asString()));
             if (userBio.isPresent()) {
                 Map<String, Object> userBioData = new HashMap<>();
 
@@ -121,7 +120,29 @@ public class UserController {
 
                 profile.put("userBio", userBioData);
             }
-            System.out.println(profile);
+
+            List<UserWork> userWork = userService.getUserWorkByID(UUID.fromString(claims.get("id").asString()));
+            if (!userWork.isEmpty()) {
+                //Map<String, Object> userWorkArray = new HashMap<>();
+                Map<String, Object>[] userWorkArray = new HashMap[userWork.size()];
+                for(int i=0; i < userWork.size(); i++){
+                    Map<String, Object> userWorkData = new HashMap<>();
+
+                    userWorkData.put("work_industry", userWork.get(i).getWork_industry());
+                    userWorkData.put("work_type", userWork.get(i).getWork_type());
+                    userWorkData.put("work_name", userWork.get(i).getWork_name());
+                    userWorkData.put("work_time_start", userWork.get(i).getWork_time_start());
+                    userWorkData.put("work_time_end", userWork.get(i).getWork_time_end());
+                    userWorkData.put("work_place", userWork.get(i).getWork_place());
+                    userWorkData.put("work_desc", userWork.get(i).getWork_desc());
+                    userWorkData.put("work_location", userWork.get(i).getWork_location());
+
+                    userWorkArray[i] = userWorkData;
+                    //userWorkArray.put(String.valueOf(i), userWorkData);
+                }
+                profile.put("userWork", userWorkArray);
+            }
+
 
             responseString = this.gson.toJson(profile);
         } else if (decryptionStatus == 2) {

@@ -1,9 +1,9 @@
 package com.example.eportfolio.service;
 
-import com.example.eportfolio.dao.UserBioDao;
 import com.example.eportfolio.dao.UserDao;
 import com.example.eportfolio.model.User;
 import com.example.eportfolio.model.UserBio;
+import com.example.eportfolio.model.UserWork;
 import com.example.eportfolio.smtp.EmailService;
 import com.example.eportfolio.smtp.MailRequestModel;
 import com.example.eportfolio.smtp.MailResponseModel;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 import java.util.*;
 
 @Repository("postgres")
-public class PostgresService implements UserDao, UserBioDao {
+public class PostgresService implements UserDao{
 
     @Autowired
     private EmailService service;
@@ -287,6 +287,31 @@ public class PostgresService implements UserDao, UserBioDao {
     }
 
     @Override
+    public List<UserWork> getUserWorkByID(UUID ID) {
+        final String sql = "SELECT * FROM users_work WHERE user_uuid = ?";
+
+        return jdbcTemplate.query(
+                sql,
+                new Object[]{ID},
+                (resultSet, i) -> {
+                    return new UserWork(
+                            UUID.fromString(resultSet.getString("user_uuid")),
+                            resultSet.getInt("work_industry"),
+                            resultSet.getInt("work_type"),
+                            resultSet.getString("work_name"),
+                            resultSet.getString("work_time_start"),
+                            resultSet.getString("work_time_end"),
+                            resultSet.getString("work_place"),
+                            resultSet.getString("work_desc"),
+                            resultSet.getString("work_location")
+                    );
+                }
+        );
+
+    }
+
+
+    @Override
     public int updateUser(String email, User user) {
 
         final String checkEmail = "SELECT * FROM users WHERE email = '"+user.getEmail()+"'";
@@ -373,5 +398,4 @@ public class PostgresService implements UserDao, UserBioDao {
             }
 
     }
-
 }

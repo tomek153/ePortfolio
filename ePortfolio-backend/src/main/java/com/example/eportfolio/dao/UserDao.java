@@ -1,8 +1,6 @@
 package com.example.eportfolio.dao;
 
-import com.example.eportfolio.model.User;
-import com.example.eportfolio.model.UserBio;
-import com.example.eportfolio.model.UserWork;
+import com.example.eportfolio.model.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +27,12 @@ public interface UserDao {
     Optional<UserBio> getUserBioByID(UUID id);
 
     List<UserWork> getUserWorkByID(UUID id);
+
+    List<UserEdu> getUserEduByID(UUID id);
+
+    List<UserSkill> getUserSkillByID(UUID id);
+
+    Optional<UserSetting> getUserSettingByID(UUID id);
     // GET USER METHODS -END-
 
     // EDIT USER METHODS -START-

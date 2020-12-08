@@ -25,7 +25,7 @@ public class UserSkill {
 
     }
 
-    public UUID getUserBioId() {
+    public UUID getUserSkillId() {
         return id;
     }
 

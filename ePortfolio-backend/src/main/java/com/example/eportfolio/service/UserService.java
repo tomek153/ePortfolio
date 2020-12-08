@@ -1,9 +1,7 @@
 package com.example.eportfolio.service;
 
 import com.example.eportfolio.dao.UserDao;
-import com.example.eportfolio.model.User;
-import com.example.eportfolio.model.UserBio;
-import com.example.eportfolio.model.UserWork;
+import com.example.eportfolio.model.*;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -39,6 +37,12 @@ public class UserService {
     public Optional<UserBio> getUserBioByID(UUID id) { return userDao.getUserBioByID(id); }
 
     public List<UserWork> getUserWorkByID(UUID id) { return userDao.getUserWorkByID(id); }
+
+    public List<UserEdu> getUserEduByID(UUID id) { return userDao.getUserEduByID(id); }
+
+    public List<UserSkill> getUserSkillByID(UUID id) { return userDao.getUserSkillByID(id); }
+
+    public Optional<UserSetting> getUserSettingByID(UUID id) { return userDao.getUserSettingByID(id); }
     // GET USER METHODS -END-
 
     // EDIT USER METHODS -START-

@@ -36,7 +36,7 @@ public class UserWork {
         this.work_location = work_location;
     }
 
-    public UUID getId() {
+    public UUID getUserWorkId() {
         return id;
     }
 

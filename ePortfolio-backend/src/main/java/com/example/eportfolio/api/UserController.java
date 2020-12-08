@@ -1,10 +1,7 @@
 package com.example.eportfolio.api;
 
 import com.auth0.jwt.interfaces.Claim;
-import com.example.eportfolio.model.Login;
-import com.example.eportfolio.model.User;
-import com.example.eportfolio.model.UserBio;
-import com.example.eportfolio.model.UserWork;
+import com.example.eportfolio.model.*;
 import com.example.eportfolio.service.UserService;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Array;
 import java.util.*;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
@@ -91,7 +87,7 @@ public class UserController {
                 .orElse(null);
     }
 
-    @RequestMapping (value = "/api/users/profile", method = GET)
+    @RequestMapping (value = "/api/users/profile/all", method = GET)
     public void getUser (HttpServletResponse response, HttpServletRequest request) throws IOException {
         Map<String, Object> profile = new HashMap<>();
         String token = request.getHeader("Authorization");
@@ -123,7 +119,6 @@ public class UserController {
 
             List<UserWork> userWork = userService.getUserWorkByID(UUID.fromString(claims.get("id").asString()));
             if (!userWork.isEmpty()) {
-                //Map<String, Object> userWorkArray = new HashMap<>();
                 Map<String, Object>[] userWorkArray = new HashMap[userWork.size()];
                 for(int i=0; i < userWork.size(); i++){
                     Map<String, Object> userWorkData = new HashMap<>();
@@ -138,9 +133,57 @@ public class UserController {
                     userWorkData.put("work_location", userWork.get(i).getWork_location());
 
                     userWorkArray[i] = userWorkData;
-                    //userWorkArray.put(String.valueOf(i), userWorkData);
                 }
                 profile.put("userWork", userWorkArray);
+            }
+
+            List<UserEdu> userEdu = userService.getUserEduByID(UUID.fromString(claims.get("id").asString()));
+            if (!userEdu.isEmpty()) {
+                Map<String, Object>[] userEduArray = new HashMap[userEdu.size()];
+                for(int i=0; i < userEdu.size(); i++){
+                    Map<String, Object> userEduData = new HashMap<>();
+
+                    userEduData.put("edu_spec", userEdu.get(i).getEdu_spec());
+                    userEduData.put("edu_type", userEdu.get(i).getEdu_type());
+                    userEduData.put("edu_name", userEdu.get(i).getEdu_name());
+                    userEduData.put("edu_time_start", userEdu.get(i).getEdu_time_start());
+                    userEduData.put("edu_time_end", userEdu.get(i).getEdu_time_end());
+                    userEduData.put("edu_place", userEdu.get(i).getEdu_place());
+                    userEduData.put("edu_desc", userEdu.get(i).getEdu_desc());
+
+                    userEduArray[i] = userEduData;
+                }
+                profile.put("userEdu", userEduArray);
+            }
+
+            List<UserSkill> userSkill = userService.getUserSkillByID(UUID.fromString(claims.get("id").asString()));
+            if (!userSkill.isEmpty()) {
+                Map<String, Object>[] userSkillArray = new HashMap[userSkill.size()];
+                for(int i=0; i < userSkill.size(); i++){
+                    Map<String, Object> userSkillData = new HashMap<>();
+
+                    userSkillData.put("skill_type", userSkill.get(i).getSkill_type());
+                    userSkillData.put("skill_name", userSkill.get(i).getSkill_name());
+                    userSkillData.put("skill_time_months", userSkill.get(i).getSkill_time_months());
+                    userSkillData.put("skill_level", userSkill.get(i).getSkill_level());
+
+                    userSkillArray[i] = userSkillData;
+                }
+                profile.put("userSkill", userSkillArray);
+            }
+
+            Optional<UserSetting> userSetting = userService.getUserSettingByID(UUID.fromString(claims.get("id").asString()));
+            if (userSetting.isPresent()) {
+                Map<String, Object> userSettingData = new HashMap<>();
+
+                userSettingData.put("public", userSetting.get().isSetting_public());
+                userSettingData.put("header1", userSetting.get().getSetting_header1());
+                userSettingData.put("header2", userSetting.get().getSetting_header2());
+                userSettingData.put("img", userSetting.get().getSetting_img());
+                userSettingData.put("consent", userSetting.get().isSetting_consent());
+                userSettingData.put("allow_contact", userSetting.get().isSetting_allow_contact());
+
+                profile.put("userSetting", userSettingData);
             }
 
 

@@ -33,7 +33,7 @@ public class UserEdu {
         this.edu_desc = edu_desc;
     }
 
-    public UUID getUserBioId() {
+    public UUID getUserEduId() {
         return id;
     }
 

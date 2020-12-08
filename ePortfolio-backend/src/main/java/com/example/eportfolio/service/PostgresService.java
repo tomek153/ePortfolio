@@ -1,9 +1,7 @@
 package com.example.eportfolio.service;
 
 import com.example.eportfolio.dao.UserDao;
-import com.example.eportfolio.model.User;
-import com.example.eportfolio.model.UserBio;
-import com.example.eportfolio.model.UserWork;
+import com.example.eportfolio.model.*;
 import com.example.eportfolio.smtp.EmailService;
 import com.example.eportfolio.smtp.MailRequestModel;
 import com.example.eportfolio.smtp.MailResponseModel;
@@ -308,6 +306,71 @@ public class PostgresService implements UserDao{
                 }
         );
 
+    }
+
+    @Override
+    public List<UserEdu> getUserEduByID(UUID ID) {
+        final String sql = "SELECT * FROM users_edu WHERE user_uuid = ?";
+
+        return jdbcTemplate.query(
+                sql,
+                new Object[]{ID},
+                (resultSet, i) -> {
+                    return new UserEdu(
+                            UUID.fromString(resultSet.getString("user_uuid")),
+                            resultSet.getInt("edu_spec"),
+                            resultSet.getInt("edu_type"),
+                            resultSet.getString("edu_name"),
+                            resultSet.getString("edu_time_start"),
+                            resultSet.getString("edu_time_end"),
+                            resultSet.getString("edu_place"),
+                            resultSet.getString("edu_desc")
+                    );
+                }
+        );
+
+    }
+
+    @Override
+    public List<UserSkill> getUserSkillByID(UUID ID) {
+        final String sql = "SELECT * FROM users_skill WHERE user_uuid = ?";
+
+        return jdbcTemplate.query(
+                sql,
+                new Object[]{ID},
+                (resultSet, i) -> {
+                    return new UserSkill(
+                            UUID.fromString(resultSet.getString("user_uuid")),
+                            resultSet.getInt("skill_type"),
+                            resultSet.getInt("skill_time_months"),
+                            resultSet.getInt("skill_level"),
+                            resultSet.getString("skill_name")
+                    );
+                }
+        );
+
+    }
+
+    @Override
+    public Optional<UserSetting> getUserSettingByID(UUID ID) {
+        final String sql = "SELECT * FROM users_setting WHERE user_uuid = ?";
+
+        UserSetting userSetting = jdbcTemplate.queryForObject(
+                sql,
+                new Object[]{ID},
+                (resultSet, i) -> {
+                    return new UserSetting(
+                            UUID.fromString(resultSet.getString("user_uuid")),
+                            resultSet.getBoolean("setting_public"),
+                            resultSet.getString("setting_header1"),
+                            resultSet.getString("setting_header2"),
+                            resultSet.getString("setting_img"),
+                            resultSet.getBoolean("setting_consent"),
+                            resultSet.getBoolean("setting_allow_contact")
+                    );
+                }
+        );
+        return Optional.ofNullable(userSetting);
     }
 
 

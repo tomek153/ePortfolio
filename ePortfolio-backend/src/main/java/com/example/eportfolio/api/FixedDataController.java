@@ -60,6 +60,100 @@ public class FixedDataController {
         out.flush();
     }
 
+    @RequestMapping(value = "/api/fixed-data/edu-type", method = GET, produces={"application/json; charset=UTF-8"})
+    public void getFixedDataEduType(HttpServletResponse response, HttpServletRequest request) throws IOException {
+
+        response.setContentType("application/json;charset=utf-8");
+        response.setCharacterEncoding("UTF-8");
+
+        Map<String, Object> data = new HashMap<>();
+        String responseString = "";
+
+        GetMethods getMethods = new GetMethods();
+        getMethods.getFixedData(data, fixedDataService, "edu_type");
+
+        responseString = this.gson.toJson(data);
+
+        PrintWriter out = response.getWriter();
+        out.print(responseString);
+        out.flush();
+    }
+
+    @RequestMapping(value = "/api/fixed-data/edu-spec", method = GET, produces={"application/json; charset=UTF-8"})
+    public void getFixedDataEduSpec(HttpServletResponse response, HttpServletRequest request) throws IOException {
+
+        response.setContentType("application/json;charset=utf-8");
+        response.setCharacterEncoding("UTF-8");
+
+        Map<String, Object> data = new HashMap<>();
+        String responseString = "";
+
+        GetMethods getMethods = new GetMethods();
+        getMethods.getFixedData(data, fixedDataService, "edu_spec");
+
+        responseString = this.gson.toJson(data);
+
+        PrintWriter out = response.getWriter();
+        out.print(responseString);
+        out.flush();
+    }
+
+    @RequestMapping(value = "/api/fixed-data/work-type", method = GET, produces={"application/json; charset=UTF-8"})
+    public void getFixedDataWorkType(HttpServletResponse response, HttpServletRequest request) throws IOException {
+
+        response.setContentType("application/json;charset=utf-8");
+        response.setCharacterEncoding("UTF-8");
+
+        Map<String, Object> data = new HashMap<>();
+        String responseString = "";
+
+        GetMethods getMethods = new GetMethods();
+        getMethods.getFixedData(data, fixedDataService, "work_type");
+
+        responseString = this.gson.toJson(data);
+
+        PrintWriter out = response.getWriter();
+        out.print(responseString);
+        out.flush();
+    }
+
+    @RequestMapping(value = "/api/fixed-data/work-industry", method = GET, produces={"application/json; charset=UTF-8"})
+    public void getFixedDataWorkIndustry(HttpServletResponse response, HttpServletRequest request) throws IOException {
+
+        response.setContentType("application/json;charset=utf-8");
+        response.setCharacterEncoding("UTF-8");
+
+        Map<String, Object> data = new HashMap<>();
+        String responseString = "";
+
+        GetMethods getMethods = new GetMethods();
+        getMethods.getFixedData(data, fixedDataService, "work_industry");
+
+        responseString = this.gson.toJson(data);
+
+        PrintWriter out = response.getWriter();
+        out.print(responseString);
+        out.flush();
+    }
+
+    @RequestMapping(value = "/api/fixed-data/skill-type", method = GET, produces={"application/json; charset=UTF-8"})
+    public void getFixedDataSkillType(HttpServletResponse response, HttpServletRequest request) throws IOException {
+
+        response.setContentType("application/json;charset=utf-8");
+        response.setCharacterEncoding("UTF-8");
+
+        Map<String, Object> data = new HashMap<>();
+        String responseString = "";
+
+        GetMethods getMethods = new GetMethods();
+        getMethods.getFixedData(data, fixedDataService, "skill_type");
+
+        responseString = this.gson.toJson(data);
+
+        PrintWriter out = response.getWriter();
+        out.print(responseString);
+        out.flush();
+    }
 
 }
 

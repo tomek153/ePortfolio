@@ -1,6 +1,7 @@
 package com.example.eportfolio.api;
 
 import com.example.eportfolio.model.*;
+import com.example.eportfolio.service.FixedDataService;
 import com.example.eportfolio.service.UserService;
 
 import java.util.*;
@@ -110,6 +111,27 @@ public class GetMethods {
             userSettingData.put("allow_contact", userSetting.get().isSetting_allow_contact());
 
             map.put("userSetting", userSettingData);
+        }
+
+        return map;
+    }
+
+    public Map getFixedData(Map<String, Object> map, FixedDataService fixedDataService, String dataType) {
+
+        String fixedDataType = "i";
+
+        List<FixedData> FixedDataList = fixedDataService.getFixedData(dataType);
+        if (!FixedDataList.isEmpty()) {
+            Map<String, Object>[] FixedDataArray = new HashMap[FixedDataList.size()];
+            for (int i = 0; i < FixedDataList.size(); i++) {
+                Map<String, Object> FixedData = new HashMap<>();
+
+                FixedData.put("name", FixedDataList.get(i).getName());
+                FixedData.put("id", FixedDataList.get(i).getId());
+
+                FixedDataArray[i] = FixedData;
+            }
+            map.put(dataType, FixedDataArray);
         }
 
         return map;

@@ -448,7 +448,6 @@ public class PostgresService implements UserDao, FixedDataDao {
     }
 
     @Override
-    @Transactional
     public void deleteUser(UUID id) throws SQLException {
 
         //final String checkUser = "SELECT * FROM users WHERE id= '" + id + "'";
@@ -458,15 +457,16 @@ public class PostgresService implements UserDao, FixedDataDao {
             conn.setAutoCommit(false);
 
             DeleteMethods deleteMethods = new DeleteMethods();
-            jdbcTemplate.execute(deleteMethods.deleteFromTable("users_edu",id));
-            jdbcTemplate.execute(deleteMethods.deleteFromTable("users_bio",id));
-            jdbcTemplate.execute(deleteMethods.deleteFromTable("users_work",id));
-            jdbcTemplate.execute(deleteMethods.deleteFromTable("users_skill",id));
-            jdbcTemplate.execute(deleteMethods.deleteFromTable("users_setting",id));
-            jdbcTemplate.execute(deleteMethods.deleteFromTable("confirmation_emails",id));
-            jdbcTemplate.execute(deleteMethods.deleteFromTable("reset_password_emails",id));
-            jdbcTemplate.execute(deleteMethods.deleteFromTable("users",id));
+            conn.prepareStatement(deleteMethods.deleteFromTable("users_edu",id)).executeUpdate();;
+            conn.prepareStatement(deleteMethods.deleteFromTable("users_bio",id)).executeUpdate();;
+            conn.prepareStatement(deleteMethods.deleteFromTable("users_work",id)).executeUpdate();;
+            conn.prepareStatement(deleteMethods.deleteFromTable("users_skill",id)).executeUpdate();;
+            conn.prepareStatement(deleteMethods.deleteFromTable("users_setting",id)).executeUpdate();;
+            conn.prepareStatement(deleteMethods.deleteFromTable("confirmation_emails",id)).executeUpdate();;
+            conn.prepareStatement(deleteMethods.deleteFromTable("reset_password_emails",id)).executeUpdate();;
+            conn.prepareStatement(deleteMethods.deleteFromTable("users",id)).executeUpdate();;
             conn.commit();
+
         } catch (SQLException e) {
             conn.rollback();
             e.printStackTrace();

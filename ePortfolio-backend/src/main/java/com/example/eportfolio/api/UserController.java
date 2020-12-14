@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.*;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
@@ -351,20 +352,41 @@ public class UserController {
         }
     }
 
-    @RequestMapping (value = "/api/users/delete/{uuid}", method = GET)
-    public void deleteUser (@Valid @NonNull @PathVariable("uuid") UUID id, HttpServletResponse response) throws IOException {
-        int status = userService.deleteUser(id);
-        if (status == 0) {
-            System.out.println ("Błąd aktualizacji użytkownika!");
-            response.sendError (405, "Delete error");
-        } else if(status == -1) {
-            System.out.println ("Błąd aktualizacji użytkownika! - Password");
-            response.sendError (405, "Delete error - password");
+    @RequestMapping (value = "/api/users/delete/", method = POST)
+    public void deleteUser (HttpServletResponse response, HttpServletRequest request) throws IOException {
+        Map<String, Object> profileMap = new HashMap<>();
+        String token = request.getHeader("Authorization");
+        String responseString = "";
+        int decryptionStatus = Login.checkJWT(token);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        if (decryptionStatus == 0) {
+            Map<String, Claim> claims = Login.getClaims();
+
+            profileMap.put("id", claims.get("id").asString());
+            UUID userUUID = UUID.fromString(claims.get("id").asString());
+
+            try {
+                userService.deleteUser(userUUID);
+                responseString = "";
+            } catch (SQLException e) {
+                e.printStackTrace();
+                response.sendError(400, "Bad request. Delete not allowed.");
+            }
+
+
+        } else if (decryptionStatus == 2) {
+            response.sendError(400, "Token expired");
+        } else if (decryptionStatus == 1) {
+            response.sendError(400, "Token decryption error");
         } else {
-            System.out.println("Usunięcie użytkownika pomyślne.");
+            response.sendError(400, "Unknown error");
         }
+
+        PrintWriter out = response.getWriter();
+        out.print(responseString);
+        out.flush();
     }
 
-
 }
-

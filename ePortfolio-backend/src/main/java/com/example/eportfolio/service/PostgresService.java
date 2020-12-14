@@ -1,5 +1,6 @@
 package com.example.eportfolio.service;
 
+import com.example.eportfolio.api.DeleteMethods;
 import com.example.eportfolio.dao.FixedDataDao;
 import com.example.eportfolio.dao.UserDao;
 import com.example.eportfolio.model.*;
@@ -8,10 +9,14 @@ import com.example.eportfolio.smtp.MailRequestModel;
 import com.example.eportfolio.smtp.MailResponseModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.mail.MailAuthenticationException;
 import org.springframework.mail.MailException;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.*;
 
 @Repository("postgres")
@@ -443,23 +448,29 @@ public class PostgresService implements UserDao, FixedDataDao {
     }
 
     @Override
-    public int deleteUser(UUID id) {
+    @Transactional
+    public void deleteUser(UUID id) throws SQLException {
 
-        final String checkUser = "SELECT * FROM users WHERE id= '" + id + "'";
+        //final String checkUser = "SELECT * FROM users WHERE id= '" + id + "'";
 
+        Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
         try {
-            final String deleteUserSQL = "DELETE from USERS where id='" +
-                    id + "';";
-            final String deleteUserBIOSQL = "DELETE from USERS_BIO where user_uuid='" +
-                    id + "';";
-            jdbcTemplate.execute(deleteUserSQL);
-            jdbcTemplate.execute(deleteUserBIOSQL);
-            return 1;
+            conn.setAutoCommit(false);
 
-        } catch (Exception e) {
+            DeleteMethods deleteMethods = new DeleteMethods();
+            jdbcTemplate.execute(deleteMethods.deleteFromTable("users_edu",id));
+            jdbcTemplate.execute(deleteMethods.deleteFromTable("users_bio",id));
+            jdbcTemplate.execute(deleteMethods.deleteFromTable("users_work",id));
+            jdbcTemplate.execute(deleteMethods.deleteFromTable("users_skill",id));
+            jdbcTemplate.execute(deleteMethods.deleteFromTable("users_setting",id));
+            jdbcTemplate.execute(deleteMethods.deleteFromTable("confirmation_emails",id));
+            jdbcTemplate.execute(deleteMethods.deleteFromTable("reset_password_emails",id));
+            jdbcTemplate.execute(deleteMethods.deleteFromTable("users",id));
+            conn.commit();
+        } catch (SQLException e) {
+            conn.rollback();
             e.printStackTrace();
             System.err.println("delete user error");
-            return 0;
         }
 
     }

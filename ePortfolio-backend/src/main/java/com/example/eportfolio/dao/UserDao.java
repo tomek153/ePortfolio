@@ -2,6 +2,7 @@ package com.example.eportfolio.dao;
 
 import com.example.eportfolio.model.*;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -42,7 +43,7 @@ public interface UserDao {
     // EDIT USER METHODS -END-
 
     // DELETE USER METHODS -START-
-    int deleteUser(UUID id);
+    void deleteUser(UUID id) throws SQLException;
     // DELETE USER METHODS -END-
 
     // CHANGE PASSWORD METHODS -START-

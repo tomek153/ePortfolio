@@ -4,6 +4,8 @@ import com.example.eportfolio.dao.UserDao;
 import com.example.eportfolio.model.*;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -54,9 +56,7 @@ public class UserService {
     // EDIT USER METHODS -END-
 
     // DELETE USER METHODS -START-
-    public int deleteUser(UUID id) {
-        return userDao.deleteUser(id);
-    }
+    public void deleteUser(UUID id) throws SQLException { userDao.deleteUser(id); }
     // DELETE USER METHODS -END-
 
     // CHANGE PASSWORD METHODS -START-

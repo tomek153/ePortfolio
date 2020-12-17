@@ -352,7 +352,7 @@ public class UserController {
         }
     }
 
-    @RequestMapping (value = "/api/users/delete/", method = POST)
+    @RequestMapping (value = "/api/users/delete/", method = DELETE)
     public void deleteUser (HttpServletResponse response, HttpServletRequest request) throws IOException {
         Map<String, Object> profileMap = new HashMap<>();
         String token = request.getHeader("Authorization");
@@ -368,8 +368,9 @@ public class UserController {
             UUID userUUID = UUID.fromString(claims.get("id").asString());
 
             try {
-                userService.deleteUser(userUUID);
-                responseString = "";
+                int result = userService.deleteUser(userUUID);
+                if( result == 0 ) { System.out.println("DELETE OK"); }
+                else { response.sendError(400, "Bad request. Delete not allowed."); }
             } catch (SQLException e) {
                 e.printStackTrace();
                 response.sendError(400, "Bad request. Delete not allowed.");

@@ -56,7 +56,7 @@ public class UserService {
     // EDIT USER METHODS -END-
 
     // DELETE USER METHODS -START-
-    public void deleteUser(UUID id) throws SQLException { userDao.deleteUser(id); }
+    public int deleteUser(UUID id) throws SQLException { return userDao.deleteUser(id); }
     // DELETE USER METHODS -END-
 
     // CHANGE PASSWORD METHODS -START-

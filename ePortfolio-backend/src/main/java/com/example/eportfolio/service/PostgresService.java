@@ -448,9 +448,7 @@ public class PostgresService implements UserDao, FixedDataDao {
     }
 
     @Override
-    public void deleteUser(UUID id) throws SQLException {
-
-        //final String checkUser = "SELECT * FROM users WHERE id= '" + id + "'";
+    public int deleteUser(UUID id) throws SQLException {
 
         Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
         try {
@@ -466,11 +464,13 @@ public class PostgresService implements UserDao, FixedDataDao {
             conn.prepareStatement(deleteMethods.deleteFromTable("reset_password_emails",id)).executeUpdate();;
             conn.prepareStatement(deleteMethods.deleteFromTable("users",id)).executeUpdate();;
             conn.commit();
+            return 0;
 
         } catch (SQLException e) {
             conn.rollback();
             e.printStackTrace();
             System.err.println("delete user error");
+            return 1;
         }
 
     }

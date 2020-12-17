@@ -43,7 +43,7 @@ public interface UserDao {
     // EDIT USER METHODS -END-
 
     // DELETE USER METHODS -START-
-    void deleteUser(UUID id) throws SQLException;
+    int deleteUser(UUID id) throws SQLException;
     // DELETE USER METHODS -END-
 
     // CHANGE PASSWORD METHODS -START-

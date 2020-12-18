@@ -127,37 +127,28 @@ public class UserController {
         out.flush();
     }
 
-    @RequestMapping (value = "/api/users/profile/public", method = GET)
-    public void getUserPublic (HttpServletResponse response, HttpServletRequest request) throws IOException {
+    @RequestMapping (value = "/api/users/profile/public/{uuid}", method = GET)
+    public void getUserPublic (@PathVariable ("uuid") UUID uuid, HttpServletResponse response, HttpServletRequest request) throws IOException {
         Map<String, Object> profile = new HashMap<>();
-        String token = request.getHeader("Authorization");
         String responseString = "";
-        int decryptionStatus = Login.checkJWT(token);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        if (decryptionStatus == 0) {
-            Map<String, Claim> claims = Login.getClaims();
+        if (uuid.toString() != "") {
 
-            profile.put("id", claims.get("id").asString());
-            profile.put("firstName", claims.get("first_name").asString());
-            profile.put("lastName", claims.get("last_name").asString());
-            profile.put("email", claims.get("email").asString());
+            profile.put("id", uuid.toString());
 
-            UUID userUUID = UUID.fromString(claims.get("id").asString());
             GetMethods getMethods = new GetMethods();
-            getMethods.getUserWorkData(profile, userService , userUUID);
-            getMethods.getUserEduData(profile, userService , userUUID);
-            getMethods.getUserSkillData(profile, userService , userUUID);
-            getMethods.getUserSettingData(profile, userService , userUUID);
+            getMethods.getUserMainData(profile, userService , uuid);
+            getMethods.getUserWorkData(profile, userService , uuid);
+            getMethods.getUserEduData(profile, userService , uuid);
+            getMethods.getUserSkillData(profile, userService , uuid);
+            getMethods.getUserSettingData(profile, userService , uuid);
 
             responseString = this.gson.toJson(profile);
-        } else if (decryptionStatus == 2) {
-            response.sendError(400, "Token expired");
-        } else if (decryptionStatus == 1) {
-            response.sendError(400, "Token decryption error");
-        } else {
-            response.sendError(400, "Unknown error");
+        }
+     else{
+            response.sendError(400, "User Data Unavailable");
         }
 
         PrintWriter out = response.getWriter();
@@ -352,7 +343,7 @@ public class UserController {
         }
     }
 
-    @RequestMapping (value = "/api/users/delete/", method = DELETE)
+    @RequestMapping (value = "/api/users/delete", method = DELETE)
     public void deleteUser (HttpServletResponse response, HttpServletRequest request) throws IOException {
         Map<String, Object> profileMap = new HashMap<>();
         String token = request.getHeader("Authorization");

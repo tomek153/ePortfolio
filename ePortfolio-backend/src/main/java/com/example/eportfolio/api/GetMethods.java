@@ -8,6 +8,21 @@ import java.util.*;
 
 public class GetMethods {
 
+    public Map getUserMainData(Map<String, Object> map, UserService userService, UUID id) {
+
+        Optional<User> user = userService.getUserByID(id);
+        if (user.isPresent()) {
+            Map<String, Object> userMainData = new HashMap<>();
+
+            userMainData.put("firstName", user.get().getFirstName());
+            userMainData.put("lastName", user.get().getLastName());
+
+            map.put("user", userMainData);
+        }
+        return map;
+
+    }
+
     public Map getUserBioData(Map<String, Object> map, UserService userService, UUID id) {
 
         Optional<UserBio> userBio = userService.getUserBioByID(id);

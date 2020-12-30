@@ -11,18 +11,19 @@ class ConfirmationLinkSuccess extends Component {
     constructor() {
         super();
         this.state = {
-            userInfo: {
-                idKey: "",
-                registerKey: ""
+            reqBody: {
+                linkId: "",
+                userId: ""
             },
             modalSuccesShow: false,
             modalFailedShow: false,
             modalAlreadyConfirmed: false,
-            modalError404: false,
-            modalLoadingMessage: false,
+            modalError: false,
+            modalLoading: false,
             reSendLinkSuccess: "none",
             reSendLinkFailed: "none",
-            reSendLinkSpinner: "none"
+            reSendLinkSpinner: "none",
+            reSendFooter: "block"
         }
     }
 
@@ -30,7 +31,7 @@ class ConfirmationLinkSuccess extends Component {
         event.preventDefault();
         superagent
             .post('http://localhost:8080/email/resend')
-            .send(this.state.userInfo)
+            .send(this.state.reqBody)
             .end((err, res) => {
                 if(err) {
                     if(res.body.message == "User exist."){
@@ -44,7 +45,6 @@ class ConfirmationLinkSuccess extends Component {
             }
         );
     }
-
     reSendConfirmationLink(event) {
 
         document.getElementsByClassName("resend-link-button")[0].style.display = "none";
@@ -53,7 +53,7 @@ class ConfirmationLinkSuccess extends Component {
         event.preventDefault();
         superagent
             .post('http://localhost:8080/email/resend')
-            .send({ idKey: this.props.match.params.idKey, registerKey: this.props.match.params.registerKey })
+            .send(this.state.reqBody)
             .end((err, res) => {
                 if(err) {
                     alert("Coś poszło nie tak!");
@@ -62,90 +62,85 @@ class ConfirmationLinkSuccess extends Component {
                     return;
                 } else {
                     if(res.body.status){
-                        document.querySelector("#successIconModal").style.color = "rgba(0,0,0,0.3)";
                         document.querySelector("div.fade.modal.show > div > div > div.modal-body > p").style.color = "rgba(0,0,0,0.3)";
                         this.setState({reSendLinkSpinner: "none"});
                         this.setState({reSendLinkSuccess: "block"});
                         this.setState({reSendLinkFailed: "none"});
-                    } else{
-                        document.querySelector("#successIconModal").style.color = "rgba(0,0,0,0.3)";
+                        this.setState({reSendFooter: "none"});
+                    } else {
                         document.querySelector("div.fade.modal.show > div > div > div.modal-body > p").style.color = "rgba(0,0,0,0.3)";
                         this.setState({reSendLinkSpinner: "none"});
                         this.setState({reSendLinkFailed: "block"});
                         this.setState({reSendLinkSuccess: "none"});
+                        this.setState({reSendFooter: "none"});
                     }
                 }
             }
         );
     }
-
-    load() {
-        this.state.userInfo.idKey = this.props.match.params.idKey;
-        this.state.userInfo.registerKey = this.props.match.params.registerKey;
-        console.log("->"+this.state.userInfo.idKey);
-        console.log("->"+this.state.userInfo.registerKey);
+    loadUserInfo() {
+        this.state.reqBody.linkId = this.props.match.params.registerKey;
+        this.state.reqBody.userId = this.props.match.params.idKey;
     }
-
     closeModal() {
         this.setState({modalSuccesShow: false});
         this.setState({modalFailedShow: false});
         this.setState({modalAlreadyConfirmed: false});
-        this.setState({modalError404: false});
+        this.setState({modalError: false});
+        this.setState({modalLoading: false});
     }
-
+    closeModalAndRedirect() {
+        this.closeModal();
+        window.location.href = "/";
+    }
     clearFailedMessage() {
         document.getElementById("failedMessageExpired").style.display = "none";
         document.getElementById("failedMessageDeactivated").style.display = "none";
     }
-    
     checkConfirmationLink() {
-        superagent
-        .post('http://localhost:8080/email/check-confirmation-link')
-        .send({ idKey: this.props.match.params.idKey, registerKey: this.props.match.params.registerKey })
-        .end((err, res) => {
-            if (err) {
-                this.closeModal();
-                this.setState({modalError404: true});
-            } else {
-                let status = res.body.status;
-                let message = res.body.message;
+        this.setState({modalLoading: true});
 
-                console.log(status);
-                console.log(message);
-                if (status == false) {
-                    this.closeModal();
-                    this.setState({modalError404: true});
-                } else {
-                    if (message == "user_confirmed") {
-                        this.closeModal();
-                        this.setState({modalAlreadyConfirmed: true});
-                    } else {
-                        if (message == "expired") {
-                            this.closeModal();
-                            this.setState({modalFailedShow: true});
-                            this.clearFailedMessage();
-                            document.getElementById("failedMessageExpired").style.display = "block";
-                        } else {
-                            if (message == "deactivated") {
-                                this.closeModal();
-                                this.setState({modalFailedShow: true});
-                                this.clearFailedMessage();
-                                document.getElementById("failedMessageDeactivated").style.display = "block";
-                                document.getElementsByClassName("resend-link-button")[0].style.display = "none";
-                            } else {
-                                if (message == "success") {
-                                    this.closeModal();
-                                    this.setState({modalSuccesShow: true});
-                                }
-                            }
-                        }
-                    }
-                }
+        var myHeaders = new Headers();
+        myHeaders.append('Content-Type', 'application/json');
+
+        const request = new Request(
+            'http://localhost:8080/email/check-confirmation-link',
+            {
+                method: 'POST',
+                headers: myHeaders,
+                body: JSON.stringify(this.state.reqBody)
             }
-        });
-    }
+        );
 
+        fetch(request)
+            .then(response => {
+                if (response.status == 200) {
+                    response.json().then(data => {
+                        if (data.status == true &&
+                                   (data.message == "expired" || data.message == "deactivated")) {
+                            this.setState({modalLoading: false});
+                            this.setState({modalFailedShow: true});
+                        } else if (data.status == true &&
+                                   data.message == "user_confirmed") {
+                            this.setState({modalLoading: false});
+                            this.setState({modalAlreadyConfirmed: true});
+                        } else if (data.status == true &&
+                                   data.message == "not_found") {
+                            this.setState({modalLoading: false});
+                            window.location.href = "/nie-znaleziono";
+                        } else {
+                            this.setState({modalLoading: false});
+                            this.setState({modalError: true});
+                        }
+                    });
+                } else {
+                    this.setState({modalLoading: false});
+                    this.setState({modalError: true});
+                }
+            });
+    }
     componentDidMount() {
+        this.loadUserInfo();
         this.checkConfirmationLink();
     }
 
@@ -153,102 +148,75 @@ class ConfirmationLinkSuccess extends Component {
         return (
             <>
                 <HomeContent/>
-                
-                <Modal show={this.state.modalSuccesShow} size="lg" aria-labelledby="contained-modal-title-vcenter"  style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
-                    <Modal.Header style={{color: "#31b4cb", backgroundColor: "rgba(49, 180, 203, 0.15)"}}>
-                        <Modal.Title id="contained-modal-title-vcenter">
-                            Konto zostało potwierdzone!
+
+                <Modal size="sm" show={this.state.modalError} aria-labelledby="example-modal-sizes-title-sm" onHide={() => this.closeModalAndRedirect()}>
+                    <Modal.Header closeButton className="modal-header-error">
+                        <Modal.Title id="example-modal-sizes-title-sm" style={{textAlign: "center"}}>
+                            <i className="fas fa-times-circle success-modal-icon"></i>Coś poszło nie tak!
                         </Modal.Title>
                     </Modal.Header>
-                    <Modal.Body style={{textAlign: "center"}}>
-                        <i className="fas fa-check fa-5x" id="successIconModal"></i>
-                        <p style={{color: "#444", fontSize: "19px"}}>
-                            <b>Gratulacje!</b>
-                        </p>
-                        <p style={{color: "#444"}}>
-                            Konto zostało <b>potwierdzone</b>! Możesz Teraz przejść do <b>panelu logowania</b> aby zalogować się do swojego <b>konta</b>.
-                        </p>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="link" className="modal-close-btn" onClick={this.closeModal.bind(this)} href="/">Zamknij</Button>
-                        <Button className="modal-redirect-btn" href="/logowanie">Przejdź do logowania</Button>
-                    </Modal.Footer>
                 </Modal>
 
-                <Modal show={this.state.modalAlreadyConfirmed} size="lg" aria-labelledby="contained-modal-title-vcenter"  style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
-                    <Modal.Header style={{color: "rgba(0, 0, 0, 0.5)", backgroundColor: "rgba(0, 0, 0, 0.15)"}}>
-                        <Modal.Title id="contained-modal-title-vcenter">
-                            Konto zostało już potwierdzone.
+                <Modal size="sm" show={this.state.modalSuccesShow} aria-labelledby="example-modal-sizes-title-sm" onHide={() => this.closeModalAndRedirect()}>
+                    <Modal.Header closeButton>
+                        <Modal.Title id="example-modal-sizes-title-sm" style={{textAlign: "center"}}>
+                            <i className="fas fa-check-circle success-modal-icon"></i>Konto zostało potwierdzone!
                         </Modal.Title>
                     </Modal.Header>
-                    <Modal.Body style={{textAlign: "center"}}>
-                        <i className="fas fa-check fa-5x" id="successIconModal" style={{color: "rgba(0, 0, 0, 0.5)"}}></i>
-                        <p style={{color: "rgba(0, 0, 0, 0.5)ss"}}>
-                            Konto zostało <b>już potwierdzone</b>. Przejdź do <b>panelu logowania</b> aby zalogować się do swojego <b>konta</b>.
-                        </p>
+                    <Modal.Body>
+                        Konto zostało <b>potwierdzone</b>! Możesz teraz przejść do <b>panelu logowania</b> aby zalogować się do swojego <b>konta</b>.
+                        <br /><sub><b>Pozdrawiamy zespół ePortfolio!</b></sub>
                     </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="link" className="modal-close-btn" onClick={this.closeModal.bind(this)} href="/">Zamknij</Button>
-                        <Button className="modal-redirect-btn" href="/logowanie">Przejdź do logowania</Button>
-                    </Modal.Footer>
                 </Modal>
 
-                <Modal show={this.state.modalFailedShow} size="lg" aria-labelledby="contained-modal-title-vcenter" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
-                    <Modal.Header style={{color: "#de473c", backgroundColor: "rgba(222, 71, 60, 0.15)"}}>
-                        <Modal.Title id="contained-modal-title-vcenter">
-                            Konto nie zostało potwierdzone!
+                <Modal size="sm" show={this.state.modalAlreadyConfirmed} aria-labelledby="example-modal-sizes-title-sm" onHide={() => this.closeModalAndRedirect()}>
+                    <Modal.Header closeButton style={{backgroundColor: "rgba(0, 0, 0, 0.5)"}}>
+                        <Modal.Title id="example-modal-sizes-title-sm" style={{textAlign: "center"}}>
+                            <i className="fas fa-check-circle success-modal-icon"></i>Konto zostało już potwierdzone.
+                        </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        Konto zostało <b>już potwierdzone</b>. Przejdź do <b>panelu logowania</b> aby zalogować się do swojego <b>konta</b>.
+                        <br /><sub><b>Pozdrawiamy zespół ePortfolio!</b></sub>
+                    </Modal.Body>
+                </Modal>
+
+                <Modal show={this.state.modalFailedShow} size="sm" aria-labelledby="contained-modal-title-sm" onHide={() => this.closeModalAndRedirect()}>
+                    <Modal.Header closeButton className="modal-header-error">
+                        <Modal.Title id="example-modal-sizes-title-sm" style={{textAlign: "center"}}>
+                            <i className="fas fa-times-circle success-modal-icon"></i>Konto nie zostało potwierdzone!
                         </Modal.Title>
                     </Modal.Header>
                     <Modal.Body style={{textAlign: "center", color: "#888888"}}>
-                        <i className="fas fa-exclamation fa-5x" id="successIconModal" style={{color: "#de473c"}}></i>
-                        <p style={{color: "#444"}} id="failedMessageExpired" >
-                            Konto <b>nie zostało</b> potwierdzone, ponieważ link aktywacyjny <b>stracił ważność</b>. Aby wygenerować <b>nowy</b> link, <b>kliknij</b> przycisk poniżej.
-                        </p>
-                        <p style={{color: "#444"}} id="failedMessageDeactivated" >
-                            <b>Link</b> aktywacyjny został <b>dezaktywowany</b>. Prawdopodobnie przez to że <b>został już wygenerowany</b> nowy email. <b>Sprawdź swoją</b> skrzynkę i <b>kliknij</b> w najnowższy link.
+                        <p style={{color: "#444"}}>
+                            Konto <b>nie zostało</b> potwierdzone, ponieważ link aktywacyjny <b>stracił ważność</b> bądź został wygenerowany <b>nowy link</b>.
+                            <br />Sprawdź swoją skrzynkę lub wygeneruj <b>nowy</b> link, klikając przycisk poniżej.
                         </p>
                     </Modal.Body>
-                    <Modal.Footer style={{display: this.state.reSendLinkSuccess}}>
-                        <Modal.Body style={{textAlign: "center"}}>
-                            <i className="fas fa-check fa-5x" id="successIconModal"></i>
-                            <p style={{color: "#444"}}>
-                                <b>Nowy</b> link aktywacyjny został <b>wysłany</b> na Twój adres email. Będzie <b>ważny</b> przez kolejne <b>30 min</b>.
-                                <br /><b>Pozdrawiamy ePortfolio team!</b>
-                            </p>
-                        </Modal.Body>
-                    </Modal.Footer>
-                    <Modal.Footer style={{display: this.state.reSendLinkFailed}}>
-                        <Modal.Body style={{textAlign: "center"}}>
-                            <i className="fas fa-exclamation fa-5x" id="successIconModal" style={{color: "#de473c"}}></i>
-                            <p style={{color: "#444"}}>
-                                Z nieznanych powodów <b>nie udało</b> się wysłać nowego linku. Prosimy spróbować <b>później</b>.
-                                <br /><b>Pozdrawiamy Zespół ePortfolio</b>
-                            </p>
-                        </Modal.Body>
-                    </Modal.Footer>
-                    <Modal.Footer>
-                        <Button variant="link" className="modal-close-btn" onClick={this.closeModal.bind(this)} href="/">Zamknij</Button>
+                    <Modal.Body style={{display: this.state.reSendLinkSuccess, textAlign: "center", borderTop: "1px solid #dee2e6"}}>
+                        <i className="fas fa-check-circle success-modal-icon" style={{fontSize: "25px", color: "green"}}></i>
+                        <p style={{color: "#444"}}>
+                            <b>Nowy</b> link aktywacyjny został <b>wysłany</b> na Twój adres email. Będzie <b>ważny</b> przez kolejne <b>30 min</b>.
+                            <br /><sub><b>Pozdrawiamy zespół ePortfolio!</b></sub>
+                        </p>
+                    </Modal.Body>
+                    <Modal.Body style={{display: this.state.reSendLinkFailed, textAlign: "center", borderTop: "1px solid #dee2e6"}}>
+                        <i className="fas fa-times-circle success-modal-icon" style={{fontSize: "25px", color: "red"}}></i>
+                        <p style={{color: "#444"}}>
+                            Z nieznanych powodów <b>nie udało</b> się wysłać nowego linku. Prosimy spróbować ponownie <b>później</b>.
+                            <br /><sub><b>Pozdrawiamy zespół ePortfolio!</b></sub>
+                        </p>
+                    </Modal.Body>
+                    <Modal.Footer style={{display: this.state.reSendFooter}}>
                         <Button className="resend-link-button" onClick={this.reSendConfirmationLink.bind(this)}>Wyslij link</Button>
                         <Spinner style={{display: this.state.reSendLinkSpinner}} id="resend-link-spinner" animation="border" variant="primary" />
                     </Modal.Footer>
                 </Modal>
 
-                <Modal show={this.state.modalError404} size="lg" aria-labelledby="contained-modal-title-vcenter" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
-                    <Modal.Header style={{color: "#de473c", backgroundColor: "rgba(222, 71, 60, 0.15)"}}>
-                        <Modal.Title id="contained-modal-title-vcenter">
-                            Error 404.
-                        </Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body style={{textAlign: "center", color: "#888888"}}>
-                        <i className="fas fa-exclamation-triangle fa-5x" id="successIconModal" style={{color: "#de473c"}}></i>
-                        <p style={{color: "#444"}}>
-                            Nie znaleźliśmy czego szukasz.
-                            <br /><b>Pozdrawiamy zespół ePortfolio</b>
-                        </p>
+                <Modal show={this.state.modalLoading} id="spinner-container" aria-labelledby="contained-modal-title-vcenter" centered>
+                    <Modal.Body>
+                        <Spinner animation="grow e-spinner"/>
                     </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="link" className="modal-close-btn" onClick={this.closeModal.bind(this)} href="/">Zamknij</Button>
-                    </Modal.Footer>
                 </Modal>
             </>
         )

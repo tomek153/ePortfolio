@@ -45,6 +45,7 @@ class RegisterContent extends Component {
             },
             modalSuccess: false,
             modalLoading: false,
+            modalCreateAccFailed: false,
             modalError: false,
             scrollbarWidth: 0
         }
@@ -198,25 +199,37 @@ class RegisterContent extends Component {
     submitFormAndSend(event) {
         event.preventDefault();
         this.setState({modalLoading: true});
-        superagent
-            .post('http://localhost:8080/api/users')
-            .send(this.state.form)
-            .end((err) => {
-                if(err) {
-                    this.clearState();
-                    this.setState({modalLoading: false});
-                    this.setState({modalError: true});
-                } else {
-                    this.clearState();
-                    this.setState({modalLoading: false});
-                    this.setState({modalSuccess: true});
-                }
-            }
-        );
+
+        if (this.state.formControll.firstName &&
+            this.state.formControll.lastName &&
+            this.state.formControll.email &&
+            this.state.formControll.password &&
+            this.state.formControll.regulations){
+                superagent
+                    .post('http://localhost:8080/api/users')
+                    .send(this.state.form)
+                    .end((err) => {
+                        if(err) {
+                            this.clearState();
+                            this.setState({modalLoading: false});
+                            this.setState({modalCreateAccFailed: true});
+                        } else {
+                            this.clearState();
+                            this.setState({modalLoading: false});
+                            this.setState({modalSuccess: true});
+                        }
+                    });
+        } else {
+            this.setState({modalLoading: false});
+            this.setState({modalError: true});
+            this.checkFormDataValid();
+            this.clearState();
+        }
     }
     closeModal() {
         this.setState({modalSuccess: false});
         this.setState({modalLoading: false});
+        this.setState({modalCreateAccFailed: false});
         this.setState({modalError: false});
     }
     showPassword() {
@@ -372,6 +385,14 @@ class RegisterContent extends Component {
                         </div>
                     </div>
 
+                    <Modal size="sm" show={this.state.modalError} aria-labelledby="example-modal-sizes-title-sm" onHide={() => this.closeModal()}>
+                        <Modal.Header closeButton className="modal-header-error">
+                            <Modal.Title id="example-modal-sizes-title-sm" style={{textAlign: "center"}}>
+                                <i className="fas fa-times-circle success-modal-icon"></i>Coś poszło nie tak!
+                            </Modal.Title>
+                        </Modal.Header>
+                    </Modal>
+
                     <Modal size="sm" show={this.state.modalSuccess} aria-labelledby="example-modal-sizes-title-sm" onHide={() => this.closeModal()}>
                         <Modal.Header closeButton>
                             <Modal.Title id="example-modal-sizes-title-sm" style={{textAlign: "center"}}>
@@ -380,11 +401,11 @@ class RegisterContent extends Component {
                         </Modal.Header>
                         <Modal.Body>
                             Na podany <b>adres email</b> został wysłany <b>link aktywacyjny</b>, potwierdź go aby móc się <b>zalogować</b>.
-                            <br /><b>Link</b> aktywacyjny będzie <b>ważny</b> przez <b>30 min</b>.
+                            <br /><sub><b>Link aktywacyjny będzie ważny przez 30 min</b>.</sub>
                         </Modal.Body>
                     </Modal>
 
-                    <Modal size="sm" show={this.state.modalError} aria-labelledby="example-modal-sizes-title-sm" onHide={() => this.closeModal()}>
+                    <Modal size="sm" show={this.state.modalCreateAccFailed} aria-labelledby="example-modal-sizes-title-sm" onHide={() => this.closeModal()}>
                         <Modal.Header closeButton className="modal-header-error">
                             <Modal.Title id="example-modal-sizes-title-sm" style={{textAlign: "center"}}>
                                 <i className="fas fa-times-circle success-modal-icon"></i>Tworzenie konta nieudane!

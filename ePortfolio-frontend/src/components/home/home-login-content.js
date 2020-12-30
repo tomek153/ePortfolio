@@ -235,7 +235,7 @@ class RegisterContent extends Component {
         event.preventDefault();
         superagent
             .post('http://localhost:8080/email/resend')
-            .send({ idKey: this.state.userId, registerKey: null })
+            .send({ userId: this.state.userId, linkId: null })
             .end((err, res) => {
                 if (err) {
                     alert("Coś poszło nie tak!");
@@ -243,12 +243,13 @@ class RegisterContent extends Component {
                     document.getElementsByClassName("resend-link-button")[0].style.display = "block";
                     return;
                 } else {
-                  console.log(res.body.status);
+                    document.querySelector("body > div.fade.modal.show > div > div > div:nth-child(2)").style.color = "rgba(0,0,0,0.3)";
                     if (res.body.status) {
                         this.setState({reSendLinkSpinner: "none"});
                         this.setState({reSendLinkSuccess: "block"});
                         this.setState({reSendLinkFailed: "none"});
                         this.setState({reSendButton: "none"});
+
                     } else {
                         this.setState({reSendLinkSpinner: "none"});
                         this.setState({reSendLinkFailed: "block"});
@@ -499,7 +500,7 @@ class RegisterContent extends Component {
                     </Modal>
 
                     <Modal size="sm" show={this.state.modalUserUnconfirmed} aria-labelledby="example-modal-sizes-title-sm" onHide={() => this.closeModal()}>
-                        <Modal.Header closeButton className="modal-header-error" style={{backgroundColor: "#969696"}}>
+                        <Modal.Header closeButton className="modal-header-error">
                             <Modal.Title id="example-modal-sizes-title-sm" style={{textAlign: "center"}}>
                                 <i className="fas fa-times-circle success-modal-icon"></i>Konto nie zostało potwierdzone!
                             </Modal.Title>

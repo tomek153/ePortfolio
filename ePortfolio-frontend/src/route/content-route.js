@@ -22,7 +22,7 @@ const ContentRoute = () => (
             <Route exact path="/moj-profil" component={UserProfile} />
             <Route exact path="/moj-profil/edytuj" component={UserProfileEdit} />
             <Route exact path="/moj-profil/usun" component={UserProfileDelete} />
-            <Route exact path="/register-link/:idKey/:registerKey" component={ConfirmationLinkSuccess} />
+            <Route exact path="/aktywacja-konta/:idKey/:registerKey" component={ConfirmationLinkSuccess} />
             <Route exact path="/reset-hasla/:idKey/:registerKey" component={ResetPassword} />
             <Route path='*' component={NotFoundContent}/>
         </Switch>

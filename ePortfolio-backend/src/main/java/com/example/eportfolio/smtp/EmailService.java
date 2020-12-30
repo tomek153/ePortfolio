@@ -204,7 +204,7 @@ public class EmailService {
         try {
             User user = jdbcTemplate.queryForObject(
                     "SELECT * FROM users WHERE id = ?",
-                    new Object[]{request.getId()},
+                    new Object[]{request.getUserId()},
                     (resultSet, i) -> {
                         return new User(
                                 UUID.fromString(resultSet.getString("id")),
@@ -226,7 +226,7 @@ public class EmailService {
                                 UUID.fromString(resultSet.getString("id")),
                                 UUID.fromString(resultSet.getString("user_uuid")),
                                 resultSet.getBoolean("status"),
-                                LocalDateTime.parse(resultSet.getString("time_stamp"), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS"))
+                                Timestamp.valueOf(resultSet.getString("time_stamp"))
                         );
                     }
             );
@@ -241,11 +241,11 @@ public class EmailService {
                 } else {
                     LocalDateTime now = LocalDateTime.now();
 
-                    if (now.compareTo(confirmationLink.getTime_stamp().plusMinutes(LINK_TIME_EXPIRED)) > 0) {
+                    if (now.compareTo(confirmationLink.getTime_stamp().toLocalDateTime().plusMinutes(LINK_TIME_EXPIRED)) > 0) {
                         response.setMessage("expired");
                         response.setStatus(Boolean.TRUE);
                     } else {
-                        jdbcTemplate.execute("UPDATE users set confirmed = true WHERE id IN('"+user.getId()+"')");
+                        jdbcTemplate.execute("UPDATE users set confirmed = true WHERE id IN('"+request.getUserId()+"')");
                         jdbcTemplate.execute("UPDATE confirmation_emails SET status = true WHERE id IN('"+confirmationLink.getId()+"');");
 
                         response.setMessage("success");
@@ -253,8 +253,8 @@ public class EmailService {
                     }
                 }
             }
-        } catch (EmptyResultDataAccessException | DateTimeParseException e) {
-            response.setMessage("Error 404");
+        } catch (EmptyResultDataAccessException erdae) {
+            response.setMessage("not_found");
             response.setStatus(Boolean.FALSE);
         }
 

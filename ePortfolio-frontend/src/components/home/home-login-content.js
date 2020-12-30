@@ -1,19 +1,25 @@
 import React, { Component } from 'react';
+import Carousel from 'react-bootstrap/Carousel';
+import Image from 'react-bootstrap/Image';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Popover from 'react-bootstrap/Popover';
 import InputGroup from 'react-bootstrap/InputGroup';
+import FormControl from 'react-bootstrap/FormControl';
 import Modal from 'react-bootstrap/Modal';
 import Spinner from 'react-bootstrap/Spinner';
-
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Popover from 'react-bootstrap/Popover';
 import superagent from 'superagent';
 
-import ImageLogo from '../../images/logo.png';
-import PageLoading from '../page-loading';
-import '../../css/login.css';
+import LogoImage from '../../images/logo-2.png';
+import ScreenImage from '../../images/system-screen.png';
+import styles from '../../css/auth.css';
 
-class LoginContent extends Component {
+class RegisterContent extends Component {
+
     constructor() {
         super();
         this.state = {
@@ -21,205 +27,136 @@ class LoginContent extends Component {
                 email: "",
                 password: ""
             },
+            resetEmail: "",
             formControll: {
                 email: false,
-                password: false
+                password: false,
+                emailReset: false
             },
-            modalSuccesShow: false,
-            modalFailedShow: false,
-            modalLoadingMessage: false,
-            modalUnconfirmed: false,
+            elements: {
+                email: "",
+                password: ""
+            },
+            modalLoading: false,
+            modalAuthFailed: false,
+            modalUserUnconfirmed: false,
+            modalError: false,
+            modalResetPassSuccess: false,
+            modalResetPassFailed: false,
+            userId: "",
             reSendLinkSuccess: "none",
             reSendLinkFailed: "none",
             reSendLinkSpinner: "none",
-            userId: "",
-            redirectExpired: false,
-            redirectBad_token: false
+            reSendButton: "block",
+            scrollbarWidth: 0
         }
     }
-
-    setBadTokenState = () => {
-        this.setState({redirectBad_token: true})
-    }
-
-    setExpiredState = () => {
-        this.setState({redirectExpired: true})
-    }
-
-    componentDidMount() {
-        let token = localStorage.getItem("token");
-        if (token != null && this.props.location.search != "?token=bad_token" && this.props.location.search != "?token=expired") {
-            this.userRedirect("/moj-profil");
-        } else {
-            this.checkFormDataValid();
-            const loader = document.querySelector(".page-loading");
-
-            window.onload = () => {
-                window.setTimeout(function() {
-                    loader.classList.add("hidden");
-                    this.setTimeout(function() {
-                        document.querySelector(".login-form-my").style = "display: block";
-                        document.querySelector("#login-back-button").style = "display: block";
-                        document.querySelector(".login-header-container").style = "display: block";
-                    }, 200);
-                }, 600);
-                if (this.props.location.search == "?token=bad_token") {
-                    window.setTimeout(this.setBadTokenState, 1200);
-                    localStorage.removeItem("token");
-                } else if (this.props.location.search == "?token=expired") {
-                    window.setTimeout(this.setExpiredState, 1200);
-                    localStorage.removeItem("token");
-                }
-            }
-        }
-    }
-
-    userRedirect(url) {
-        const form = document.querySelector(".login-form-my");
-        const backButton = document.querySelector("#login-back-button");
-        const header = document.querySelector(".login-header-container");
-
-        form.classList.remove("w3-animate-right-login-container");
-        form.classList.add("w3-animate-left-login-container");
-        backButton.classList.add("w3-animate-left-login-back-button");
-        backButton.classList.add("w3-animate-right-login-back-button");
-        header.classList.add("w3-animate-left-login-header");
-        header.classList.add("w3-animate-right-login-header");
-
-        setTimeout(function() {
-            form.style = "display: none";
-            backButton.style = "display: none";
-            header.style = "display: none";
-
-            setTimeout(function() {
-                window.location.href = url;
-            }, 200);
-        }, 600);
-    }
-
-    homeRedirect() {
-        this.userRedirect("/");
-    }
-
-    registerRedirect() {
-        this.userRedirect("/rejestracja");
-    }
-
     checkFormDataValid() {
+        var element = document.getElementsByClassName("auth-button-my")[0];
+
         if (this.state.formControll.email &&
             this.state.formControll.password
         ) {
-            document.getElementsByClassName("login-button-my")[0].disabled = false;
+            element.disabled = false;
         } else {
-            document.getElementsByClassName("login-button-my")[0].disabled = true;
+            element.disabled = true;
         }
     }
-
     handleEmailChanged(event) {
-        this.state.form.email = event.target.value;
-
-        let length = event.target.value.length;
+        let value = event.target.value;
+        this.state.form.email = value;
         var regex = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
-        let element = document.getElementById("form-value-alert-email");
-        let messageShort = '<sub>Min 8 znaków.</sub>';
-        let messageLong = '<sub>Max 40 znaków.</sub>';
-        let messageRegexViolation = '<sub>Podano niepoprawny adres email.</sub>';
-
-        this.checkEmailRegex(event.target.value, regex, messageRegexViolation, element,
-            8, 40, length, messageShort, messageLong);
-    }
-    checkEmailRegex(text, regex, messageRegexViolation, element, from, to, length, messageShort, messageLong) {
         let wronCharRegex = /[^a-zA-Z0-9@_.-]/;
+        let isProperValue = false;
+        let length = event.target.value.length;
+        let element = document.getElementById("form-value-alert-email");
 
-        if (text.match(regex) != null) {
-            if (text.match(wronCharRegex) != null) {
-                element.style.display = "block";
-                element.innerHTML = "<sub>Podano niepoprawny znak.</sub>";
-                this.state.formControll.email = false;
-                this.checkFormDataValid();
-            } else {
-                if (length < 8 || length > 40) {
-                    element.style.display = "block";
-                    element.innerHTML = "<sub>Min 8, max 40 znaków.</sub>";
-                    this.state.formControll.email = false;
-                    this.checkFormDataValid();
-                } else {
-                    element.style.display = "none";
-                    this.state.formControll.email = true;
-                    this.checkFormDataValid();
+        if (value.match(regex) != null) {
+            if (value.match(wronCharRegex) == null) {
+                if (length >= 8 && length <= 50) {
+                    isProperValue = true;
                 }
             }
+        }
+
+        if (isProperValue) {
+            this.state.formControll.email = true;
+            element.innerHTML = "<i class=\"fas fa-check\" style=\"font-size: 15px\"></i>";
         } else {
-            element.style.display = "block";
-            element.innerHTML = messageRegexViolation;
             this.state.formControll.email = false;
-            this.checkFormDataValid();
+            element.innerHTML = "<sub>Podano nieprawidłową wartość.</sub>";
+        }
+        this.checkFormDataValid();
+    }
+    handleEmailChangedPassReset(event) {
+        let value = event.target.value;
+        this.state.resetEmail = value;
+        var regex = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
+        let wronCharRegex = /[^a-zA-Z0-9@_.-]/;
+        let isProperValue = false;
+        let length = event.target.value.length;
+        let element = document.getElementById("form-value-alert-email-reset-pass");
+
+        if (value.match(regex) != null) {
+            if (value.match(wronCharRegex) == null) {
+                if (length >= 8 && length <= 50) {
+                    isProperValue = true;
+                }
+            }
+        }
+
+        if (isProperValue) {
+            this.state.formControll.emailReset = true;
+            element.innerHTML = "<i class=\"fas fa-check\" style=\"font-size: 15px\"></i>";
+        } else {
+            this.state.formControll.emailReset = false;
+            element.innerHTML = "<sub>Podano nieprawidłową wartość.</sub>";
+        }
+
+        var button = document.getElementById("reset-pass-button");
+        if (this.state.formControll.emailReset
+        ) {
+            button.disabled = false;
+        } else {
+            button.disabled = true;
         }
     }
-
     handlePasswordChanged(event) {
-        let password = event.target.value;
-        this.state.form.password = password;
-
-        let length = event.target.value.length;
+        let value = event.target.value;
+        this.state.form.password = value;
+        let length = value.length;
         let element = document.getElementById("form-value-alert-password");
+        let element2 = document.getElementById("form-value-alert-password-span");
+        let element3 = document.getElementById("register-password-tooltip");
 
-        if (password.match(/[^a-zA-Z0-9!@#$%^&*(){}[\]|:";'<>?,.\/\\]/)) {
-            element.style.display = "block";
-        } else {
-            if (password.match(/[a-z]/) &&
-                password.match(/[A-Z]/) &&
-                password.match(/[0-9]/) &&
-                password.match(/[!@#$%^&*(){}[\]|:";'<>?,.\/\\]/)
+        element.style.display = "block";
+        if (!value.match(/[^a-zA-Z0-9!@#$%^&*(){}[\]|:";'<>?,.\/\\]/)) {
+            if (value.match(/[a-z]/) &&
+                value.match(/[A-Z]/) &&
+                value.match(/[0-9]/) &&
+                value.match(/[!@#$%^&*(){}[\]|:";'<>?,.\/\\]/)
             ) {
                 if (length >= 8 && length <= 40) {
-                    element.style.display = "none";
+                    element2.innerHTML = "<i class=\"fas fa-check\" style=\"font-size: 15px\"></i>";
+                    element3.style.display = "none";
                     this.state.formControll.password = true;
-                    this.checkFormDataValid();
                 } else {
-                    element.style.display = "block";
+                    element2.innerHTML = "<sub>Podano nieprawidłową wartość.</sub>";
+                    element3.style.display = "block";
                     this.state.formControll.password = false;
-                    this.checkFormDataValid();
                 }
             } else {
-                element.style.display = "block";
+                element2.innerHTML = "<sub>Podano nieprawidłową wartość.</sub>";
+                element3.style.display = "block";
                 this.state.formControll.password = false;
-                this.checkFormDataValid();
             }
         }
-    }
-    showPassword() {
-        var x = document.getElementById("formBasicPassword");
-        if (x.type === "password") {
-            var element = document.querySelector("#inputGroupPrepend > i.fas.fa-eye");
-            element.style.display = "none";
-            var element2 = document.querySelector("#inputGroupPrepend > i.fas.fa-eye-slash");
-            element2.style.display = "block";
-            x.type = "text";
-        } else {
-            var element2 = document.querySelector("#inputGroupPrepend > i.fas.fa-eye-slash");
-            element2.style.display = "none";
-            var element = document.querySelector("#inputGroupPrepend > i.fas.fa-eye");
-            element.style.display = "block";
-            x.type = "password";
-        }
-    }
-    changePasswordInputStyleIn() {
-        var element = document.querySelector("form > div:nth-child(6) > div");
-        element.style.boxShadow = "0 0 0 0.2rem rgba(0,123,255,.25)";
 
-        var element2 = document.getElementById("inputGroupPrepend");
-        element2.style.borderColor = "#80bdff";
+        this.checkFormDataValid();
     }
-    changePasswordInputStyleOut() {
-        var element = document.querySelector("form > div:nth-child(6) > div");
-        element.style.boxShadow = "0 0 0 0 rgba(0,123,255,.25)";
-
-        var element2 = document.getElementById("inputGroupPrepend");
-        element2.style.borderColor = "#ced4da";
-    }
-
     submitFormAndSend(event) {
+        this.setState({modalLoading: true});
+
         var myHeaders = new Headers();
         myHeaders.append('Content-Type', 'application/json');
 
@@ -236,34 +173,62 @@ class LoginContent extends Component {
             .then(response => response.json())
             .then(data => {
                 console.log(data);
-                if (data.message == "Authentication failed.") {
-                    this.setState({modalLoadingMessage: false});
-                    this.setState({modalFailedShow: true});
-                } else if (data.message == "User unconfirmed.") {
+                this.setState({modalLoading: false});
+
+                if (data.message == "authentication_failed.")
+                    this.setState({modalAuthFailed: true});
+                else if (data.message == "user_unconfirmed.") {
                     this.state.userId = data.userId;
-                    this.setState({modalLoadingMessage: false});
-                    this.setState({modalUnconfirmed: true});
-                } else if (data.message == "Authentication success.") {
-                    localStorage.setItem('token', data.token);
-                    this.userRedirect("/moj-profil");
-                } else {
-                    console.log(data);
-                    alert("Unknown error.");
+                    this.setState({modalUserUnconfirmed: true});
+                    this.setState({reSendButton: "block"});
                 }
+                // } else if (data.message == "Authentication success.") {
+                //     localStorage.setItem('token', data.token);
+                //     this.userRedirect("/moj-profil");
+                // else {
+                //     console.log(data);
+                //     alert("Unknown error.");
+                // }
             }
         );
     }
+    sendResetPassRequest(event) {
+        this.setState({modalLoading: true});
 
-    closeModal() {
-        this.setState({modalSuccesShow: false});
-        this.setState({modalFailedShow: false});
-        this.setState({modalUnconfirmed: false});
-        this.setState({redirectExpired: false});
-        this.setState({redirectBad_token: false});
+        var myHeaders = new Headers();
+        myHeaders.append('Content-Type', 'application/json');
+
+        const request = new Request(
+            'http://localhost:8080/api/reset-password',
+            {
+                method: 'POST',
+                headers: myHeaders,
+                body: this.state.resetEmail
+            }
+        );
+
+        fetch(request)
+            .then(response => {
+                this.clearResetPassState()
+
+                if (response) {
+                    if (response.status == 200) {
+                        this.setState({modalLoading: false});
+                        this.setState({modalResetPassSuccess: true});
+                    } else if (response.status == 405) {
+                        this.setState({modalLoading: false});
+                        this.setState({modalResetPassFailed: true});
+                    } else {
+                        this.setState({modalLoading: false});
+                        this.setState({modalError: true});
+                    }
+                } else {
+                    this.setState({modalLoading: false});
+                    this.setState({modalError: true});
+                }
+            });
     }
-
     reSendConfirmationLink(event) {
-
         document.getElementsByClassName("resend-link-button")[0].style.display = "none";
         this.setState({reSendLinkSpinner: "block"});
 
@@ -272,34 +237,148 @@ class LoginContent extends Component {
             .post('http://localhost:8080/email/resend')
             .send({ idKey: this.state.userId, registerKey: null })
             .end((err, res) => {
-                if(err) {
+                if (err) {
                     alert("Coś poszło nie tak!");
                     this.setState({reSendLinkSpinner: "none"});
                     document.getElementsByClassName("resend-link-button")[0].style.display = "block";
                     return;
                 } else {
-                    if(res.body.status){
-                        document.querySelector("#successIconModal").style.color = "rgba(0,0,0,0.3)";
-                        document.querySelector("div.fade.modal.show > div > div > div.modal-body > p").style.color = "rgba(0,0,0,0.3)";
+                  console.log(res.body.status);
+                    if (res.body.status) {
                         this.setState({reSendLinkSpinner: "none"});
                         this.setState({reSendLinkSuccess: "block"});
                         this.setState({reSendLinkFailed: "none"});
-                    } else{
-                        document.querySelector("#successIconModal").style.color = "rgba(0,0,0,0.3)";
-                        document.querySelector("div.fade.modal.show > div > div > div.modal-body > p").style.color = "rgba(0,0,0,0.3)";
+                        this.setState({reSendButton: "none"});
+                    } else {
                         this.setState({reSendLinkSpinner: "none"});
                         this.setState({reSendLinkFailed: "block"});
                         this.setState({reSendLinkSuccess: "none"});
+                        this.setState({reSendButton: "none"});
                     }
                 }
             }
         );
     }
+    closeModal() {
+        this.setState({modalLoading: false});
+        this.setState({modalError: false});
+        this.setState({modalAuthFailed: false});
+        this.setState({modalUserUnconfirmed: false});
+        this.setState({modalResetPassSuccess: false});
+        this.setState({modalResetPassFailed: false});
+
+        this.clearState();
+    }
+    showPassword() {
+        var x = document.getElementById("formGridPassword");
+        if (x.type === "password") {
+            var element = document.querySelector("#inputGroupPrepend > i.fas.fa-eye");
+            element.style.display = "none";
+            var element2 = document.querySelector("#inputGroupPrepend > i.fas.fa-eye-slash");
+            element2.style.display = "block";
+            x.type = "text";
+        } else {
+            var element2 = document.querySelector("#inputGroupPrepend > i.fas.fa-eye-slash");
+            element2.style.display = "none";
+            var element = document.querySelector("#inputGroupPrepend > i.fas.fa-eye");
+            element.style.display = "block";
+            x.type = "password";
+        }
+    }
+    changePasswordInputStyleIn() {
+        var element = document.querySelector("form > div:nth-child(6) > div");
+        element.style.boxShadow = "0 5px 5px -5px black";
+
+        var element2 = document.getElementById("inputGroupPrepend");
+        element2.style.borderColor = "#ced4da";
+
+        var element3 = document.getElementById("formGridPassword");
+        element3.style.borderColor = "#ced4da";
+    }
+    changePasswordInputStyleOut() {
+        var element3 = document.getElementById("formGridPassword");
+        element3.style.borderColor = "#ced4da";
+
+        var element = document.querySelector("form > div:nth-child(6) > div");
+        element.style.boxShadow = "0 3px 3px -3px black";
+
+        var element2 = document.getElementById("inputGroupPrepend");
+        element2.style.borderColor = "#ced4da";
+
+    }
+    componentDidMount() {
+        this.adjustContent();
+    }
+    adjustContent() {
+        document.getElementsByClassName("auth-button-my")[0].disabled = true;
+        document.getElementById("root").style.height = "100%";
+        document.querySelector("#root > div.navbar-header > div > div.navbar-buttons").innerHTML = "<a href=\"/rejestracja\">Załóż konto</a><a class=\"navbar-button-active\" style=\"margin-right: 10px\">Zaloguj się</a>";
+        document.getElementById("password-reset-form").style.display = "none";
+    }
+    clearState() {
+        this.state.form.email = "";
+        this.state.form.password = "";
+
+        this.state.formControll.email = false;
+        this.state.formControll.password = false;
+
+        document.getElementById("formGridEmail").value = "";
+        document.getElementById("formGridPassword").value = "";
+        document.getElementsByClassName("auth-button-my")[0].disabled = true;
+        document.getElementById("form-value-alert-email").innerHTML = "";
+        document.getElementById("form-value-alert-password-span").innerHTML = "";
+
+        this.setState({userId: ""});
+        this.setState({reSendLinkSuccess: "none"});
+        this.setState({reSendLinkFailed: "none"});
+        this.setState({reSendLinkSpinner: "none"});
+        this.setState({reSendButton: "block"});
+    }
+    clearResetPassState() {
+        this.state.resetEmail = "";
+        this.state.formControll.emailReset = false;
+
+        document.getElementById("formGridEmailResetPass").value = "";
+        document.getElementById("reset-pass-button").disabled = true;
+        document.getElementById("form-value-alert-email-reset-pass").innerHTML = "";
+    }
+    loginFormDisplay() {
+        var resetPass = document.getElementById("password-reset-form");
+        var signIn = document.getElementById("sign-in-form");
+
+        resetPass.classList.remove("w3-animate-right-in");
+        signIn.classList.remove("w3-animate-left-out");
+
+        resetPass.classList.add("w3-animate-right-out");
+        setTimeout(function() {
+            resetPass.style.display = "none";
+            signIn.style.display = "block";
+            signIn.classList.add("w3-animate-left-in");
+        }, 400);
+
+        this.clearState();
+    }
+    passResetFormDisplay() {
+        var resetPass = document.getElementById("password-reset-form");
+        var signIn = document.getElementById("sign-in-form");
+
+        resetPass.classList.remove("w3-animate-right-out");
+        signIn.classList.remove("w3-animate-left-in");
+
+        signIn.classList.add("w3-animate-left-out");
+        setTimeout(function() {
+            signIn.style.display = "none";
+            resetPass.style.display = "block";
+            resetPass.classList.add("w3-animate-right-in");
+        }, 400);
+
+        this.clearResetPassState();
+    }
 
     render() {
-        const popoverPassword = (
+        const popover = (
             <Popover id="popover-basic">
-                <Popover.Title as="h2" className="tooltip-register-password-header"><b>Polityka haseł.</b></Popover.Title>
+                <Popover.Title as="h3" className="tooltip-register-password-header"><b>Jakie hasło utworzyć?</b></Popover.Title>
                 <Popover.Content>
                     Hasło powinno zawierać:
                     <ul>
@@ -311,148 +390,153 @@ class LoginContent extends Component {
                     </ul>
                 </Popover.Content>
             </Popover>
-        );
+          );
 
         return (
-            <div class="background-image-container">
-                <PageLoading />
-                <div className="background-opcaity-container">
-                    <div className="login-header-container w3-animate-left-login-header"><span className="gradient-text">Logowanie</span></div>
-                    <i className="fas fa-arrow-left home-link-register w3-animate-left-login-back-button" id="login-back-button" onClick={this.homeRedirect.bind(this)}></i>
-                    <img
-                        className="login-logo-my"
-                        src={ImageLogo}
-                    />
-                    <div className="login-form-my w3-animate-right-login-container">
-                        <Form>
-                            <h3 className="gradient-text">Witaj !</h3>
-                            <p>Tutaj możesz zalogować się do swojego konta.</p>
-                            <p>Nie posiadasz jeszcze konta? <a className="login-links login-register-redirect" onClick={this.registerRedirect.bind(this)}>Zarejestruj się</a>
-                            </p>
-                            <hr />
-                            <Form.Group controlId="formBasicEmail">
-                                    <Form.Label>Email</Form.Label><span id="form-value-alert-email" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
-                                    <Form.Control type="email" placeholder="Wprowadź email..." onChange={this.handleEmailChanged.bind(this)}/>
-                                    <Form.Text className="text-muted">
-                                        We'll never share your email with anyone else.
-                                    </Form.Text>
-                            </Form.Group>
+            <>
+                <div className="home-container" style={{height: "100%"}}>
+                    <div className="photo-section photo-login-register">
+                        <div className="opacity-background">
+                            <div className="auth-content-container" style={{width: "700px"}} id="sign-in-form">
+                                <Form>
+                                    <h2 className="gradient-text">Logowanie</h2>
+                                    <h4 className="gradient-text">Tutaj możesz zalogować się do swojego konta.</h4>
+                                    <p>Nie posiadasz jeszcze konta? <a className="form-link" href="/rejestracja">Zarejestruj się</a></p>
+                                    <hr style={{ marginBottom: "2rem"}}/>
+                                    <Form.Group controlId="formGridEmail">
+                                            <Form.Label>Email:</Form.Label><span id="form-value-alert-email" className="form-value-alert"></span>
+                                            <Form.Control type="email" placeholder="Wprowadź email..." onChange={this.handleEmailChanged.bind(this)}/>
+                                    </Form.Group>
 
-                            <Form.Group controlId="formBasicPassword" style={{marginBottom: '45px'}}>
-                                <Form.Label>Hasło</Form.Label>
-                                <span id="form-value-alert-password" className="form-value-alert">
-                                    <sub>Podano niepoprawne hasło. </sub>
-                                    <OverlayTrigger trigger="hover" placement="top" overlay={popoverPassword}>
-                                        <sub variant="success" id="register-password-tooltip"><i className="fas fa-question-circle"></i></sub>
-                                    </OverlayTrigger>
-                                </span>
-                                <InputGroup id="div-password-login">
-                                    <Form.Control type="password" placeholder="Wprowadź hasło..." onChange={this.handlePasswordChanged.bind(this)} onFocus={this.changePasswordInputStyleIn} onBlur={this.changePasswordInputStyleOut}/>
-                                    <InputGroup.Prepend>
-                                        <InputGroup.Text id="inputGroupPrepend" onClick={this.showPassword}><i className="fas fa-eye w3-animate-opacity"></i><i className="fas fa-eye-slash w3-animate-opacity"></i></InputGroup.Text>
-                                    </InputGroup.Prepend>
-                                </InputGroup>
-                            </Form.Group>
-                            <Button onClick={this.submitFormAndSend.bind(this)} variant="primary" className="login-button-my" style={{float: 'right'}}>
-                                Zaloguj się
-                            </Button>
-                            <Button variant="link" style={{float: 'right'}} className="login-links">
-                                Nie pamiętasz hasła?
-                            </Button>
-                        </Form>
+                                    <Form.Group controlId="formGridPassword">
+                                        <Form.Label>Hasło:</Form.Label>
+                                        <span id="form-value-alert-password" className="form-value-alert" style={{display: "none"}}>
+                                            <span id="form-value-alert-password-span"></span>
+                                            <OverlayTrigger trigger={["hover", "hover"]} placement="right" overlay={popover}>
+                                                <sub variant="success" id="register-password-tooltip"><i className="fas fa-question-circle"></i></sub>
+                                            </OverlayTrigger>
+                                        </span>
+                                        <InputGroup>
+                                            <Form.Control type="password" placeholder="Wprowadź hasło..." onChange={this.handlePasswordChanged.bind(this)} onFocus={this.changePasswordInputStyleIn} onBlur={this.changePasswordInputStyleOut}/>
+                                            <InputGroup.Prepend>
+                                                <InputGroup.Text id="inputGroupPrepend" onClick={this.showPassword}><i className="fas fa-eye w3-animate-opacity"></i><i className="fas fa-eye-slash w3-animate-opacity" style={{display: "none", width: "18px"}}></i></InputGroup.Text>
+                                            </InputGroup.Prepend>
+                                        </InputGroup>
+                                    </Form.Group>
+                                    <Form.Label>Nie pamiętasz hasła? <span className="form-link" onClick={this.passResetFormDisplay.bind(this)}>Zmień je</span></Form.Label>
+
+                                    <Button onClick={this.submitFormAndSend.bind(this)} type="button" variant="primary" className="auth-button-my" style={{float: 'right'}}>
+                                        Zaloguj się
+                                    </Button>
+                                </Form>
+                              </div>
+
+                              <div className="auth-content-container" style={{width: "700px"}} id="password-reset-form">
+                                <Form>
+                                    <h2 className="gradient-text">Odzyskiwanie konta</h2>
+                                    <p>Wpisz swój adres email, abyśmy mogli wysłać Ci link do resetowania hasła.</p>
+                                    <hr style={{ marginBottom: "2rem"}}/>
+                                    <Form.Group controlId="formGridEmailResetPass">
+                                            <Form.Label>Email:</Form.Label><span id="form-value-alert-email-reset-pass" className="form-value-alert"></span>
+                                            <Form.Control type="email" placeholder="Wprowadź email..." onChange={this.handleEmailChangedPassReset.bind(this)}/>
+                                    </Form.Group>
+
+                                    <Button variant="outline-secondary" onClick={this.loginFormDisplay.bind(this)}>Wstecz</Button>
+                                    <Button onClick={this.sendResetPassRequest.bind(this)} id="reset-pass-button" type="button" variant="primary" className="auth-button-my" style={{float: 'right'}}>
+                                        Wyślij
+                                    </Button>
+                                </Form>
+                            </div>
+                        </div>
+                        <div id="footer" style={{height: "70px", background: "none", position: "fixed", bottom: 0, width: "100%"}}>
+                            <div className="width-divider">
+                                <p>ePortfolio &copy; 2020</p><p>Wszelkie prawa zastrzeżone</p>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <Modal show={this.state.modalLoadingMessage} id="container-spinner-modal-register-request" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
-                    <Spinner animation="grow" variant="light" id="spinner-modal-register-request"/>
-                </Modal>
-                <Modal show={this.state.modalFailedShow} size="lg" aria-labelledby="contained-modal-title-vcenter" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
-                    <Modal.Header style={{color: "#de473c", backgroundColor: "rgba(222, 71, 60, 0.15)"}}>
-                        <Modal.Title id="contained-modal-title-vcenter">
-                            Błąd logowania!
-                        </Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body style={{textAlign: "center"}}>
-                        <i className="fas fa-exclamation fa-5x" id="successIconModal" style={{color: "#de473c"}}></i>
-                        <p style={{color: "#444"}}>
-                            Wprowadzono błedny login lub hasło. Spróbuj ponownie.
-                        </p>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="link" className="modal-close-btn" onClick={this.closeModal.bind(this)}>Zamknij</Button>
-                    </Modal.Footer>
-                </Modal>
-                <Modal show={this.state.modalUnconfirmed} size="lg" aria-labelledby="contained-modal-title-vcenter" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
-                    <Modal.Header style={{color: "#31b4cb", backgroundColor: "rgba(49, 180, 203, 0.15)"}}>
-                        <Modal.Title id="contained-modal-title-vcenter">
-                            Konto nie zostało potwierdzone.
-                        </Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body style={{textAlign: "center"}}>
-                        <i className="fas fa-exclamation fa-5x" id="successIconModal" style={{color: "#31b4cb"}}></i>
-                        <p style={{color: "#444"}}>
+
+                    <Modal size="sm" show={this.state.modalError} aria-labelledby="example-modal-sizes-title-sm" onHide={() => this.closeModalAndRedirect()}>
+                        <Modal.Header closeButton className="modal-header-error">
+                            <Modal.Title id="example-modal-sizes-title-sm" style={{textAlign: "center"}}>
+                                <i className="fas fa-times-circle success-modal-icon"></i>Coś poszło nie tak!
+                            </Modal.Title>
+                        </Modal.Header>
+                    </Modal>
+
+                    <Modal size="sm" show={this.state.modalResetPassFailed} aria-labelledby="example-modal-sizes-title-sm" onHide={() => this.closeModal()}>
+                        <Modal.Header closeButton className="modal-header-error">
+                            <Modal.Title id="example-modal-sizes-title-sm" style={{textAlign: "center"}}>
+                                <i className="fas fa-times-circle success-modal-icon"></i>Użytkownik nie istnieje!
+                            </Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <b>Nie znaleźliśmy</b> danego użytkownika w systemie. <b>Sprawdź</b> swój adres email i <b>spróbuj ponownie</b>.
+                        </Modal.Body>
+                    </Modal>
+
+                    <Modal size="sm" show={this.state.modalResetPassSuccess} aria-labelledby="example-modal-sizes-title-sm" onHide={() => this.closeModal()}>
+                        <Modal.Header closeButton>
+                            <Modal.Title id="example-modal-sizes-title-sm" style={{textAlign: "center"}}>
+                                <i className="fas fa-check-circle success-modal-icon"></i>Email wysłany!
+                            </Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            Na podany <b>adres email</b> został wysłany link, otwórz go żeby ustawić <b>nowe hasło</b>.
+                            <br /><sub><b>Link resetujący będzie ważny przez 30 min.</b></sub>
+                        </Modal.Body>
+                    </Modal>
+
+                    <Modal size="sm" show={this.state.modalAuthFailed} aria-labelledby="example-modal-sizes-title-sm" onHide={() => this.closeModal()}>
+                        <Modal.Header closeButton className="modal-header-error">
+                            <Modal.Title id="example-modal-sizes-title-sm" style={{textAlign: "center"}}>
+                                <i className="fas fa-times-circle success-modal-icon"></i>Błąd logowania!
+                            </Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            Podano <b>nieprawidłowy</b> login lub hasło.
+                            <br/><sub><b>Spróbuj ponownie.</b></sub>
+                        </Modal.Body>
+                    </Modal>
+
+                    <Modal size="sm" show={this.state.modalUserUnconfirmed} aria-labelledby="example-modal-sizes-title-sm" onHide={() => this.closeModal()}>
+                        <Modal.Header closeButton className="modal-header-error" style={{backgroundColor: "#969696"}}>
+                            <Modal.Title id="example-modal-sizes-title-sm" style={{textAlign: "center"}}>
+                                <i className="fas fa-times-circle success-modal-icon"></i>Konto nie zostało potwierdzone!
+                            </Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
                             <b>Potwerdz</b> swoje konto aby móc się zalogować. <br />
                             Jeśli Twój link aktywacyjny <b>stracił ważność</b>, kliknij przycisk poniżej aby <b>wygenerować</b> nowy.
-                        </p>
-                    </Modal.Body>
-                    <Modal.Footer style={{display: this.state.reSendLinkSuccess}}>
-                        <Modal.Body style={{textAlign: "center"}}>
-                            <i className="fas fa-check fa-5x" id="successIconModal"></i>
+                        </Modal.Body>
+                        <Modal.Body style={{display: this.state.reSendLinkSuccess, textAlign: "center", borderTop: "1px solid #dee2e6"}}>
+                            <i className="fas fa-check-circle success-modal-icon" style={{fontSize: "25px", color: "green"}}></i>
                             <p style={{color: "#444"}}>
                                 <b>Nowy</b> link aktywacyjny został <b>wysłany</b> na Twój adres email. Będzie <b>ważny</b> przez kolejne <b>30 min</b>.
-                                <br /><b>Pozdrawiamy ePortfolio team!</b>
+                                <br /><sub><b>Pozdrawiamy zespół ePortfolio!</b></sub>
                             </p>
                         </Modal.Body>
-                    </Modal.Footer>
-                    <Modal.Footer style={{display: this.state.reSendLinkFailed}}>
-                        <Modal.Body style={{textAlign: "center"}}>
-                            <i className="fas fa-exclamation fa-5x" id="successIconModal" style={{color: "#de473c"}}></i>
+                        <Modal.Body style={{display: this.state.reSendLinkFailed, textAlign: "center", borderTop: "1px solid #dee2e6"}}>
+                            <i className="fas fa-times-circle success-modal-icon" style={{fontSize: "25px", color: "red"}}></i>
                             <p style={{color: "#444"}}>
-                                Z nieznanych powodów <b>nie udało</b> się wysłać nowego linku. Prosimy spróbować <b>później</b>.
-                                <br /><b>Pozdrawiamy Zespół ePortfolio</b>
+                                Z nieznanych powodów <b>nie udało</b> się wysłać nowego linku. Prosimy spróbować ponownie <b>później</b>.
+                                <br /><sub><b>Pozdrawiamy zespół ePortfolio!</b></sub>
                             </p>
                         </Modal.Body>
-                    </Modal.Footer>
-                    <Modal.Footer>
-                        <Button variant="link" className="modal-close-btn" onClick={this.closeModal.bind(this)}>Zamknij</Button>
-                        <Button className="resend-link-button" onClick={this.reSendConfirmationLink.bind(this)}>Wyslij link</Button>
-                        <Spinner style={{display: this.state.reSendLinkSpinner}} id="resend-link-spinner" animation="border" variant="primary" />
-                    </Modal.Footer>
-                </Modal>
-                <Modal show={this.state.redirectExpired} size="lg" aria-labelledby="contained-modal-title-vcenter" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
-                    <Modal.Header style={{color: "#de473c", backgroundColor: "rgba(222, 71, 60, 0.15)"}}>
-                        <Modal.Title id="contained-modal-title-vcenter">
-                            Sesja wygasła!
-                        </Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body style={{textAlign: "center"}}>
-                        <i className="fas fa-exclamation fa-5x" id="successIconModal" style={{color: "#de473c"}}></i>
-                        <p style={{color: "#444"}}>
-                            Twoja sesja wygasła. Zaloguj się ponownie aby wejść na swoje konto.
-                        </p>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="link" className="modal-close-btn" onClick={this.closeModal.bind(this)}>Zamknij</Button>
-                    </Modal.Footer>
-                </Modal>
-                <Modal show={this.state.redirectBad_token} size="lg" aria-labelledby="contained-modal-title-vcenter" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
-                    <Modal.Header style={{color: "#de473c", backgroundColor: "rgba(222, 71, 60, 0.15)"}}>
-                        <Modal.Title id="contained-modal-title-vcenter">
-                            Brak autoryzacji!
-                        </Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body style={{textAlign: "center"}}>
-                        <i className="fas fa-exclamation fa-5x" id="successIconModal" style={{color: "#de473c"}}></i>
-                        <p style={{color: "#444"}}>
-                            Zaloguj się aby móc wejść do serwisu.
-                        </p>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="link" className="modal-close-btn" onClick={this.closeModal.bind(this)}>Zamknij</Button>
-                    </Modal.Footer>
-                </Modal>
-            </div>
+                        <Modal.Footer style={{display: this.state.reSendButton}}>
+                            <Button className="resend-link-button" onClick={this.reSendConfirmationLink.bind(this)}>Wyslij link</Button>
+                            <Spinner style={{display: this.state.reSendLinkSpinner}} id="resend-link-spinner" animation="border" variant="primary" />
+                        </Modal.Footer>
+                    </Modal>
+
+                    <Modal show={this.state.modalLoading} id="spinner-container" aria-labelledby="contained-modal-title-vcenter" centered>
+                        <Modal.Body>
+                            <Spinner animation="grow e-spinner"/>
+                        </Modal.Body>
+                    </Modal>
+                </div>
+            </>
         )
     }
 }
 
-export default LoginContent;
+export default RegisterContent;

@@ -1,23 +1,29 @@
 import React, { Component } from 'react';
+import Carousel from 'react-bootstrap/Carousel';
+import Image from 'react-bootstrap/Image';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import Col from 'react-bootstrap/Col';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Popover from 'react-bootstrap/Popover';
 import InputGroup from 'react-bootstrap/InputGroup';
+import FormControl from 'react-bootstrap/FormControl';
 import Modal from 'react-bootstrap/Modal';
 import Spinner from 'react-bootstrap/Spinner';
-
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Popover from 'react-bootstrap/Popover';
 import superagent from 'superagent';
 
-import ImageLogo from '../../images/logo.png';
-import PageLoading from '../page-loading';
+import LogoImage from '../../images/logo-2.png';
+import ScreenImage from '../../images/system-screen.png';
+import styles from '../../css/auth.css';
 
-class LoginContent extends Component {
+class RegisterContent extends Component {
+
     constructor() {
         super();
         this.state = {
-            newUser: {
+            form: {
                 firstName: "",
                 lastName: "",
                 email: "",
@@ -31,154 +37,187 @@ class LoginContent extends Component {
                 password: false,
                 regulations: false
             },
-            modalSuccesShow: false,
-            modalFailedShow: false,
-            modalLoadingMessage: false
+            elements: {
+                firstName: "",
+                lastName: "",
+                email: "",
+                password: ""
+            },
+            modalSuccess: false,
+            modalLoading: false,
+            modalError: false,
+            scrollbarWidth: 0
         }
     }
-
     checkFormDataValid() {
+        var element = document.getElementsByClassName("auth-button-my")[0];
+
         if (this.state.formControll.firstName &&
             this.state.formControll.lastName &&
             this.state.formControll.email &&
             this.state.formControll.password &&
             this.state.formControll.regulations
         ) {
-            var element = document.getElementsByClassName("login-button-my")[0];
             element.disabled = false;
         } else {
-            document.getElementsByClassName("login-button-my")[0].disabled = true;
+            element.disabled = true;
         }
     }
-
-
     handleFirstNameChanged(event) {
-        this.state.newUser.firstName = event.target.value;
-
-        let length = event.target.value.length;
-        var regex = /[^a-zA-Z]/;
+        let value = event.target.value;
+        this.state.form.firstName = value;
+        let length = value.length;
+        var regex = /[^a-zA-Z -]/;
+        let isProperValue = false;
         let element = document.getElementById("form-value-alert-name");
-        let messageShort = '<sub>Min 2 znaki.</sub>';
-        let messageLong = '<sub>Max 15 znaków.</sub>';
-        let messageRegexViolation = '<sub>Podano niedozwolony znak.</sub>';
 
-
-        this.checkRegex(event.target.value, regex, messageRegexViolation, element,
-            2, 15, length, messageShort, messageLong, "firstName");
-    }
-    handleLastNameChanged(event) {
-        this.state.newUser.lastName = event.target.value;
-
-        let length = event.target.value.length;
-        var regex = /[^a-zA-Z]/;
-        let element = document.getElementById("form-value-alert-lastName");
-        let messageShort = '<sub>Min 2 znaki.</sub>';
-        let messageLong = '<sub>Max 20 znaków.</sub>';
-        let messageRegexViolation = '<sub>Podano niedozwolony znak.</sub>';
-
-
-        this.checkRegex(event.target.value, regex, messageRegexViolation, element,
-            2, 20, length, messageShort, messageLong, "lastName");
-    }
-    checkRegex(text, regex, messageRegexViolation, element, from, to, length, messageShort, messageLong, name) {
-        if (text.match(regex) != null) {
-            element.style.display = "block";
-            element.innerHTML = messageRegexViolation;
-            this.updateNamesState(name, false);
-        } else {
-            this.checkMessageState(from, to, length, messageShort, messageLong, element, name);
+        if (value.match(regex) == null) {
+            if (length >= 2 && length <= 40) {
+                isProperValue = true;
+            }
         }
-    }
-    checkMessageState(from, to, length, messageShort, messageLong, element, name) {
-        if (length < from) {
-            element.style.display = "block";
-            element.innerHTML = messageShort;
-            this.updateNamesState(name, false);
-        } else if (length > to) {
-            element.style.display = "block";
-            element.innerHTML = messageLong;
-            this.updateNamesState(name, false);
+
+        if (isProperValue) {
+            this.state.formControll.firstName = true;
+            element.innerHTML = "<i class=\"fas fa-check\" style=\"font-size: 15px\"></i>";
         } else {
-            element.style.display = "none";
-            this.updateNamesState(name, true);
+            this.state.formControll.firstName = false;
+            element.innerHTML = "<sub>Podano nieprawidłową wartość.</sub>";
         }
-    }
-    updateNamesState(name, bool) {
-        if (name == "firstName")
-            this.state.formControll.firstName = bool;
-        else
-            this.state.formControll.lastName = bool;
 
         this.checkFormDataValid();
     }
+    handleLastNameChanged(event) {
+        let value = event.target.value;
+        this.state.form.lastName = value;
+        let length = value.length;
+        var regex = /[^a-zA-Z -]/;
+        let isProperValue = false;
+        let element = document.getElementById("form-value-alert-lastName");
 
-
-    handleEmailChanged(event) {
-        this.state.newUser.email = event.target.value;
-
-        let length = event.target.value.length;
-        var regex = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
-        let element = document.getElementById("form-value-alert-email");
-        let messageShort = '<sub>Min 8 znaków.</sub>';
-        let messageLong = '<sub>Max 40 znaków.</sub>';
-        let messageRegexViolation = '<sub>Podano niepoprawny adres email.</sub>';
-
-        this.checkEmailRegex(event.target.value, regex, messageRegexViolation, element,
-            8, 40, length, messageShort, messageLong);
-    }
-    checkEmailRegex(text, regex, messageRegexViolation, element, from, to, length, messageShort, messageLong) {
-        let wronCharRegex = /[^a-zA-Z0-9@_.-]/;
-
-        if (text.match(regex) != null) {
-            if (text.match(wronCharRegex) != null) {
-                element.style.display = "block";
-                element.innerHTML = "<sub>Podano niepoprawny znak.</sub>";
-                this.state.formControll.email = false;
-                this.checkFormDataValid();
-            } else {
-                element.style.display = "none";
-                this.checkMessageState(from, to, length, messageShort, messageLong, element);
-                this.state.formControll.email = true;
-                this.checkFormDataValid();
+        if (value.match(regex) == null) {
+            if (length >= 2 && length <= 40) {
+                isProperValue = true;
             }
+        }
+
+        if (isProperValue) {
+            this.state.formControll.lastName = true;
+            element.innerHTML = "<i class=\"fas fa-check\" style=\"font-size: 15px\"></i>";
         } else {
-            element.style.display = "block";
-            element.innerHTML = messageRegexViolation;
+            this.state.formControll.lastName = false;
+            element.innerHTML = "<sub>Podano nieprawidłową wartość.</sub>";
+        }
+
+        this.checkFormDataValid();
+    }
+    handleEmailChanged(event) {
+        let value = event.target.value;
+        this.state.form.email = value;
+        var regex = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
+        let wronCharRegex = /[^a-zA-Z0-9@_.-]/;
+        let isProperValue = false;
+        let length = event.target.value.length;
+        let element = document.getElementById("form-value-alert-email");
+
+        if (value.match(regex) != null) {
+            if (value.match(wronCharRegex) == null) {
+                if (length >= 8 && length <= 50) {
+                    isProperValue = true;
+                }
+            }
+        }
+
+        if (isProperValue) {
+            superagent
+                .get('http://localhost:8080/api/users/'+this.state.form.email)
+                .send(this.state.form)
+                .end((res, err) => {
+                    if (err) {
+                        this.state.formControll.email = false;
+                        element.innerHTML = "<sub>Nieznany błąd.</sub>";
+                    } else {
+                        if (res.status == 200 && res.rawResponse == "user_not_exist") {
+                            this.state.formControll.email = true;
+                            element.innerHTML = "<i class=\"fas fa-check\" style=\"font-size: 15px\"></i>";
+                        } else if (res.status == 200 && res.rawResponse == "user_exist") {
+                            this.state.formControll.email = false;
+                            element.innerHTML = "<sub>Użytkownik z podanym adresem email istnieje.</sub>";
+                        } else {
+                            this.state.formControll.email = false;
+                            element.innerHTML = "<sub>Nieznany błąd.</sub>";
+                        }
+                    }
+                    this.checkFormDataValid();
+                });
+        } else {
             this.state.formControll.email = false;
+            element.innerHTML = "<sub>Podano nieprawidłową wartość.</sub>";
             this.checkFormDataValid();
         }
     }
-
     handlePasswordChanged(event) {
-        let password = event.target.value;
-        this.state.newUser.password = password;
-
-        let length = event.target.value.length;
+        let value = event.target.value;
+        this.state.form.password = value;
+        let length = value.length;
         let element = document.getElementById("form-value-alert-password");
+        let element2 = document.getElementById("form-value-alert-password-span");
+        let element3 = document.getElementById("register-password-tooltip");
 
-        if (password.match(/[^a-zA-Z0-9!@#$%^&*(){}[\]|:";'<>?,.\/\\]/)) {
-            element.style.display = "block";
-        } else {
-            if (password.match(/[a-z]/) &&
-                password.match(/[A-Z]/) &&
-                password.match(/[0-9]/) &&
-                password.match(/[!@#$%^&*(){}[\]|:";'<>?,.\/\\]/)
+        element.style.display = "block";
+        if (!value.match(/[^a-zA-Z0-9!@#$%^&*(){}[\]|:";'<>?,.\/\\]/)) {
+            if (value.match(/[a-z]/) &&
+                value.match(/[A-Z]/) &&
+                value.match(/[0-9]/) &&
+                value.match(/[!@#$%^&*(){}[\]|:";'<>?,.\/\\]/)
             ) {
                 if (length >= 8 && length <= 40) {
-                    element.style.display = "none";
+                    element2.innerHTML = "<i class=\"fas fa-check\" style=\"font-size: 15px\"></i>";
+                    element3.style.display = "none";
                     this.state.formControll.password = true;
-                    this.checkFormDataValid();
                 } else {
-                    element.style.display = "block";
+                    element2.innerHTML = "<sub>Podano nieprawidłową wartość.</sub>";
+                    element3.style.display = "block";
                     this.state.formControll.password = false;
-                    this.checkFormDataValid();
                 }
             } else {
-                element.style.display = "block";
+                element2.innerHTML = "<sub>Podano nieprawidłową wartość.</sub>";
+                element3.style.display = "block";
                 this.state.formControll.password = false;
-                this.checkFormDataValid();
             }
         }
+
+        this.checkFormDataValid();
+    }
+    checkRegulations() {
+        var element = document.getElementById("formBasicCheckbox");
+        this.state.formControll.regulations = element.checked;
+
+        this.checkFormDataValid();
+    }
+    submitFormAndSend(event) {
+        event.preventDefault();
+        this.setState({modalLoading: true});
+        superagent
+            .post('http://localhost:8080/api/users')
+            .send(this.state.form)
+            .end((err) => {
+                if(err) {
+                    this.clearState();
+                    this.setState({modalLoading: false});
+                    this.setState({modalError: true});
+                } else {
+                    this.clearState();
+                    this.setState({modalLoading: false});
+                    this.setState({modalSuccess: true});
+                }
+            }
+        );
+    }
+    closeModal() {
+        this.setState({modalSuccess: false});
+        this.setState({modalLoading: false});
+        this.setState({modalError: false});
     }
     showPassword() {
         var x = document.getElementById("formGridPassword");
@@ -196,126 +235,63 @@ class LoginContent extends Component {
             x.type = "password";
         }
     }
-
     changePasswordInputStyleIn() {
-        var element = document.querySelector("form > div:nth-child(5) > div:nth-child(2) > div");
-        element.style.boxShadow = "0 0 0 0.2rem rgba(0,123,255,.25)";
-
-        var element2 = document.getElementById("inputGroupPrepend");
-        element2.style.borderColor = "#80bdff";
-    }
-    changePasswordInputStyleOut() {
-        var element = document.querySelector("form > div:nth-child(5) > div:nth-child(2) > div");
-        element.style.boxShadow = "0 0 0 0 rgba(0,123,255,.25)";
+        var element = document.querySelector("form > div:nth-child(6) > div:nth-child(2) > div");
+        element.style.boxShadow = "0 5px 5px -5px black";
 
         var element2 = document.getElementById("inputGroupPrepend");
         element2.style.borderColor = "#ced4da";
+
+        var element3 = document.getElementById("formGridPassword");
+        element3.style.borderColor = "#ced4da";
     }
+    changePasswordInputStyleOut() {
+        var element3 = document.getElementById("formGridPassword");
+        element3.style.borderColor = "#ced4da";
 
-    checkRegulations() {
-        var element = document.getElementById("formBasicCheckbox");
-        this.state.formControll.regulations = element.checked;
+        var element = document.querySelector("form > div:nth-child(6) > div:nth-child(2) > div");
+        element.style.boxShadow = "0 3px 3px -3px black";
 
-        this.checkFormDataValid();
+        var element2 = document.getElementById("inputGroupPrepend");
+        element2.style.borderColor = "#ced4da";
+
     }
+    componentDidMount() {
+        this.adjustContent();
+    }
+    adjustContent() {
+        document.getElementsByClassName("auth-button-my")[0].disabled = true;
+        document.getElementById("root").style.height = "100%";
+        document.querySelector("#root > div.navbar-header > div > div.navbar-buttons").innerHTML = "<span class=\"navbar-button-active\">Załóż konto</span><a href=\"/logowanie\" id=\"login-button\">Zaloguj się</a>";
+    }
+    clearState() {
+        this.state.form.firstName = "";
+        this.state.form.lastName = "";
+        this.state.form.email = "";
+        this.state.form.password = "";
 
-    clearField() {
-        document.getElementById("formGridFirstName").value = "";
-        document.getElementById("formGridLastName").value = "";
-        document.getElementById("formGridEmail").value = "";
-        document.getElementById("formGridPassword").value = "";
-        document.getElementById("formBasicCheckbox").checked = false;
-        this.state.newUser.firstName = "";
-        this.state.newUser.lastName = "";
-        this.state.newUser.email = "";
-        this.state.newUser.password = "";
         this.state.formControll.firstName = false;
         this.state.formControll.lastName = false;
         this.state.formControll.email = false;
         this.state.formControll.password = false;
         this.state.formControll.regulations = false;
-        document.getElementsByClassName("login-button-my")[0].disabled = true;
-    }
 
-    submitFormAndSend(event) {
-        this.setState({modalLoadingMessage: true});
-        event.preventDefault();
-        superagent
-            .post('http://localhost:8080/api/users')
-            .send(this.state.newUser)
-            .end((err, res) => {
-                if(err) {
-                    if(res.body.message == "User exist."){
-                        this.setState({modalLoadingMessage: false});
-                        this.setState({modalFailedShow: true});
-                    } else
-                        alert("Registration failed");
-                        this.setState({modalLoadingMessage: false});
-                    return;
-                } else {
-                    this.clearField();
-                    this.setState({modalLoadingMessage: false});
-                    this.setState({modalSuccesShow: true});
-                }
-            }
-        );
-    }
-
-    closeModal() {
-        this.setState({modalSuccesShow: false});
-        this.setState({modalFailedShow: false});
-    }
-
-    componentDidMount() {
-        const loader = document.querySelector(".page-loading");
-        document.querySelector(".login-button-my.register-button-my").disabled = true;
-        window.onload = function() {
-            this.setTimeout(function() {
-                loader.classList.add("hidden");
-                this.setTimeout(function() {
-                    document.querySelector(".login-form-my").style = "display: block";
-                    document.querySelector("#login-back-button").style = "display: block";
-                    document.querySelector(".login-header-container").style = "display: block";
-                }, 200);
-            }, 600);
-        }
-    }
-
-    userRedirect(url) {
-        const form = document.querySelector(".login-form-my");
-        const backButton = document.querySelector("#login-back-button");
-        const header = document.querySelector(".login-header-container");
-
-        form.classList.remove("w3-animate-right-login-container");
-        form.classList.add("w3-animate-left-login-container");
-        backButton.classList.add("w3-animate-left-login-back-button");
-        backButton.classList.add("w3-animate-right-login-back-button");
-        header.classList.add("w3-animate-left-login-header");
-        header.classList.add("w3-animate-right-login-header");
-
-        setTimeout(function() {
-            form.style = "display: none";
-            backButton.style = "display: none";
-            header.style = "display: none";
-
-            setTimeout(function() {
-                window.location.href = url;
-            }, 200);
-        }, 600);
-    }
-
-    homeRedirect() {
-        this.userRedirect("/");
-    }
-
-    loginRedirect() {
-        this.userRedirect("/logowanie");
+        document.getElementById("formGridFirstName").value = "";
+        document.getElementById("formGridLastName").value = "";
+        document.getElementById("formGridEmail").value = "";
+        document.getElementById("formGridPassword").value = "";
+        document.getElementById("formBasicCheckbox").checked = false;
+        document.getElementsByClassName("auth-button-my")[0].disabled = true;
+        document.getElementById("form-value-alert-name").innerHTML = "";
+        document.getElementById("form-value-alert-lastName").innerHTML = "";
+        document.getElementById("form-value-alert-email").innerHTML = "";
+        document.getElementById("form-value-alert-password-span").innerHTML = "";
     }
 
     render() {
         const popover = (
             <Popover id="popover-basic">
-                <Popover.Title as="h2" className="tooltip-register-password-header"><b>Jakie hasło utworzyć?</b></Popover.Title>
+                <Popover.Title as="h3" className="tooltip-register-password-header"><b>Jakie hasło utworzyć?</b></Popover.Title>
                 <Popover.Content>
                     Hasło powinno zawierać:
                     <ul>
@@ -330,108 +306,105 @@ class LoginContent extends Component {
           );
 
         return (
-            <div class="background-image-container">
-                <PageLoading />
-                <div className="background-opcaity-container">
-                    <div className="login-header-container w3-animate-left-login-header"><span className="gradient-text">Rejestracja</span></div>
-                    <i className="fas fa-arrow-left home-link-register w3-animate-left-login-back-button" id="login-back-button" onClick={this.homeRedirect.bind(this)}></i>
-                    <img
-                        className="login-logo-my"
-                        src={ImageLogo}
-                    />
-                    <div className="login-form-my w3-animate-right-login-container register-form-my">
-                        <Form>
-                            <h3 className="gradient-text">Witaj!</h3>
-                            <p>Utworzenie konta zajmie Ci tylko <b>kilka sekund</b>.</p>
-                            <hr />
-                            <Form.Row>
-                                <Form.Group as={Col} controlId="formGridFirstName">
-                                    <Form.Label>Imię</Form.Label><span id="form-value-alert-name" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
-                                    <Form.Control placeholder="Wprowadź imię..." onChange={this.handleFirstNameChanged.bind(this)}/>
-                                </Form.Group>
+            <>
+                <div className="home-container" style={{height: "100%"}}>
+                    <div className="photo-section photo-login-register">
+                        <div className="opacity-background">
+                            <div className="auth-container">
+                            <div className="auth-content-container">
+                                <Form>
+                                    <h2 className="gradient-text">Rejestracja</h2>
+                                    <h4 className="gradient-text">Dołącz do społeczności ePortfolio!</h4>
+                                    <p>Utworzenie konta zajmie Ci tylko <b>chwile</b>.</p>
+                                    <hr style={{ marginBottom: "2rem"}}/>
+                                    <Form.Row>
+                                        <Form.Group as={Col} controlId="formGridFirstName">
+                                            <Form.Label>Imię:</Form.Label><span id="form-value-alert-name" className="form-value-alert"></span>
+                                            <Form.Control placeholder="Wprowadź imię..." onChange={this.handleFirstNameChanged.bind(this)} autoComplete="none"/>
+                                        </Form.Group>
 
-                                <Form.Group as={Col} controlId="formGridLastName">
-                                    <Form.Label>Nazwisko</Form.Label><span id="form-value-alert-lastName" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
-                                    <Form.Control placeholder="Wprowadź nazwisko..." onChange={this.handleLastNameChanged.bind(this)}/>
-                                </Form.Group>
-                            </Form.Row>
+                                        <Form.Group as={Col} controlId="formGridLastName">
+                                            <Form.Label>Nazwisko:</Form.Label><span id="form-value-alert-lastName" className="form-value-alert"></span>
+                                            <Form.Control placeholder="Wprowadź nazwisko..." onChange={this.handleLastNameChanged.bind(this)} autoComplete="none"/>
+                                        </Form.Group>
+                                    </Form.Row>
 
-                            <Form.Row>
-                                <Form.Group as={Col} controlId="formGridEmail">
-                                    <Form.Label>Email</Form.Label><span id="form-value-alert-email" className="form-value-alert"><sub>Podano nieprawidłową wartość.</sub></span>
-                                    <Form.Control placeholder="Wprowadź email..." onChange={this.handleEmailChanged.bind(this)}/>
-                                </Form.Group>
+                                    <Form.Row>
+                                        <Form.Group as={Col} controlId="formGridEmail">
+                                            <Form.Label>Email:</Form.Label><span id="form-value-alert-email" className="form-value-alert"></span>
+                                            <Form.Control placeholder="Wprowadź email..." onChange={this.handleEmailChanged.bind(this)} autoComplete="none"/>
+                                        </Form.Group>
 
-                                <Form.Group as={Col} controlId="formGridPassword">
-                                    <Form.Label>Hasło</Form.Label>
-                                    <span id="form-value-alert-password" className="form-value-alert">
-                                        <sub>Podano niepoprawne hasło. </sub>
-                                        <OverlayTrigger trigger="hover" placement="right" overlay={popover}>
-                                            <sub variant="success" id="register-password-tooltip"><i className="fas fa-question-circle"></i></sub>
-                                        </OverlayTrigger>
-                                    </span>
-                                    <InputGroup>
-                                        <Form.Control type="password" placeholder="Wprowadź hasło..." onChange={this.handlePasswordChanged.bind(this)} onFocus={this.changePasswordInputStyleIn} onBlur={this.changePasswordInputStyleOut}/>
-                                        <InputGroup.Prepend>
-                                            <InputGroup.Text id="inputGroupPrepend" onClick={this.showPassword}><i className="fas fa-eye w3-animate-opacity"></i><i className="fas fa-eye-slash w3-animate-opacity"></i></InputGroup.Text>
-                                        </InputGroup.Prepend>
-                                    </InputGroup>
-                                </Form.Group>
-                            </Form.Row>
-                            <Form.Group controlId="formBasicCheckbox">
-                                <Form.Check>
-                                    <Form.Check.Input type="checkbox" onClick={this.checkRegulations.bind(this)}/>
-                                    <Form.Check.Label>Zapoznałem się z <a id="checkbox-regulations-link" href="/regulamin" target="_blank">regulaminem</a> serwisu, oraz akceptuje jego warunki.</Form.Check.Label>
-                                </Form.Check>
-                            </Form.Group>
+                                        <Form.Group as={Col} controlId="formGridPassword">
+                                            <Form.Label>Hasło:</Form.Label>
+                                            <span id="form-value-alert-password" className="form-value-alert" style={{display: "none"}}>
+                                                <span id="form-value-alert-password-span"></span>
+                                                <OverlayTrigger trigger={["hover", "hover"]} placement="right" overlay={popover}>
+                                                    <sub variant="success" id="register-password-tooltip"><i className="fas fa-question-circle"></i></sub>
+                                                </OverlayTrigger>
+                                            </span>
+                                            <InputGroup>
+                                                <Form.Control type="password" placeholder="Wprowadź hasło..." onChange={this.handlePasswordChanged.bind(this)} onFocus={this.changePasswordInputStyleIn} onBlur={this.changePasswordInputStyleOut}/>
+                                                <InputGroup.Prepend>
+                                                    <InputGroup.Text id="inputGroupPrepend" onClick={this.showPassword}><i className="fas fa-eye w3-animate-opacity"></i><i className="fas fa-eye-slash w3-animate-opacity" style={{display: "none", width: "18px"}}></i></InputGroup.Text>
+                                                </InputGroup.Prepend>
+                                            </InputGroup>
+                                        </Form.Group>
+                                    </Form.Row>
+                                    <Form.Group controlId="formBasicCheckbox">
+                                        <Form.Check>
+                                            <Form.Check.Input type="checkbox" onClick={this.checkRegulations.bind(this)}/>
+                                            <Form.Check.Label>Zapoznałem się z <a id="checkbox-regulations-link" href="/regulamin" target="_blank">regulaminem</a> serwisu, oraz akceptuje jego warunki.</Form.Check.Label>
+                                        </Form.Check>
+                                    </Form.Group>
 
-                            <Button onClick={this.submitFormAndSend.bind(this)} type="button" variant="primary" className="login-button-my register-button-my" style={{float: 'right'}}>
-                                Utwórz konto
-                            </Button>
-
-                            <p className="register-have-account">Posiadasz już konto? <a onClick={this.loginRedirect.bind(this)} className="register-login-btn">Zaloguj się</a></p>
-                        </Form>
+                                    <Button onClick={this.submitFormAndSend.bind(this)} type="button" variant="primary" className="auth-button-my" style={{float: 'right'}}>
+                                        Utwórz konto
+                                    </Button>
+                                </Form>
+                            </div>
+                            </div>
+                        </div>
+                        <div id="footer" style={{height: "70px", background: "none", position: "fixed", bottom: 0, width: "100%"}}>
+                            <div className="width-divider">
+                                <p>ePortfolio &copy; 2020</p><p>Wszelkie prawa zastrzeżone</p>
+                            </div>
+                        </div>
                     </div>
-                    <Modal show={this.state.modalSuccesShow} size="lg" aria-labelledby="contained-modal-title-vcenter"  style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
-                        <Modal.Header style={{color: "#31b4cb", backgroundColor: "rgba(49, 180, 203, 0.15)"}}>
-                            <Modal.Title id="contained-modal-title-vcenter">
-                                Konto zostało utworzone!
+
+                    <Modal size="sm" show={this.state.modalSuccess} aria-labelledby="example-modal-sizes-title-sm" onHide={() => this.closeModal()}>
+                        <Modal.Header closeButton>
+                            <Modal.Title id="example-modal-sizes-title-sm" style={{textAlign: "center"}}>
+                                <i className="fas fa-check-circle success-modal-icon"></i>Tworzenie konta zakończone!
                             </Modal.Title>
                         </Modal.Header>
-                        <Modal.Body style={{textAlign: "center"}}>
-                            <i className="fas fa-check fa-5x" id="successIconModal"></i>
-                            <p style={{color: "#444"}}>
-                                Tworzenie konta zakończone. Na podany <b>adres email</b> został wysłany <b>link aktywacyjny</b>, potwierdź go aby móc się <b>zalogować</b>.
-                                <br /><b>Link</b> aktywacyjny będzie <b>ważny</b> przez <b>30 min</b>.
-                            </p>
+                        <Modal.Body>
+                            Na podany <b>adres email</b> został wysłany <b>link aktywacyjny</b>, potwierdź go aby móc się <b>zalogować</b>.
+                            <br /><b>Link</b> aktywacyjny będzie <b>ważny</b> przez <b>30 min</b>.
                         </Modal.Body>
-                        <Modal.Footer>
-                            <Button variant="link" onClick={this.closeModal.bind(this)} className="modal-close-btn">Zamknij</Button>
-                        </Modal.Footer>
                     </Modal>
-                    <Modal show={this.state.modalFailedShow} size="lg" aria-labelledby="contained-modal-title-vcenter" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
-                        <Modal.Header style={{color: "#de473c", backgroundColor: "rgba(222, 71, 60, 0.15)"}}>
-                            <Modal.Title id="contained-modal-title-vcenter">
-                                Konto nie zostało utworzone!
+
+                    <Modal size="sm" show={this.state.modalError} aria-labelledby="example-modal-sizes-title-sm" onHide={() => this.closeModal()}>
+                        <Modal.Header closeButton className="modal-header-error">
+                            <Modal.Title id="example-modal-sizes-title-sm" style={{textAlign: "center"}}>
+                                <i className="fas fa-times-circle success-modal-icon"></i>Tworzenie konta nieudane!
                             </Modal.Title>
                         </Modal.Header>
-                        <Modal.Body style={{textAlign: "center"}}>
-                            <i className="fas fa-exclamation fa-5x" id="successIconModal" style={{color: "#de473c"}}></i>
-                            <p style={{color: "#444"}}>
-                                Konto <b>nie zostało</b> utworzone, ponieważ <b>istnieje</b> użytkownik z podanym adresem email. Spróbuj ponownie z <b>innym</b> adresem email.
-                            </p>
+                        <Modal.Body>
+                            Z nieznanych powodów <b>nie udało się</b> utworzyć konta.
+                            <br/>Spróbuj ponownie <b>później</b>.
                         </Modal.Body>
-                        <Modal.Footer>
-                            <Button variant="link" className="modal-close-btn" onClick={this.closeModal.bind(this)}>Zamknij</Button>
-                        </Modal.Footer>
                     </Modal>
-                    <Modal show={this.state.modalLoadingMessage} id="container-spinner-modal-register-request" style={{backgroundColor: "rgba(0,0,0,0.4)"}} centered>
-                        <Spinner animation="grow" variant="light" id="spinner-modal-register-request"/>
+
+                    <Modal show={this.state.modalLoading} id="spinner-container" aria-labelledby="contained-modal-title-vcenter" centered>
+                        <Modal.Body>
+                            <Spinner animation="grow e-spinner"/>
+                        </Modal.Body>
                     </Modal>
                 </div>
-            </div>
+            </>
         )
     }
 }
 
-export default LoginContent;
+export default RegisterContent;

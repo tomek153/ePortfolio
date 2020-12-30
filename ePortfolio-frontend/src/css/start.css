@@ -2,6 +2,7 @@ html, body {
     height: 100%;
     background-color: #f2f1f1;
     color: #444;
+    scrollbar-width: none;
 }
 
 .home-container {
@@ -12,14 +13,43 @@ html, body {
 .navbar-header {
     background-color: unset!important;
     background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.3), rgba(0,0,0,0.001));
-    position: fixed;
+    position: sticky;
+    margin-bottom: -100px;
+    top: 0;
     z-index: 100;
     width: 100%;
     height: 100px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    transition: ease .5s;
 }
 .navbar-header-dark {
     background: linear-gradient(rgba(20,20,20,0.9), rgba(20,20,20,0.9));
+    height: 60px;
+    margin-bottom: -60px;
+    transition: ease .5s;
+}
+.navbar-header-dark > div > div.navbar-links {
+    height: 60px;
+}
+.navbar-header-dark > div > div.navbar-links > a {
+    height: 52.5px;
+    margin: 7.5px 0px 10px 0px;
+}
+.navbar-header-dark > div > div.navbar-buttons {
+    margin: 11px 0px;
+    height: 38px;
+    padding: 0px 6px 0px 6px;
+}
+.navbar-header-dark > div > div.navbar-buttons > a {
+    padding: 7px 22px;
+}
+.navbar-header-dark > div > div.navbar-buttons > a#login-button {
+    padding: 5px 20px;
+}
+.navbar-header-dark > div > img {
+    content: url("../images/logo-2.png");
+    margin: 7.4px 0px;
+    width: 160px;
+    padding: 0px 13.5px;
 }
 .header-image-logo {
     margin: 12.5px 0;
@@ -27,6 +57,7 @@ html, body {
     vertical-align: unset!important;
     padding: 0px;
     width: 160px;
+    transition: ease .5s;
 }
 .photo-section {
     width: 100%;
@@ -49,33 +80,37 @@ html, body {
 }
 .navbar-links {
     width: calc(100% - 460px);
-    height: 150px;
+    height: 100px;
     float: left;
     text-align: center;
 }
 .navbar-links > a {
-    margin: 30px 0px;
+    margin: 30px 0px 0px 0px;
     padding: 10px 20px;
     display: inline-block;
     height: 70px;
     text-align: center;
-    transition: color .3s ease;
     color: #f2f1f1;
     text-transform: uppercase;
     font-weight: bold;
+    transition: ease .5s;
+    transition-property: margin, padding, color;
 }
 .navbar-links > a:hover {
-    height: 69px;
+    height: 67px;
     cursor: pointer;
     color: #31b4cb;
-    border-bottom: 2px solid #31b4cb;
+    border-bottom: 3px solid #31b4cb;
+    text-decoration: none;
 }
 .navbar-buttons {
-    width: 300px;
+    width: 273px;
     height: 44px;
     margin: 28px 0;
     float: left;
     text-align: center;
+    transition: ease .5s;
+    transition-property: height, margin;
 }
 .navbar-buttons > a {
     display: block;
@@ -85,13 +120,16 @@ html, body {
     text-align: center;
     border-radius: 2em;
     box-shadow: 0 10px 10px -10px black;
-    transition:  .3s ease;
+    color: #444;
+    transition: .3s ease;
+    transition-property: background-color, border-color, color;
 }
 .navbar-buttons > a:hover {
     cursor: pointer;
     box-shadow: 0 15px 15px -15px black;
     background-color: #31b4cb;
     color: #f2f1f1;
+    text-decoration: none;
 }
 #login-button {
     margin-right: 10px;
@@ -108,6 +146,7 @@ html, body {
 .home-content {
     width: 100%;
     margin: 0;
+    box-shadow: 0 15px 15px 15px black;
 }
 .content-header {
     width: 100%;
@@ -148,14 +187,18 @@ h1 {
 .offer-brochure {
     width: 610px;
     margin: 0 auto;
-    padding: 40px 60px;
-    box-shadow: 0 10px 20px -10px black;
-    border-radius: 50px;
-    background-color: #fefefe;
+    padding: 40px 50px;
+    box-shadow: 0 20px 20px -20px black;
+    border-radius: 10px;
+    background-color: #5599a6;
+    color: #fefefe;
+}
+ul {
+    margin-bottom: 5px;
 }
 ul > li {
-    font-size: 19px;
-    padding: 10px 0px;
+    font-size: 18px;
+    padding: 5px 0px;
     text-align: left;
 }
 ul > li > p {
@@ -167,9 +210,6 @@ ul > li > p {
     font-size: 35px;
     text-shadow: 1px 0px 1px #444;
 }
-hr {
-    margin-left: -40px;
-}
 #offer-header {
     background-color: #5599a6;
 }
@@ -178,7 +218,10 @@ hr {
     border-color: #fefefe;
 }
 #offer-content {
-    background-color: #5599a6;
+    background-image: url("../images/background-second.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 #contact-header {
     background-color: #ededed;
@@ -187,7 +230,7 @@ hr {
     background-color: #ededed;
 }
 #footer {
-    background-color: #444;
+    background: linear-gradient(rgba(68, 68, 68,0.9), rgba(68, 68, 68,0.95), rgba(68, 68, 68,1.0))
 }
 #footer > div > p {
     color: #fefefe;
@@ -200,6 +243,7 @@ hr {
     font-size: 13px;
 }
 #form-send-button {
+    max-width: 117px;
     font-size: 25px;
     width: inherit;
     border-radius: 2em;
@@ -210,16 +254,24 @@ hr {
     color: #31b4cb;
     box-shadow: 0 10px 10px -10px black;
 }
-.input-group-prepend > span {
-    background-color: #31b4cb;
-    color: #fefefe;
+#form-send-button:disabled {
+    border: 2px solid #5599a6;
+    color: #5599a6;
+    box-shadow: none;
 }
-#form-send-button:hover {
+#form-send-button:disabled {
+    cursor: auto;
+}
+#form-send-button:enabled:hover {
     border-color: #31b4cb;
     background-color: #31b4cb;
     color: #fefefe;
     box-shadow: 0 10px 10px -10px black;
     cursor: pointer;
+}
+.input-group-prepend > span {
+  background-color: #31b4cb;
+  color: #fefefe;
 }
 .login-form-my {
     width: 60%;
@@ -273,6 +325,72 @@ hr {
     background-color: #31b4cb;
     color: #fefefe;
     border-color: #31b4cb;
+}
+.modal-body {
+    text-align: center;
+}
+.modal-header {
+    text-align: center;
+    border: none;
+}
+.modal-sm {
+    max-width: 600px;
+}
+.modal-title {
+    font-size: 17px;
+}
+.success-modal-icon {
+    margin-right: 15px;
+    font-size: 18px;
+    color: #fefefe;
+    text-shadow: 1px 0px 1px #444;
+}
+input.form-control:focus {
+    box-shadow: none;
+}
+textarea.form-control:focus {
+    box-shadow: none;
+}
+.e-spinner {
+    background: radial-gradient(rgba(237, 229, 118, 0.3), rgba(237, 229, 118, 0.5), rgba(237, 229, 118, 1.00));
+    width: 6rem;
+    height: 6rem;
+}
+#spinner-container > div {
+    background-color: unset;
+    border: none;
+}
+.photo-login-register {
+    height: 100%;
+}
+.resend-link-button {
+    color: #fff;
+    background-color: #31b4cb;
+    border-color: #31b4cb;
+    box-shadow: 0px 5px 5px -5px #000;
+    transition: ease-in-out .3s;
+    float: right;
+}
+.resend-link-button:hover {
+    box-shadow: 0px 8px 8px -8px #000;
+    background-color: #20a3ba;
+    border-color: #20a3ba;
+}
+.resend-link-button:focus {
+    box-shadow: 0px 0px 4px 0px #000;
+    background-color: #20a3ba;
+    border-color: #20a3ba;
+}
+.resend-link-button:active {
+    box-shadow: 0px 0px 4px 0px #000!important;
+    background-color: #20a3ba!important;
+    border-color: #20a3ba!important;
+}
+#resend-link-spinner {
+    margin-left: 37px;
+    margin-right: 37px;
+    color: #31b4cb!important;
+    float: right;
 }
 /*
 

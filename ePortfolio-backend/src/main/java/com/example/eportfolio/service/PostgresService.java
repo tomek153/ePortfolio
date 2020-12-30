@@ -2,6 +2,7 @@ package com.example.eportfolio.service;
 
 import com.example.eportfolio.dao.UserBioDao;
 import com.example.eportfolio.dao.UserDao;
+import com.example.eportfolio.model.ResetPasswordRequest;
 import com.example.eportfolio.model.User;
 import com.example.eportfolio.model.UserBio;
 import com.example.eportfolio.smtp.EmailService;
@@ -107,14 +108,12 @@ public class PostgresService implements UserDao, UserBioDao {
             return 0;
     }
 
-    public int changePassword(User user){
+    public int changePassword(ResetPasswordRequest resetPasswordRequest){
 
-        final String sqlFirst = "SELECT * FROM users WHERE id ='" + user.getId() + "'";
+        final String sqlFirst = "SELECT * FROM users WHERE id = ?";
         String sqlChangePassword;
-        String emailKey;
-        String idKey;
 
-        List<User> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
+        List<User> listFind = jdbcTemplate.query(sqlFirst, new Object[]{resetPasswordRequest.getUser_uuid()}, (resultSet, i) -> {
             return new User(
                     UUID.fromString(resultSet.getString("id")),
                     resultSet.getString("first_name"),
@@ -127,25 +126,21 @@ public class PostgresService implements UserDao, UserBioDao {
         });
 
         if (listFind.isEmpty()) {
-            System.out.println("User");
             return 0;
         } else{
-            //System.out.println(user.getId() + " =? " + listFind.get(0).getId());
             sqlChangePassword = "UPDATE users SET password = "+
-                    "md5('"+user.getPassword()+"')"+
-                    "where id ='"+ listFind.get(0).getId() +"'";
+                    "md5('" + resetPasswordRequest.getPassword() + "')"+
+                    "where id ='" + resetPasswordRequest.getUser_uuid() + "'";
             jdbcTemplate.execute(sqlChangePassword);
-            jdbcTemplate.execute("UPDATE reset_password_emails SET status = true WHERE user_uuid IN('"+user.getId()+"');");
+            jdbcTemplate.execute("UPDATE reset_password_emails SET status = true WHERE user_uuid IN('" + resetPasswordRequest.getUser_uuid() + "');");
 
-        return 1;
+            return 1;
         }
     }
 
     @Override
-    public int resetPasswordRequest(User user){
-        final String sqlFirst = "SELECT * FROM users WHERE email = '"+user.getEmail()+"'";
-        String emailKey;
-        String idKey;
+    public int resetPasswordRequest(String email){
+        String sqlFirst = "SELECT * FROM users WHERE email = ?";
 
         List<User> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
             return new User(
@@ -157,39 +152,36 @@ public class PostgresService implements UserDao, UserBioDao {
                     resultSet.getString("role"),
                     resultSet.getBoolean("confirmed")
             );
-        });
+        }, email);
 
         if (listFind.isEmpty()) {
            return 0;
-        } else
+        } else {
             try {
-                final String deactivateExistingResetPasswordLinks = "UPDATE reset_password_emails SET status = true WHERE" +
-                        " user_uuid = (SELECT id FROM users WHERE email IN('" +user.getEmail()+"') limit 1)";
+                User user = listFind.get(0);
+
+                final String deactivateExistingResetPasswordLinks = "UPDATE reset_password_emails SET status = true WHERE user_uuid = '"+user.getId()+"'";
                 jdbcTemplate.execute(deactivateExistingResetPasswordLinks);
 
                 final String addResetPasswordEmailSQL = "INSERT INTO reset_password_emails (id, user_uuid, status) VALUES (" +
                         "uuid_generate_v4(), " +
-                        "(SELECT id FROM users WHERE email IN('"+user.getEmail()+"')), "+
+                        "'" + user.getId() + "', " +
                         "false )";
                 jdbcTemplate.execute(addResetPasswordEmailSQL);
 
-                String getEmailKey = "SELECT id FROM reset_password_emails WHERE user_uuid IN (SELECT id FROM users WHERE email = '"+user.getEmail()+"') ORDER BY time_stamp desc limit 1";
-                emailKey = jdbcTemplate.queryForObject(getEmailKey, new Object[]{}, (resultSet, i) -> {
-                    return new String (resultSet.getString("id"));
-                });
-                String getIdKey = "SELECT id FROM users WHERE email IN ('"+user.getEmail()+"')";
-                idKey = jdbcTemplate.queryForObject(getIdKey, new Object[]{}, (resultSet, i) -> {
-                    return new String (resultSet.getString("id"));
+                String getEmailKey = "SELECT id FROM reset_password_emails WHERE user_uuid = ? AND status = false";
+                String emailKey = jdbcTemplate.queryForObject(getEmailKey, new Object[]{user.getId()}, (resultSet, i) -> {
+                    return new String(resultSet.getString("id"));
                 });
 
                 Map<String, Object> model = new HashMap<>();
-                model.put("Name", listFind.get(0).getFirstName());
+                model.put("Name", user.getFirstName());
                 model.put("location", "Poznań, Polska");
-                model.put( "idKey", idKey);
-                model.put( "linkKey", emailKey);
+                model.put("idKey", user.getId());
+                model.put("linkKey", emailKey);
 
-                MailRequestModel request = new MailRequestModel(user.getFirstName(), user.getEmail(), "ePortfolio", "ePortfolio | Resetowanie hasła");
-                MailResponseModel response =  service.sendResetPasswordEmail(request, model);
+                MailRequestModel request = new MailRequestModel(user.getFirstName(), email, "ePortfolio", "ePortfolio | Resetowanie hasła");
+                MailResponseModel response = service.sendResetPasswordEmail(request, model);
 
                 if (response.isStatus())
                     return 1;
@@ -201,6 +193,7 @@ public class PostgresService implements UserDao, UserBioDao {
                 System.err.println("Problem na etapie wysyłania maila resetowania hasła");
                 return 0;
             }
+        }
     }
     @Override
     public List<User> getUsers() {
@@ -220,25 +213,22 @@ public class PostgresService implements UserDao, UserBioDao {
     }
 
     @Override
-    public Optional<User> getUserByEmail(String email) {
-        final String sql = "SELECT * FROM users WHERE email = ?";
+    public boolean checkUserExistByEmail(String email) {
+        final String sql = "SELECT * FROM users WHERE email = '"+email+"'";
 
-        User user = jdbcTemplate.queryForObject(
-            sql,
-            new Object[]{email},
-            (resultSet, i) -> {
-                return new User(
-                        UUID.fromString(resultSet.getString("id")),
-                        resultSet.getString("first_name"),
-                        resultSet.getString("last_name"),
-                        resultSet.getString("email"),
-                        resultSet.getString("password"),
-                        resultSet.getString("role"),
-                        resultSet.getBoolean("confirmed")
-                );
-            }
-        );
-        return Optional.ofNullable(user);
+        List<User> listFind = jdbcTemplate.query(sql, (resultSet, i) -> {
+            return new User(
+                    UUID.fromString(resultSet.getString("id")),
+                    resultSet.getString("first_name"),
+                    resultSet.getString("last_name"),
+                    resultSet.getString("email"),
+                    resultSet.getString("password"),
+                    resultSet.getString("role"),
+                    resultSet.getBoolean("confirmed")
+            );
+        });
+
+        return !listFind.isEmpty();
     }
 
     @Override

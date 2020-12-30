@@ -1,5 +1,6 @@
 package com.example.eportfolio.dao;
 
+import com.example.eportfolio.model.ResetPasswordRequest;
 import com.example.eportfolio.model.User;
 import java.util.List;
 import java.util.Optional;
@@ -16,13 +17,11 @@ public interface UserDao {
 
     List<User> getUsers();
 
-    int changePassword(User user);
+    int changePassword(ResetPasswordRequest resetPasswordRequest);
 
-    Optional<User> getUserByEmail(String email);
+    boolean checkUserExistByEmail(String email);
 
-
-
-    int resetPasswordRequest(User user);
+    int resetPasswordRequest(String email);
 
     Optional<User> getUserByID(UUID id);
 

@@ -2,36 +2,20 @@ package com.example.eportfolio.smtp;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 @Data
 public class LinkMailRequestModel {
-    @NotNull
-    private UUID idKey;
-    @NotNull
-    private UUID registerKey;
+    @NotNull @Getter @Setter private UUID id;
+    @NotNull @Getter @Setter private UUID userId;
 
-    public LinkMailRequestModel(@JsonProperty("idKey") UUID idKey,
-                                @JsonProperty("registerKey") UUID registerKey) {
-        this.idKey = idKey;
-        this.registerKey = registerKey;
-    }
-
-    public UUID getIdKey() {
-        return idKey;
-    }
-
-    public void setIdKey(UUID idKey) {
-        this.idKey = idKey;
-    }
-
-    public UUID getRegisterKey() {
-        return registerKey;
-    }
-
-    public void setRegisterKey(UUID registerKey) {
-        this.registerKey = registerKey;
+    public LinkMailRequestModel(@JsonProperty("linkId") UUID id,
+                                @JsonProperty("userId") UUID userId) {
+        this.id = id;
+        this.userId = userId;
     }
 }

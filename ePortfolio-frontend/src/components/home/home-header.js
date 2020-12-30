@@ -11,6 +11,9 @@ import LogoImage from '../../images/logo.png';
 class HomeHeader extends Component {
 
     componentDidMount() {
+        this.navigationScrollAdjust();
+    }
+    navigationScrollAdjust() {
         var header = document.getElementsByClassName("navbar-header")[0];
         window.onscroll = function() {
           if (window.pageYOffset > 0) {
@@ -21,53 +24,22 @@ class HomeHeader extends Component {
         }
     }
 
-    redirectAnimation(href) {
-        const nav = document.querySelector(".navbar-my");
-        const form = document.querySelector(".home-info-container");
-
-        nav.classList.remove("animate-nav-in");
-        nav.classList.add("animate-nav-out");
-        form.classList.remove("w3-animate-right-home-container");
-        form.classList.add("w3-animate-left-home-container");
-
-        setTimeout(function() {
-            nav.style = "display: none";
-            form.style = "display: none";
-
-            setTimeout(function() {
-                window.location.href = href;
-            }, 200);
-        }, 600);
-    }
-
-    registerRedirect() {
-        this.redirectAnimation("/rejestracja");
-    }
-
-    loginRedirect() {
-        this.redirectAnimation("/logowanie");
-    }
-
-    contactRedirect() {
-        this.redirectAnimation("/kontakt");
-    }
-
     render() {
         return (
             <>
                 <div className="navbar-header">
                     <div className="width-divider">
-                        <Image src={LogoImage} className="header-image-logo"/>
+                        <a href="/"><Image src={LogoImage} className="header-image-logo"/></a>
                         <div className="navbar-links">
-                            <a>Czym jest?</a>
-                            <a>Oferta</a>
-                            <a>Kontakt</a>
+                            <a href="/#czym-jest">Czym jest?</a>
+                            <a href="/#oferta">Oferta</a>
+                            <a href="/#kontakt">Kontakt</a>
                             <a>Szukaj</a>
 
                         </div>
                         <div className="navbar-buttons">
-                            <a>Załóż konto</a>
-                            <a id="login-button">Zaloguj się</a>
+                            <a href="/rejestracja">Załóż konto</a>
+                            <a href="/logowanie" id="login-button">Zaloguj się</a>
                         </div>
                     </div>
                 </div>
@@ -77,19 +49,3 @@ class HomeHeader extends Component {
 }
 
 export default HomeHeader;
-
-// <a>Kontakt</a>
-// <a>Logowanie</a>
-// <a>Rejestracja</a>
-
-// <Navbar bg="light" variant="light">
-//     <div className="width-content">
-//         <Navbar.Brand href="/" className="mr-auto">
-//             <Image src={LogoImage} fluid className="header-image-logo"/>
-//         </Navbar.Brand>
-//         <Button variant="link" className="header-btn-my header-home-links header-btn-shadow" onClick={this.contactRedirect.bind(this)}>Kontakt</Button>
-//         <div className="header-divider"></div>
-//         <Button variant="link" className="header-btn-my header-btn-login-my" onClick={this.loginRedirect.bind(this)}>Zaloguj</Button>
-//         <Button variant="link" className="header-btn-my header-btn-register-my header-btn-shadow" onClick={this.registerRedirect.bind(this)} style={{marginRight: "0"}}>Rejestracja</Button>
-//     </div>
-// </Navbar>

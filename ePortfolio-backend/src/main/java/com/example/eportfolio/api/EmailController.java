@@ -32,8 +32,8 @@ public class EmailController {
     @RequestMapping(value = "/email/resend", method = POST)
     public MailResponseModel reSendEmail(@RequestBody LinkMailRequestModel request) {
         Map<String, Object> model = new HashMap<>();
-        model.put("idKey", request.getIdKey());
-        model.put("linkKey", request.getRegisterKey());
+        model.put("idKey", request.getUserId());
+        model.put("linkKey", request.getId());
         return service.reSendRegisterEmail(request, model);
     }
 

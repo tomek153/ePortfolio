@@ -1,22 +1,12 @@
 import React, { Component } from 'react';
-import Carousel from 'react-bootstrap/Carousel';
-import Image from 'react-bootstrap/Image';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
-import FormControl from 'react-bootstrap/FormControl';
 import Modal from 'react-bootstrap/Modal';
 import Spinner from 'react-bootstrap/Spinner';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
 import superagent from 'superagent';
-
-import LogoImage from '../../images/logo-2.png';
-import ScreenImage from '../../images/system-screen.png';
-import styles from '../../css/auth.css';
 
 class RegisterContent extends Component {
 
@@ -169,28 +159,34 @@ class RegisterContent extends Component {
             }
         );
 
-        fetch(request)
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                this.setState({modalLoading: false});
+        if (this.state.formControll.email &&
+            this.state.formControll.password
+          ){
+            fetch(request)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    this.setState({modalLoading: false});
 
-                if (data.message == "authentication_failed.")
-                    this.setState({modalAuthFailed: true});
-                else if (data.message == "user_unconfirmed.") {
-                    this.state.userId = data.userId;
-                    this.setState({modalUserUnconfirmed: true});
-                    this.setState({reSendButton: "block"});
-                }
-                // } else if (data.message == "Authentication success.") {
-                //     localStorage.setItem('token', data.token);
-                //     this.userRedirect("/moj-profil");
-                // else {
-                //     console.log(data);
-                //     alert("Unknown error.");
-                // }
-            }
-        );
+                    if (data.message == "authentication_failed.")
+                        this.setState({modalAuthFailed: true});
+                    else if (data.message == "user_unconfirmed.") {
+                        this.state.userId = data.userId;
+                        this.setState({modalUserUnconfirmed: true});
+                        this.setState({reSendButton: "block"});
+                    }
+                    // } else if (data.message == "Authentication success.") {
+                    //     localStorage.setItem('token', data.token);
+                    //     this.userRedirect("/moj-profil");
+                    // else {
+                    //     console.log(data);
+                    //     alert("Unknown error.");
+                    // }
+                });
+        } else {
+            this.setState({modalLoading: false});
+            this.setState({modalError: true});
+        }
     }
     sendResetPassRequest(event) {
         this.setState({modalLoading: true});
@@ -207,26 +203,32 @@ class RegisterContent extends Component {
             }
         );
 
-        fetch(request)
-            .then(response => {
-                this.clearResetPassState()
+        if (this.state.formControll.emailReset) {
+            fetch(request)
+              .then(response => {
+                  this.clearResetPassState()
 
-                if (response) {
-                    if (response.status == 200) {
-                        this.setState({modalLoading: false});
-                        this.setState({modalResetPassSuccess: true});
-                    } else if (response.status == 405) {
-                        this.setState({modalLoading: false});
-                        this.setState({modalResetPassFailed: true});
-                    } else {
-                        this.setState({modalLoading: false});
-                        this.setState({modalError: true});
-                    }
-                } else {
-                    this.setState({modalLoading: false});
-                    this.setState({modalError: true});
-                }
-            });
+                  if (response) {
+                      if (response.status == 200) {
+                          this.setState({modalLoading: false});
+                          this.setState({modalResetPassSuccess: true});
+                      } else if (response.status == 405) {
+                          this.setState({modalLoading: false});
+                          this.setState({modalResetPassFailed: true});
+                      } else {
+                          this.setState({modalLoading: false});
+                          this.setState({modalError: true});
+                      }
+                  } else {
+                      this.setState({modalLoading: false});
+                      this.setState({modalError: true});
+                  }
+              });
+        } else {
+            this.setState({modalLoading: false});
+            this.setState({modalError: true});
+            document.getElementById("reset-pass-button").disabled = true;
+        }
     }
     reSendConfirmationLink(event) {
         document.getElementsByClassName("resend-link-button")[0].style.display = "none";
@@ -456,7 +458,7 @@ class RegisterContent extends Component {
                         </div>
                     </div>
 
-                    <Modal size="sm" show={this.state.modalError} aria-labelledby="example-modal-sizes-title-sm" onHide={() => this.closeModalAndRedirect()}>
+                    <Modal size="sm" show={this.state.modalError} aria-labelledby="example-modal-sizes-title-sm" onHide={() => this.closeModal()}>
                         <Modal.Header closeButton className="modal-header-error">
                             <Modal.Title id="example-modal-sizes-title-sm" style={{textAlign: "center"}}>
                                 <i className="fas fa-times-circle success-modal-icon"></i>Coś poszło nie tak!

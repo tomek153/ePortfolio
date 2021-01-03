@@ -16,7 +16,6 @@ import LogoImage from '../../images/logo-2.png';
 import ScreenImage from '../../images/system-screen.png';
 
 class HomeContent extends Component {
-
     constructor() {
         super();
         this.state = {
@@ -37,6 +36,7 @@ class HomeContent extends Component {
             },
             modalSuccess: false,
             modalLoading: false,
+            modalError: false,
             scrollbarWidth: 0
         }
     }
@@ -44,6 +44,7 @@ class HomeContent extends Component {
     closeModal() {
         this.setState({modalSuccess: false});
         this.setState({modalLoading: false});
+        this.setState({modalError: false});
     }
     modalShow(modalName) {
         switch (modalName) {
@@ -56,24 +57,29 @@ class HomeContent extends Component {
         }
     }
     sendEmailForm() {
-        this.modalShow("loading");
-        superagent
-            .post('http://localhost:8080/email/contact-message')
-            .send(this.state.form)
-            .end((err, res) => {
-                this.closeModal();
-                if(err) {
-                        alert("Error");
-                    return;
-                } else {
-                    this.modalShow("success");
-                    this.clearState();
-                    this.checkFormDataValid();
-                }
-            }
-        );
+        if (this.state.formControll.name &&
+            this.state.formControll.email &&
+            this.state.formControll.message
+          ){
+            this.modalShow("loading");
+            superagent
+              .post('http://localhost:8080/email/contact-message')
+              .send(this.state.form)
+              .end((err, res) => {
+                  this.closeModal();
+                  if(err) {
+                      this.setState({modalError: true});
+                  } else {
+                      this.modalShow("success");
+                      this.clearState();
+                      this.checkFormDataValid();
+                  }
+              });
+        } else {
+            this.setState({modalError: true});
+            this.checkFormDataValid();
+        }
     }
-
     clearState() {
         this.state.form.name = "";
         this.state.form.email = "";
@@ -98,8 +104,6 @@ class HomeContent extends Component {
         } else {
             element.disabled = true;
         }
-
-        console.log(this.state.formControll.name+" | "+this.state.formControll.email+" | "+this.state.formControll.message);
     }
     handleEmailChanged(event) {
         let value = event.target.value
@@ -176,25 +180,10 @@ class HomeContent extends Component {
 
         this.checkFormDataValid();
     }
-
     componentDidMount() {
         this.getScrollbarWidth();
         this.clearState();
         this.checkFormDataValid();
-
-        // const nav = document.querySelector(".navbar-my");
-        // const loader = document.querySelector(".page-loading");
-        //
-        // window.onload = function() {
-        //     this.setTimeout(function() {
-        //         loader.classList.add("hidden");
-        //         this.setTimeout(function() {
-        //             nav.style = "visibility: visible";
-        //             nav.classList.add("animate-nav-in");
-        //             document.querySelector(".home-info-container").style = "display: block";
-        //         }, 200);
-        //     }, 600);
-        // }
     }
     getScrollbarWidth() {
         // Creating invisible container
@@ -324,6 +313,15 @@ class HomeContent extends Component {
                             </div>
                         </div>
                     </div>
+
+                    <Modal size="sm" show={this.state.modalError} aria-labelledby="example-modal-sizes-title-sm" onHide={() => this.closeModal()}>
+                        <Modal.Header closeButton className="modal-header-error">
+                            <Modal.Title id="example-modal-sizes-title-sm" style={{textAlign: "center"}}>
+                                <i className="fas fa-times-circle success-modal-icon"></i>Coś poszło nie tak!
+                            </Modal.Title>
+                        </Modal.Header>
+                    </Modal>
+
                     <Modal size="sm" show={this.state.modalSuccess} aria-labelledby="example-modal-sizes-title-sm" onHide={() => this.closeModal()}>
                         <Modal.Header closeButton>
                             <Modal.Title id="example-modal-sizes-title-sm" style={{textAlign: "center"}}>
@@ -331,6 +329,7 @@ class HomeContent extends Component {
                             </Modal.Title>
                         </Modal.Header>
                     </Modal>
+
                     <Modal show={this.state.modalLoading} id="spinner-container" aria-labelledby="contained-modal-title-vcenter" centered>
                         <Modal.Body>
                             <Spinner animation="grow e-spinner"/>
@@ -343,32 +342,3 @@ class HomeContent extends Component {
 }
 
 export default HomeContent;
-
-// <div className="background-image-container">
-//     <PageLoading />
-//     <div className="background-opcaity-container">
-//         <div className="home-info-container">
-//             <div style={{float: "left", width: "60%", minHeight: "450px"}}>
-//                 <h1 className="gradient-text">Czym jest ePortfolio?</h1>
-//                 <hr />
-//                 <br />
-//                 <p style={{color: "#444"}}>&nbsp;&nbsp;Lorem Ipsum jest tekstem stosowanym jako przykładowy wypełniacz w przemyśle poligraficznym. Został po raz pierwszy użyty w XV w. przez nieznanego drukarza do wypełnienia tekstem próbnej książki. Pięć wieków później zaczął być używany przemyśle elektronicznym, pozostając praktycznie niezmienionym. Spopularyzował się w latach 60. XX w. wraz z publikacją arkuszy Letrasetu, zawierających fragmenty Lorem Ipsum.</p>
-//                 <p style={{color: "#444"}}>Ogólnie znana teza głosi, iż użytkownika może rozpraszać zrozumiała zawartość strony, kiedy ten chce zobaczyć sam jej wygląd. Jedną z mocnych stron używania Lorem Ipsum jest to, że ma wiele różnych „kombinacji” zdań, słów i akapitów, w przeciwieństwie do zwykłego: „tekst, tekst, tekst”, sprawiającego, że wygląda to „zbyt czytelnie” po polsku.</p>
-//             </div>
-//             <div style={{float: "left", width: "40%", textAlign: "center", minHeight: "450px"}}>
-//                 <div style={{width: "50%", minHeight: "450px", float: "left", display: "table", textAlign: "right"}}>
-//                     <i className="fas fa-briefcase middle" style={{fontSize: "7.5em", color: "#eb4a4a"}}></i>
-//                 </div>
-//                 <div style={{width: "50%", float: "left", display: "table", minHeight: "450px"}}>
-//                     <div className="middle">
-//                         <i className="fas fa-laptop-house" style={{fontSize: "7.5em", marginBottom: "25px", color: "#dcd465"}}></i>
-//                         <i className="fas fa-globe-europe" style={{fontSize: "7.5em", marginTop: "25px", color: "#31b4cb"}}></i>
-//                     </div>
-//                 </div>
-//             </div>
-//         </div>
-//     </div>
-// </div>
-// <div className="carousel-home-content">
-//
-// </div>

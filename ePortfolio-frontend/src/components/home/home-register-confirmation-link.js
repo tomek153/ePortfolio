@@ -27,24 +27,6 @@ class ConfirmationLinkSuccess extends Component {
         }
     }
 
-    getLinkStatus(event) {
-        event.preventDefault();
-        superagent
-            .post('http://localhost:8080/email/resend')
-            .send(this.state.reqBody)
-            .end((err, res) => {
-                if(err) {
-                    if(res.body.message == "User exist."){
-                        this.setState({modalFailedShow: true});
-                    } else
-                        alert("Registration failed");
-                    return;
-                } else {
-                    this.setState({modalSuccesShow: true});
-                }
-            }
-        );
-    }
     reSendConfirmationLink(event) {
 
         document.getElementsByClassName("resend-link-button")[0].style.display = "none";
@@ -128,6 +110,10 @@ class ConfirmationLinkSuccess extends Component {
                                    data.message == "not_found") {
                             this.setState({modalLoading: false});
                             window.location.href = "/nie-znaleziono";
+                        } else if (data.status == true &&
+                                   data.message == "success") {
+                            this.setState({modalLoading: false});
+                            this.setState({modalSuccesShow: true});
                         } else {
                             this.setState({modalLoading: false});
                             this.setState({modalError: true});

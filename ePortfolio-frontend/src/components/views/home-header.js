@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import Image from 'react-bootstrap/Image';
 
-import '../../css/start.css';
 import LogoImage from '../../images/logo.png';
 
 class HomeHeader extends Component {

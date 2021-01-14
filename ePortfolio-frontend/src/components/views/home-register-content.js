@@ -1,22 +1,17 @@
 import React, { Component } from 'react';
-import Carousel from 'react-bootstrap/Carousel';
-import Image from 'react-bootstrap/Image';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
-import FormControl from 'react-bootstrap/FormControl';
 import Modal from 'react-bootstrap/Modal';
-import Spinner from 'react-bootstrap/Spinner';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
 import superagent from 'superagent';
 
-import LogoImage from '../../images/logo-2.png';
-import ScreenImage from '../../images/system-screen.png';
-import styles from '../../css/auth.css';
+import ModalHeaderError from '../modals/error-header';
+import ModalLoading from '../modals/loading';
+import ModalError from '../modals/error';
+import ModalSuccess from '../modals/success';
 
 class RegisterContent extends Component {
 
@@ -226,7 +221,7 @@ class RegisterContent extends Component {
             this.clearState();
         }
     }
-    closeModal() {
+    closeModal = () => {
         this.setState({modalSuccess: false});
         this.setState({modalLoading: false});
         this.setState({modalCreateAccFailed: false});
@@ -362,7 +357,7 @@ class RegisterContent extends Component {
                                                     <InputGroup.Text id="inputGroupPrepend" onClick={this.showPassword}><i className="fas fa-eye w3-animate-opacity"></i><i className="fas fa-eye-slash w3-animate-opacity" style={{display: "none", width: "18px"}}></i></InputGroup.Text>
                                                 </InputGroup.Prepend>
                                             </InputGroup>
-                                        </Form.Group>
+                                        </Form.Group>   
                                     </Form.Row>
                                     <Form.Group controlId="formBasicCheckbox">
                                         <Form.Check>
@@ -385,43 +380,19 @@ class RegisterContent extends Component {
                         </div>
                     </div>
 
-                    <Modal size="sm" show={this.state.modalError} aria-labelledby="example-modal-sizes-title-sm" onHide={() => this.closeModal()}>
-                        <Modal.Header closeButton className="modal-header-error">
-                            <Modal.Title id="example-modal-sizes-title-sm" style={{textAlign: "center"}}>
-                                <i className="fas fa-times-circle success-modal-icon"></i>Coś poszło nie tak!
-                            </Modal.Title>
-                        </Modal.Header>
-                    </Modal>
+                    <ModalHeaderError show={this.state.modalError} onClose={this.closeModal}/>
 
-                    <Modal size="sm" show={this.state.modalSuccess} aria-labelledby="example-modal-sizes-title-sm" onHide={() => this.closeModal()}>
-                        <Modal.Header closeButton>
-                            <Modal.Title id="example-modal-sizes-title-sm" style={{textAlign: "center"}}>
-                                <i className="fas fa-check-circle success-modal-icon"></i>Tworzenie konta zakończone!
-                            </Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                            Na podany <b>adres email</b> został wysłany <b>link aktywacyjny</b>, potwierdź go aby móc się <b>zalogować</b>.
-                            <br /><sub><b>Link aktywacyjny będzie ważny przez 30 min</b>.</sub>
-                        </Modal.Body>
-                    </Modal>
+                    <ModalSuccess show={this.state.modalSuccess} onClose={this.closeModal} title="Tworzenie konta zakończone!">
+                        Na podany <b>adres email</b> został wysłany <b>link aktywacyjny</b>, potwierdź go aby móc się <b>zalogować</b>.
+                        <br /><sub><b>Link aktywacyjny będzie ważny przez 30 min</b>.</sub>
+                    </ModalSuccess>
 
-                    <Modal size="sm" show={this.state.modalCreateAccFailed} aria-labelledby="example-modal-sizes-title-sm" onHide={() => this.closeModal()}>
-                        <Modal.Header closeButton className="modal-header-error">
-                            <Modal.Title id="example-modal-sizes-title-sm" style={{textAlign: "center"}}>
-                                <i className="fas fa-times-circle success-modal-icon"></i>Tworzenie konta nieudane!
-                            </Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                            Z nieznanych powodów <b>nie udało się</b> utworzyć konta.
-                            <br/>Spróbuj ponownie <b>później</b>.
-                        </Modal.Body>
-                    </Modal>
+                    <ModalError show={this.state.modalCreateAccFailed} onClose={this.closeModal} title="Tworzenie konta nieudane!">
+                        Z nieznanych powodów <b>nie udało się</b> utworzyć konta.
+                        <br/>Spróbuj ponownie <b>później</b>.
+                    </ModalError>
 
-                    <Modal show={this.state.modalLoading} id="spinner-container" aria-labelledby="contained-modal-title-vcenter" centered>
-                        <Modal.Body>
-                            <Spinner animation="grow e-spinner"/>
-                        </Modal.Body>
-                    </Modal>
+                    <ModalLoading show={this.state.modalLoading}/>
                 </div>
             </>
         )

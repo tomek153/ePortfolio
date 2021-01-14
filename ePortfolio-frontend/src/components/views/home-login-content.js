@@ -2,11 +2,15 @@ import React, { Component } from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
-import Modal from 'react-bootstrap/Modal';
-import Spinner from 'react-bootstrap/Spinner';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
 import superagent from 'superagent';
+
+import ModalHeaderError from '../modals/error-header';
+import ModalLoading from '../modals/loading';
+import ModalError from '../modals/error';
+import ModalSuccess from '../modals/success';
+import ModalErrorResendLink from '../modals/error-resend-link';
 
 class RegisterContent extends Component {
 
@@ -230,11 +234,10 @@ class RegisterContent extends Component {
             document.getElementById("reset-pass-button").disabled = true;
         }
     }
-    reSendConfirmationLink(event) {
+    reSendConfirmationLink = () => {
         document.getElementsByClassName("resend-link-button")[0].style.display = "none";
         this.setState({reSendLinkSpinner: "block"});
 
-        event.preventDefault();
         superagent
             .post('http://localhost:8080/email/resend')
             .send({ userId: this.state.userId, linkId: null })
@@ -245,7 +248,6 @@ class RegisterContent extends Component {
                     document.getElementsByClassName("resend-link-button")[0].style.display = "block";
                     return;
                 } else {
-                    document.querySelector("body > div.fade.modal.show > div > div > div:nth-child(2)").style.color = "rgba(0,0,0,0.3)";
                     if (res.body.status) {
                         this.setState({reSendLinkSpinner: "none"});
                         this.setState({reSendLinkSuccess: "block"});
@@ -262,7 +264,7 @@ class RegisterContent extends Component {
             }
         );
     }
-    closeModal() {
+    closeModal = () => {
         this.setState({modalLoading: false});
         this.setState({modalError: false});
         this.setState({modalAuthFailed: false});
@@ -458,84 +460,37 @@ class RegisterContent extends Component {
                         </div>
                     </div>
 
-                    <Modal size="sm" show={this.state.modalError} aria-labelledby="example-modal-sizes-title-sm" onHide={() => this.closeModal()}>
-                        <Modal.Header closeButton className="modal-header-error">
-                            <Modal.Title id="example-modal-sizes-title-sm" style={{textAlign: "center"}}>
-                                <i className="fas fa-times-circle success-modal-icon"></i>Coś poszło nie tak!
-                            </Modal.Title>
-                        </Modal.Header>
-                    </Modal>
+                    <ModalHeaderError show={this.state.modalError} onClose={this.closeModal}/>
 
-                    <Modal size="sm" show={this.state.modalResetPassFailed} aria-labelledby="example-modal-sizes-title-sm" onHide={() => this.closeModal()}>
-                        <Modal.Header closeButton className="modal-header-error">
-                            <Modal.Title id="example-modal-sizes-title-sm" style={{textAlign: "center"}}>
-                                <i className="fas fa-times-circle success-modal-icon"></i>Użytkownik nie istnieje!
-                            </Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                            <b>Nie znaleźliśmy</b> danego użytkownika w systemie. <b>Sprawdź</b> swój adres email i <b>spróbuj ponownie</b>.
-                        </Modal.Body>
-                    </Modal>
+                    <ModalError show={this.state.modalResetPassFailed} onClose={this.closeModal} title="Użytkownik nie istnieje!">
+                        <b>Nie znaleźliśmy</b> danego użytkownika w systemie. <b>Sprawdź</b> swój adres email i <b>spróbuj ponownie</b>.
+                    </ModalError>
 
-                    <Modal size="sm" show={this.state.modalResetPassSuccess} aria-labelledby="example-modal-sizes-title-sm" onHide={() => this.closeModal()}>
-                        <Modal.Header closeButton>
-                            <Modal.Title id="example-modal-sizes-title-sm" style={{textAlign: "center"}}>
-                                <i className="fas fa-check-circle success-modal-icon"></i>Email wysłany!
-                            </Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                            Na podany <b>adres email</b> został wysłany link, otwórz go żeby ustawić <b>nowe hasło</b>.
-                            <br /><sub><b>Link resetujący będzie ważny przez 30 min.</b></sub>
-                        </Modal.Body>
-                    </Modal>
+                    <ModalSuccess show={this.state.modalResetPassSuccess} onClose={this.closeModal} title="Email wysłany!">
+                        Na podany <b>adres email</b> został wysłany link, otwórz go żeby ustawić <b>nowe hasło</b>.
+                        <br /><sub><b>Link resetujący będzie ważny przez 30 min.</b></sub>
+                    </ModalSuccess>
 
-                    <Modal size="sm" show={this.state.modalAuthFailed} aria-labelledby="example-modal-sizes-title-sm" onHide={() => this.closeModal()}>
-                        <Modal.Header closeButton className="modal-header-error">
-                            <Modal.Title id="example-modal-sizes-title-sm" style={{textAlign: "center"}}>
-                                <i className="fas fa-times-circle success-modal-icon"></i>Błąd logowania!
-                            </Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                            Podano <b>nieprawidłowy</b> login lub hasło.
-                            <br/><sub><b>Spróbuj ponownie.</b></sub>
-                        </Modal.Body>
-                    </Modal>
+                    <ModalError show={this.state.modalAuthFailed} onClose={this.closeModal} title="Błąd logowania!">
+                        Podano <b>nieprawidłowy</b> login lub hasło.
+                        <br/><sub><b>Spróbuj ponownie.</b></sub>
+                    </ModalError>
 
-                    <Modal size="sm" show={this.state.modalUserUnconfirmed} aria-labelledby="example-modal-sizes-title-sm" onHide={() => this.closeModal()}>
-                        <Modal.Header closeButton className="modal-header-error">
-                            <Modal.Title id="example-modal-sizes-title-sm" style={{textAlign: "center"}}>
-                                <i className="fas fa-times-circle success-modal-icon"></i>Konto nie zostało potwierdzone!
-                            </Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                            <b>Potwerdz</b> swoje konto aby móc się zalogować. <br />
-                            Jeśli Twój link aktywacyjny <b>stracił ważność</b>, kliknij przycisk poniżej aby <b>wygenerować</b> nowy.
-                        </Modal.Body>
-                        <Modal.Body style={{display: this.state.reSendLinkSuccess, textAlign: "center", borderTop: "1px solid #dee2e6"}}>
-                            <i className="fas fa-check-circle success-modal-icon" style={{fontSize: "25px", color: "green"}}></i>
-                            <p style={{color: "#444"}}>
-                                <b>Nowy</b> link aktywacyjny został <b>wysłany</b> na Twój adres email. Będzie <b>ważny</b> przez kolejne <b>30 min</b>.
-                                <br /><sub><b>Pozdrawiamy zespół ePortfolio!</b></sub>
-                            </p>
-                        </Modal.Body>
-                        <Modal.Body style={{display: this.state.reSendLinkFailed, textAlign: "center", borderTop: "1px solid #dee2e6"}}>
-                            <i className="fas fa-times-circle success-modal-icon" style={{fontSize: "25px", color: "red"}}></i>
-                            <p style={{color: "#444"}}>
-                                Z nieznanych powodów <b>nie udało</b> się wysłać nowego linku. Prosimy spróbować ponownie <b>później</b>.
-                                <br /><sub><b>Pozdrawiamy zespół ePortfolio!</b></sub>
-                            </p>
-                        </Modal.Body>
-                        <Modal.Footer style={{display: this.state.reSendButton}}>
-                            <Button className="resend-link-button" onClick={this.reSendConfirmationLink.bind(this)}>Wyslij link</Button>
-                            <Spinner style={{display: this.state.reSendLinkSpinner}} id="resend-link-spinner" animation="border" variant="primary" />
-                        </Modal.Footer>
-                    </Modal>
+                    <ModalErrorResendLink
+                        onClose={this.closeModal}
+                        show={this.state.modalUserUnconfirmed}
+                        title="Konto nie zostało potwierdzone!"
+                        reSendSuccess={this.state.reSendLinkSuccess}
+                        reSendFailed={this.state.reSendLinkFailed}
+                        reSendButton={this.state.reSendButton}
+                        reSendSpinner={this.state.reSendLinkSpinner}
+                        reSendLink={this.reSendConfirmationLink}
+                        >
+                        <b>Potwerdz</b> swoje konto aby móc się zalogować. <br />
+                        Jeśli Twój link aktywacyjny <b>stracił ważność</b>, kliknij przycisk poniżej aby <b>wygenerować</b> nowy.
+                    </ModalErrorResendLink>
 
-                    <Modal show={this.state.modalLoading} id="spinner-container" aria-labelledby="contained-modal-title-vcenter" centered>
-                        <Modal.Body>
-                            <Spinner animation="grow e-spinner"/>
-                        </Modal.Body>
-                    </Modal>
+                    <ModalLoading show={this.state.modalLoading}/>
                 </div>
             </>
         )

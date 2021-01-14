@@ -1,7 +1,7 @@
 import React from 'react';
 import { Switch, Route, BrowserRouter } from 'react-router-dom';
 
-import HomeHeader from '../components/home/home-header';
+import HomeHeader from '../components/views/home-header';
 import UserHeader from '../components/user/user-header';
 
 const HeaderRoute = () => (

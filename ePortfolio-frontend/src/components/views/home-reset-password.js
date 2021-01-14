@@ -1,22 +1,12 @@
 import React, { Component } from 'react';
-import Carousel from 'react-bootstrap/Carousel';
-import Image from 'react-bootstrap/Image';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
-import FormControl from 'react-bootstrap/FormControl';
-import Modal from 'react-bootstrap/Modal';
-import Spinner from 'react-bootstrap/Spinner';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Popover from 'react-bootstrap/Popover';
-import superagent from 'superagent';
 
-import LogoImage from '../../images/logo-2.png';
-import ScreenImage from '../../images/system-screen.png';
-import styles from '../../css/auth.css';
+import ModalHeaderError from '../modals/error-header';
+import ModalLoading from '../modals/loading';
+import ModalError from '../modals/error';
+import ModalSuccess from '../modals/success';
 
 class ResetPassword extends Component {
 
@@ -189,13 +179,13 @@ class ResetPassword extends Component {
                 }
             });
     }
-    closeModal() {
+    closeModal = () => {
         this.setState({modalError: false});
         this.setState({modalUserNotExists: false});
         this.setState({modalSuccess: false});
         this.setState({modalLinkDeactivated: false});
     }
-    closeModalAndRedirect() {
+    closeModalAndRedirect = () => {
         this.closeModal();
         window.location.href = "/";
     }
@@ -330,55 +320,24 @@ class ResetPassword extends Component {
                         </div>
                     </div>
 
-                    <Modal size="sm" show={this.state.modalError} aria-labelledby="example-modal-sizes-title-sm" onHide={() => this.closeModalAndRedirect()}>
-                        <Modal.Header closeButton className="modal-header-error">
-                            <Modal.Title id="example-modal-sizes-title-sm" style={{textAlign: "center"}}>
-                                <i className="fas fa-times-circle success-modal-icon"></i>Coś poszło nie tak!
-                            </Modal.Title>
-                        </Modal.Header>
-                    </Modal>
+                    <ModalHeaderError show={this.state.modalError} onClose={this.closeModal}/>
 
-                    <Modal size="sm" show={this.state.modalUserNotExists} aria-labelledby="example-modal-sizes-title-sm" onHide={() => this.closeModal()}>
-                        <Modal.Header closeButton className="modal-header-error">
-                            <Modal.Title id="example-modal-sizes-title-sm" style={{textAlign: "center"}}>
-                                <i className="fas fa-times-circle success-modal-icon"></i>Użytkownik nie istnieje!
-                            </Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                            <b>Nie znaleźliśmy</b> użytkownika z podanym adresem email. <b>Sprawdź</b> swój adres email i <b>spróbuj ponownie</b>.
-                        </Modal.Body>
-                    </Modal>
+                    <ModalError show={this.state.modalUserNotExists} onClose={this.closeModal} title="Użytkownik nie istnieje!">
+                        <b>Nie znaleźliśmy</b> użytkownika z podanym adresem email. <b>Sprawdź</b> swój adres email i <b>spróbuj ponownie</b>.
+                    </ModalError>
 
-                    <Modal size="sm" show={this.state.modalLinkDeactivated} aria-labelledby="example-modal-sizes-title-sm" onHide={() => this.closeModalAndRedirect()}>
-                        <Modal.Header closeButton className="modal-header-error">
-                            <Modal.Title id="example-modal-sizes-title-sm" style={{textAlign: "center"}}>
-                                <i className="fas fa-times-circle success-modal-icon"></i>Link nieaktywny!
-                            </Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                            Podany link został <b>dezaktywowany</b> na wskutek zmiany hasła, utworzenia nowego linku bądź <b>wygasł</b> jego czas oczekiwania.
-                            <br />Jeśli nie udało Ci się zmienić hasło prosimy <b>wygenerować nowy</b> link w panelu logowania.
-                            <br /><sub><b>Pozdrawiamy zespół ePortfolio!</b></sub>
-                        </Modal.Body>
-                    </Modal>
+                    <ModalError show={this.state.modalLinkDeactivated} onClose={this.closeModalAndRedirect} title="Link nieaktywny!">
+                        Podany link został <b>dezaktywowany</b> na wskutek zmiany hasła, utworzenia nowego linku bądź <b>wygasł</b> jego czas oczekiwania.
+                        <br />Jeśli nie udało Ci się zmienić hasło prosimy <b>wygenerować nowy</b> link w panelu logowania.
+                        <br /><sub><b>Pozdrawiamy zespół ePortfolio!</b></sub>
+                    </ModalError>
 
-                    <Modal size="sm" show={this.state.modalSuccess} aria-labelledby="example-modal-sizes-title-sm" onHide={() => this.closeModalAndRedirect()}>
-                        <Modal.Header closeButton>
-                            <Modal.Title id="example-modal-sizes-title-sm" style={{textAlign: "center"}}>
-                                <i className="fas fa-check-circle success-modal-icon"></i>Zmiana hasła zakończone!
-                            </Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                            <b>Nowe hasło</b> do konta zostało <b>zmienione</b> poprawnie. Możesz teraz przejść do panelu logowania.
-                            <br /><sub><b>Pozdrawiamy zespół ePortfolio!</b></sub>
-                        </Modal.Body>
-                    </Modal>
+                    <ModalSuccess show={this.state.modalSuccess} onClose={this.closeModalAndRedirect} title="Zmiana hasła zakończone!">
+                        <b>Nowe hasło</b> do konta zostało <b>zmienione</b> poprawnie. Możesz teraz przejść do panelu logowania.
+                        <br /><sub><b>Pozdrawiamy zespół ePortfolio!</b></sub>
+                    </ModalSuccess>
 
-                    <Modal show={this.state.modalLoading} id="spinner-container" aria-labelledby="contained-modal-title-vcenter" centered>
-                        <Modal.Body>
-                            <Spinner animation="grow e-spinner"/>
-                        </Modal.Body>
-                    </Modal>
+                    <ModalLoading show={this.state.modalLoading}/>
                 </div>
             </>
         )

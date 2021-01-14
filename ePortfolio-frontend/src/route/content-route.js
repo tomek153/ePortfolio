@@ -1,13 +1,13 @@
 import React from 'react';
 import { Switch, Route, BrowserRouter } from 'react-router-dom';
 
-import HomeContent from '../components/home/home-content';
+import HomeContent from '../components/views/home-content';
 import NotFoundContent from '../components/page-not-found';
-import LoginContent from '../components/home/home-login-content';
-import RegisterContent from '../components/home/home-register-content';
-import ResetPassword from '../components/home/home-reset-password';
-import RegulationsContent from '../components/home/home-regulations-content';
-import ConfirmationLinkSuccess from '../components/home/home-register-confirmation-link';
+import LoginContent from '../components/views/home-login-content';
+import RegisterContent from '../components/views/home-register-content';
+import ResetPassword from '../components/views/home-reset-password';
+import RegulationsContent from '../components/views/home-regulations-content';
+import ConfirmationLinkSuccess from '../components/views/home-register-confirmation-link';
 import UserProfile from '../components/user/user-profile';
 import UserProfileEdit from '../components/user/user-profile-edit';
 import UserProfileDelete from '../components/user/user-profile-delete';

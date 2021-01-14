@@ -455,7 +455,9 @@ class RegisterContent extends Component {
                         </div>
                         <div id="footer" style={{height: "70px", background: "none", position: "fixed", bottom: 0, width: "100%"}}>
                             <div className="width-divider">
-                                <p>ePortfolio &copy; 2020</p><p>Wszelkie prawa zastrzeżone</p>
+                                <span></span>
+                                <p className="text-shadow-1-2">ePortfolio &copy; 2020</p>
+                                <p className="text-shadow-1-2">Wszelkie prawa zastrzeżone</p>
                             </div>
                         </div>
                     </div>

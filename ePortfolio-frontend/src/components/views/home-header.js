@@ -26,10 +26,10 @@ class HomeHeader extends Component {
                     <div className="width-divider">
                         <a href="/"><Image src={LogoImage} className="header-image-logo"/></a>
                         <div className="navbar-links">
-                            <a href="/#czym-jest">Czym jest?</a>
-                            <a href="/#oferta">Oferta</a>
-                            <a href="/#kontakt">Kontakt</a>
-                            <a>Szukaj</a>
+                            <a className="text-shadow-1" href="/#czym-jest">Czym jest?</a>
+                            <a className="text-shadow-1" href="/#oferta">Oferta</a>
+                            <a className="text-shadow-1" href="/#kontakt">Kontakt</a>
+                            <a className="text-shadow-1">Szukaj</a>
 
                         </div>
                         <div className="navbar-buttons">

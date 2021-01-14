@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import superagent from 'superagent';
 
-import HomeContent from './home-content';
+import HomeContent from './home';
 import ModalHeaderError from '../modals/error-header';
 import ModalLoading from '../modals/loading';
 import ModalSuccess from '../modals/success';

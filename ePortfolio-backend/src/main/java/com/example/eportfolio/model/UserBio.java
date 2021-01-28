@@ -60,7 +60,6 @@ public class UserBio {
     public String getDate_birth() {
         return date_birth;
     }
-
     public String getGender() {
         return gender;
     }

@@ -3,22 +3,16 @@ package com.example.eportfolio.service;
 import com.example.eportfolio.api.DeleteMethods;
 import com.example.eportfolio.dao.FixedDataDao;
 import com.example.eportfolio.dao.UserDao;
-import com.example.eportfolio.model.ResetPasswordRequest;
-import com.example.eportfolio.model.User;
-import com.example.eportfolio.model.UserBio;
 import com.example.eportfolio.model.*;
 import com.example.eportfolio.smtp.EmailService;
 import com.example.eportfolio.smtp.MailRequestModel;
 import com.example.eportfolio.smtp.MailResponseModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.mail.MailAuthenticationException;
-import org.springframework.mail.MailException;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.mail.MailAuthenticationException;
 import org.springframework.mail.MailException;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -33,13 +27,13 @@ public class PostgresService implements UserDao, FixedDataDao {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public PostgresService(JdbcTemplate jdbcTemplate) {
+    public PostgresService (JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     public int addUser(UUID id, User user) {
-        final String sqlFirst = "SELECT * FROM users WHERE email = '" + user.getEmail() + "'";
+        final String sqlFirst = "SELECT * FROM users WHERE email = '"+user.getEmail()+"'";
         String emailKey;
         String idKey;
 
@@ -59,41 +53,41 @@ public class PostgresService implements UserDao, FixedDataDao {
             try {
                 final String addUserSQL = "INSERT INTO users (id, first_name, last_name, email, password, role, confirmed) " +
                         "VALUES (uuid_generate_v4(), " +
-                        "'" + user.getFirstName() + "', " +
-                        "'" + user.getLastName() + "', " +
-                        "'" + user.getEmail() + "', " +
-                        "md5('" + user.getPassword() + "')," +
-                        "'" + user.getRole() + "'," +
-                        "" + user.isConfirmed() +
+                        "'"+user.getFirstName()+"', " +
+                        "'"+user.getLastName()+"', " +
+                        "'"+user.getEmail()+"', " +
+                        "md5('"+user.getPassword()+"'),"+
+                        "'"+user.getRole()+"',"+
+                        ""+user.isConfirmed()+
                         ")";
                 jdbcTemplate.execute(addUserSQL);
 
                 final String addUserBioSQL = "INSERT INTO users_bio (id, user_uuid, phone, address_main, address_city, address_zip, address_country, date_birth, gender) VALUES (" +
                         "uuid_generate_v4(), " +
-                        "(SELECT id FROM users WHERE email IN('" + user.getEmail() + "'))," +
+                        "(SELECT id FROM users WHERE email IN('"+user.getEmail()+"'))," +
                         "'','','','','','', '')";
                 jdbcTemplate.execute(addUserBioSQL);
 
                 final String addConfirmationEmailSQL = "INSERT INTO confirmation_emails (id, user_uuid, status) VALUES (" +
-                        "uuid_generate_v4(), " +
-                        "(SELECT id FROM users WHERE email IN('" + user.getEmail() + "')), " +
-                        "false )";
+                    "uuid_generate_v4(), " +
+                    "(SELECT id FROM users WHERE email IN('"+user.getEmail()+"')), "+
+                    "false )";
                 jdbcTemplate.execute(addConfirmationEmailSQL);
 
-                String getEmailKey = "SELECT id FROM confirmation_emails WHERE user_uuid IN (SELECT id FROM users WHERE email = '" + user.getEmail() + "') AND status = false";
+                String getEmailKey = "SELECT id FROM confirmation_emails WHERE user_uuid IN (SELECT id FROM users WHERE email = '"+user.getEmail()+"') AND status = false";
                 emailKey = jdbcTemplate.queryForObject(getEmailKey, new Object[]{}, (resultSet, i) -> {
-                    return new String(resultSet.getString("id"));
+                    return new String (resultSet.getString("id"));
                 });
-                String getIdKey = "SELECT id FROM users WHERE email IN ('" + user.getEmail() + "')";
+                String getIdKey = "SELECT id FROM users WHERE email IN ('"+user.getEmail()+"')";
                 idKey = jdbcTemplate.queryForObject(getIdKey, new Object[]{}, (resultSet, i) -> {
-                    return new String(resultSet.getString("id"));
+                    return new String (resultSet.getString("id"));
                 });
 
                 Map<String, Object> model = new HashMap<>();
                 model.put("Name", user.getFirstName());
                 model.put("location", "Poznań, Polska");
-                model.put("idKey", idKey);
-                model.put("linkKey", emailKey);
+                model.put( "idKey", idKey);
+                model.put( "linkKey", emailKey);
 
                 try {
                     MailRequestModel request = new MailRequestModel(user.getFirstName(), user.getEmail(), "ePortfolio", "ePortfolio | Potwierdzenie rejestracji");
@@ -203,7 +197,6 @@ public class PostgresService implements UserDao, FixedDataDao {
             }
         }
     }
-
     @Override
     public List<User> getUsers() {
         final String sql = "SELECT * FROM users";
@@ -374,11 +367,10 @@ public class PostgresService implements UserDao, FixedDataDao {
         return Optional.ofNullable(userSetting);
     }
 
-
     @Override
     public int updateUser(String email, User user) {
 
-        final String checkEmail = "SELECT * FROM users WHERE email = '" + user.getEmail() + "'";
+        final String checkEmail = "SELECT * FROM users WHERE email = '"+user.getEmail()+"'";
 
         List<User> listFind = jdbcTemplate.query(checkEmail, (resultSet, i) -> {
             return new User(

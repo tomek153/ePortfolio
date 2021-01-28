@@ -1,12 +1,9 @@
 package com.example.eportfolio.api;
 
 import com.auth0.jwt.interfaces.Claim;
-import com.example.eportfolio.model.*;
 import com.example.eportfolio.model.ResetPasswordRequest;
 import com.example.eportfolio.model.Login;
 import com.example.eportfolio.model.User;
-import com.example.eportfolio.model.UserBio;
-import com.example.eportfolio.service.UserBioService;
 import com.example.eportfolio.service.UserService;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +20,7 @@ import java.util.*;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 @RestController
 public class UserController {
 
@@ -156,7 +153,7 @@ public class UserController {
 
             responseString = this.gson.toJson(profile);
         }
-     else{
+        else{
             response.sendError(400, "User Data Unavailable");
         }
 
@@ -317,18 +314,18 @@ public class UserController {
         response.setCharacterEncoding("UTF-8");
 
         if (status == 1)
-            responseMap.put("message", "authentication_failed.");
+            responseMap.put("message", "Authentication failed.");
         else if (status == 2) {
-            responseMap.put("message", "user_unconfirmed.");
+            responseMap.put("message", "User unconfirmed.");
             responseMap.put("userId", login.getUser().getId());
         } else if (status == 0) {
             String token = login.createToken();
-            if (!token.equals("create_token_error.")) {
+            if (!token.equals("Create token error.")) {
 
-                responseMap.put("message", "authentication_success.");
+                responseMap.put("message", "Authentication success.");
                 responseMap.put("token", token);
             } else
-                responseMap.put("message", "token_error.");
+                responseMap.put("message", "Token error.");
         }
 
         String responseString = this.gson.toJson(responseMap);
@@ -390,4 +387,6 @@ public class UserController {
         out.flush();
     }
 
+
 }
+

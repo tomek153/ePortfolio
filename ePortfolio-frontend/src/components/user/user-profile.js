@@ -44,7 +44,6 @@ class UserProfile extends Component {
                 headers: myHeaders
             }
         );
-        console.log("Token: " + localStorage.getItem("token"));
 
         fetch(request)
             .then(response => {
@@ -57,13 +56,13 @@ class UserProfile extends Component {
                     response.json()
                         .then(data => {
                             if (data.message == "Token expired") {
-                              //  window.location.replace("/logowanie?token=expired");
+                                window.location.replace("/logowanie?token=expired");
                             } else {
-                               // window.location.replace("/logowanie?token=bad_token");
+                                window.location.replace("/logowanie?token=bad_token");
                             }
                         });
                 } else {
-                   // window.location.replace("/logowanie?token=bad_token");
+                    window.location.replace("/logowanie?token=bad_token");
                 }
             });
 
@@ -79,7 +78,7 @@ class UserProfile extends Component {
             }, 600);
         };
     }
-   
+
     render() {
 
         return (

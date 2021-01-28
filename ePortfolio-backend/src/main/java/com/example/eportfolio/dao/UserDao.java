@@ -3,6 +3,8 @@ package com.example.eportfolio.dao;
 import com.example.eportfolio.model.*;
 
 import java.sql.SQLException;
+import com.example.eportfolio.model.ResetPasswordRequest;
+import com.example.eportfolio.model.User;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,15 +23,20 @@ public interface UserDao {
     // GET USER METHODS -START-
     List<User> getUsers();
 
+    int changePassword(ResetPasswordRequest resetPasswordRequest);
+
+    boolean checkUserExistByEmail(String email);
     Optional<User> getUserByEmail(String email);
 
     Optional<User> getUserByID(UUID id);
+    int resetPasswordRequest(String email);
 
     Optional<UserBio> getUserBioByID(UUID id);
 
     List<UserWork> getUserWorkByID(UUID id);
 
     List<UserEdu> getUserEduByID(UUID id);
+    Optional<User> getUserByID(UUID id);
 
     List<UserSkill> getUserSkillByID(UUID id);
 

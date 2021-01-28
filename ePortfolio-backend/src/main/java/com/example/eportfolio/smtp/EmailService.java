@@ -20,6 +20,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -202,8 +203,8 @@ public class EmailService {
 
         try {
             User user = jdbcTemplate.queryForObject(
-                    "SELECT * FROM users WHERE id IN('"+request.getIdKey()+"')",
-                    new Object[]{},
+                    "SELECT * FROM users WHERE id = ?",
+                    new Object[]{request.getUserId()},
                     (resultSet, i) -> {
                         return new User(
                                 UUID.fromString(resultSet.getString("id")),
@@ -218,14 +219,14 @@ public class EmailService {
             );
 
             ConfirmationLink confirmationLink = jdbcTemplate.queryForObject(
-                    "SELECT * FROM confirmation_emails WHERE id IN('"+request.getRegisterKey()+"') AND user_uuid IN('"+request.getIdKey()+"')",
-                    new Object[]{},
+                    "SELECT * FROM confirmation_emails WHERE id = ? AND user_uuid = ?",
+                    new Object[]{request.getId(), request.getUserId()},
                     (resultSet, i) -> {
                         return new ConfirmationLink(
                                 UUID.fromString(resultSet.getString("id")),
                                 UUID.fromString(resultSet.getString("user_uuid")),
                                 resultSet.getBoolean("status"),
-                                LocalDateTime.parse(resultSet.getString("time_stamp"), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS"))
+                                Timestamp.valueOf(resultSet.getString("time_stamp"))
                         );
                     }
             );
@@ -240,11 +241,11 @@ public class EmailService {
                 } else {
                     LocalDateTime now = LocalDateTime.now();
 
-                    if (now.compareTo(confirmationLink.getTime_stamp().plusMinutes(LINK_TIME_EXPIRED)) > 0) {
+                    if (now.compareTo(confirmationLink.getTime_stamp().toLocalDateTime().plusMinutes(LINK_TIME_EXPIRED)) > 0) {
                         response.setMessage("expired");
                         response.setStatus(Boolean.TRUE);
                     } else {
-                        jdbcTemplate.execute("UPDATE users set confirmed = true WHERE id IN('"+user.getId()+"')");
+                        jdbcTemplate.execute("UPDATE users set confirmed = true WHERE id IN('"+request.getUserId()+"')");
                         jdbcTemplate.execute("UPDATE confirmation_emails SET status = true WHERE id IN('"+confirmationLink.getId()+"');");
 
                         response.setMessage("success");
@@ -252,8 +253,8 @@ public class EmailService {
                     }
                 }
             }
-        } catch (EmptyResultDataAccessException | DateTimeParseException e) {
-            response.setMessage("Error 404");
+        } catch (EmptyResultDataAccessException erdae) {
+            response.setMessage("not_found");
             response.setStatus(Boolean.FALSE);
         }
 
@@ -263,19 +264,17 @@ public class EmailService {
     public MailResponseModel checkResetPasswordLink(LinkMailRequestModel request) {
         MailResponseModel response = new MailResponseModel();
 
-        try {
-            ResetPasswordLink resetPasswordLink = jdbcTemplate.queryForObject(
-                    "SELECT * FROM reset_password_emails WHERE id IN('"+request.getRegisterKey()+"') AND user_uuid IN('"+request.getIdKey()+"')",
-                    new Object[]{},
+            try {
+                ResetPasswordLink resetPasswordLink = jdbcTemplate.queryForObject(
+                    "SELECT * FROM reset_password_emails WHERE id = ? AND user_uuid = ?",
+                    new Object[] {request.getId(), request.getUserId()},
                     (resultSet, i) -> {
                         return new ResetPasswordLink(
                                 UUID.fromString(resultSet.getString("id")),
                                 UUID.fromString(resultSet.getString("user_uuid")),
                                 resultSet.getBoolean("status"),
-                                LocalDateTime.parse(resultSet.getString("time_stamp"), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS"))
-                        );
-                    }
-            );
+                                Timestamp.valueOf(resultSet.getString("time_stamp"))
+                );});
 
 
                 if (resetPasswordLink.isStatus()) {
@@ -284,21 +283,18 @@ public class EmailService {
                 } else {
                     LocalDateTime now = LocalDateTime.now();
 
-                    if (now.compareTo(resetPasswordLink.getTime_stamp().plusMinutes(LINK_TIME_EXPIRED)) > 0) {
+                    if (now.compareTo(resetPasswordLink.getTime_stamp().toLocalDateTime().plusMinutes(LINK_TIME_EXPIRED)) > 0) {
                         response.setMessage("expired");
                         response.setStatus(Boolean.TRUE);
                     } else {
-
-
                         response.setMessage("success");
                         response.setStatus(Boolean.TRUE);
                     }
                 }
-
-        } catch (EmptyResultDataAccessException | DateTimeParseException e) {
-            response.setMessage("Error 404");
-            response.setStatus(Boolean.FALSE);
-        }
+            } catch (EmptyResultDataAccessException erdae) {
+                response.setMessage("not_found");
+                response.setStatus(Boolean.FALSE);
+            }
 
         return response;
     }

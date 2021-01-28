@@ -11,7 +11,6 @@ import superagent from 'superagent';
 
 import ImageLogo from '../../images/logo.png';
 import PageLoading from '../page-loading';
-import '../../css/login.css';
 
 class LoginContent extends Component {
     constructor() {

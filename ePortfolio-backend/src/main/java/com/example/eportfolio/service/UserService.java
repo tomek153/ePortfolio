@@ -1,6 +1,8 @@
 package com.example.eportfolio.service;
 
 import com.example.eportfolio.dao.UserDao;
+import com.example.eportfolio.model.User;
+import com.example.eportfolio.model.ResetPasswordRequest;
 import com.example.eportfolio.model.*;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,15 @@ public class UserService {
         return userDao.getUsers();
     }
 
+    public int changePassword(ResetPasswordRequest resetPasswordRequest){
+        return userDao.changePassword(resetPasswordRequest);
+    }
+
+    public int resetPasswordRequest(String email){
+        return userDao.resetPasswordRequest(email);
+    }
+    public boolean checkUserExistByEmail(String email) {
+        return userDao.checkUserExistByEmail(email);
     public Optional<User> getUserByEmail(String email) {
         return userDao.getUserByEmail(email);
     }

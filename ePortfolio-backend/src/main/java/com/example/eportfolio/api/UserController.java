@@ -2,6 +2,11 @@ package com.example.eportfolio.api;
 
 import com.auth0.jwt.interfaces.Claim;
 import com.example.eportfolio.model.*;
+import com.example.eportfolio.model.ResetPasswordRequest;
+import com.example.eportfolio.model.Login;
+import com.example.eportfolio.model.User;
+import com.example.eportfolio.model.UserBio;
+import com.example.eportfolio.service.UserBioService;
 import com.example.eportfolio.service.UserService;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +23,7 @@ import java.util.*;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
-@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 public class UserController {
 
@@ -51,27 +56,22 @@ public class UserController {
     }
 
     @RequestMapping (value = "/api/reset-password", method = POST)
-    public void resetPasswordRequest (@Valid @NonNull @RequestBody User user, HttpServletResponse response) throws IOException {
-        int status = userService.resetPasswordRequest(user);
+    public void resetPasswordRequest (@Valid @NonNull @RequestBody String email, HttpServletResponse response) throws IOException {
+        int status = userService.resetPasswordRequest(email);
 
         if (status == 0) {
-            System.out.println ("Blad! User nie istnieje!");
-            response.sendError (405, "User_does_not_exist");
-        } else {
-            System.out.println("Mail wysłany.");
+            System.out.println("\"/api/reset-password\": User does not exists.");
+            response.sendError (405, "user_does_not_exist");
         }
     }
 
     @RequestMapping (value = "/api/change-password", method = POST)
-    public void changePasswordForUser(@Valid @NonNull @RequestBody User user, HttpServletResponse response) throws IOException {
-        System.out.println ("Zmiana hasła");
-        int status = userService.changePassword(user);
-
+    public void changePasswordForUser(@Valid @NonNull @RequestBody ResetPasswordRequest resetPasswordRequest, HttpServletResponse response) throws IOException {
+        int status = userService.changePassword(resetPasswordRequest);
+//
         if (status == 0) {
-            System.out.println ("Hasło nie zostało zmienione!");
-            response.sendError (405, "User_does_not_exist");
-        } else {
-            System.out.println("Password_changed");
+            System.out.println("\"/api/change-password\": User does not exists.");
+            response.sendError (405, "user_does_not_exist");
         }
     }
 
@@ -83,9 +83,18 @@ public class UserController {
 
     @RequestMapping (value = "/api/users/{email}", method = GET)
     @ResponseBody
-    public User getUserByEmail (@PathVariable ("email") String email) {
-        return userService.getUserByEmail (email)
-                .orElse(null);
+    public void checkUserExistByEmail (@PathVariable ("email") String email, HttpServletResponse response) throws IOException {
+        boolean userExist = userService.checkUserExistByEmail (email);
+        PrintWriter out = response.getWriter();
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        if (userExist) {
+            out.print("user_exist");
+        } else {
+            out.print("user_not_exist");
+        }
+        out.flush();
     }
 
     @RequestMapping (value = "/api/users/profile/all", method = GET)
@@ -308,18 +317,18 @@ public class UserController {
         response.setCharacterEncoding("UTF-8");
 
         if (status == 1)
-            responseMap.put("message", "Authentication failed.");
+            responseMap.put("message", "authentication_failed.");
         else if (status == 2) {
-            responseMap.put("message", "User unconfirmed.");
+            responseMap.put("message", "user_unconfirmed.");
             responseMap.put("userId", login.getUser().getId());
         } else if (status == 0) {
             String token = login.createToken();
-            if (!token.equals("Create token error.")) {
+            if (!token.equals("create_token_error.")) {
 
-                responseMap.put("message", "Authentication success.");
+                responseMap.put("message", "authentication_success.");
                 responseMap.put("token", token);
             } else
-                responseMap.put("message", "Token error.");
+                responseMap.put("message", "token_error.");
         }
 
         String responseString = this.gson.toJson(responseMap);

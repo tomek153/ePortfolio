@@ -51,7 +51,14 @@ public interface UserDao {
     int changePassword(ResetPasswordRequest resetPasswordRequest);
 
     int resetPasswordRequest(String email);
-
     // CHANGE PASSWORD METHODS -END-
 
+
+    // ADD USER PROPERTIES -START-
+    int addUserWork(UUID id, UserWork userWork) throws SQLException;
+
+    int addUserEdu(UUID id, UserEdu userEdu) throws SQLException;
+
+    int addUserSkill(UUID id, UserSkill userSkill) throws SQLException;
+    // ADD USER PROPERTIES -END-
 }

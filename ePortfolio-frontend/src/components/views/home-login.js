@@ -179,9 +179,11 @@ class RegisterContent extends Component {
                         this.setState({modalUserUnconfirmed: true});
                         this.setState({reSendButton: "block"});
                     }
-                    // } else if (data.message == "Authentication success.") {
-                    //     localStorage.setItem('token', data.token);
-                    //     this.userRedirect("/moj-profil");
+                    else if (data.message == "Authentication success.") {
+                        localStorage.setItem('token', data.token);
+                        //this.userRedirect("/moj-profil");
+                        console.log(data.token);
+                    }
                     // else {
                     //     console.log(data);
                     //     alert("Unknown error.");

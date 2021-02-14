@@ -1,9 +1,7 @@
 package com.example.eportfolio.api;
 
 import com.auth0.jwt.interfaces.Claim;
-import com.example.eportfolio.model.ResetPasswordRequest;
-import com.example.eportfolio.model.Login;
-import com.example.eportfolio.model.User;
+import com.example.eportfolio.model.*;
 import com.example.eportfolio.service.UserService;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -387,6 +385,119 @@ public class UserController {
         out.flush();
     }
 
+    @RequestMapping (value = "/api/users/add/work", method = POST)
+    public void addUserWork (@Valid @NonNull @RequestBody UserWork userWork, HttpServletResponse response, HttpServletRequest request) throws IOException {
+        Map<String, Object> profileMap = new HashMap<>();
+        String token = request.getHeader("Authorization");
+        String responseString = "";
+        int decryptionStatus = Login.checkJWT(token);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        if (decryptionStatus == 0) {
+            Map<String, Claim> claims = Login.getClaims();
+
+            profileMap.put("id", claims.get("id").asString());
+            UUID userUUID = UUID.fromString(claims.get("id").asString());
+
+            try {
+                int result = userService.addUserWork(userUUID, userWork);
+                if( result == 1 ) { System.out.println("USERWORK ADDED"); }
+                else { response.sendError(400, "Bad request. Method not allowed."); }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                response.sendError(400, "Bad request. Method not allowed.");
+            }
+
+
+        } else if (decryptionStatus == 2) {
+            response.sendError(400, "Token expired");
+        } else if (decryptionStatus == 1) {
+            response.sendError(400, "Token decryption error");
+        } else {
+            response.sendError(400, "Unknown error");
+        }
+
+        PrintWriter out = response.getWriter();
+        out.print(responseString);
+        out.flush();
+    }
+
+    @RequestMapping (value = "/api/users/add/edu", method = POST)
+    public void addUserEdu (@Valid @NonNull @RequestBody UserEdu userEdu, HttpServletResponse response, HttpServletRequest request) throws IOException {
+        Map<String, Object> profileMap = new HashMap<>();
+        String token = request.getHeader("Authorization");
+        String responseString = "";
+        int decryptionStatus = Login.checkJWT(token);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        if (decryptionStatus == 0) {
+            Map<String, Claim> claims = Login.getClaims();
+
+            profileMap.put("id", claims.get("id").asString());
+            UUID userUUID = UUID.fromString(claims.get("id").asString());
+
+            try {
+                int result = userService.addUserEdu(userUUID, userEdu);
+                if( result == 1 ) { System.out.println("USEREDU ADDED"); }
+                else { response.sendError(400, "Bad request. Method not allowed."); }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                response.sendError(400, "Bad request. Method not allowed.");
+            }
+
+
+        } else if (decryptionStatus == 2) {
+            response.sendError(400, "Token expired");
+        } else if (decryptionStatus == 1) {
+            response.sendError(400, "Token decryption error");
+        } else {
+            response.sendError(400, "Unknown error");
+        }
+
+        PrintWriter out = response.getWriter();
+        out.print(responseString);
+        out.flush();
+    }
+
+    @RequestMapping (value = "/api/users/add/skill", method = POST)
+    public void addUserSkill (@Valid @NonNull @RequestBody UserSkill userSkill, HttpServletResponse response, HttpServletRequest request) throws IOException {
+        Map<String, Object> profileMap = new HashMap<>();
+        String token = request.getHeader("Authorization");
+        String responseString = "";
+        int decryptionStatus = Login.checkJWT(token);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        if (decryptionStatus == 0) {
+            Map<String, Claim> claims = Login.getClaims();
+
+            profileMap.put("id", claims.get("id").asString());
+            UUID userUUID = UUID.fromString(claims.get("id").asString());
+
+            try {
+                int result = userService.addUserSkill(userUUID, userSkill);
+                if( result == 1 ) { System.out.println("USERSKILL ADDED"); }
+                else { response.sendError(400, "Bad request. Method not allowed."); }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                response.sendError(400, "Bad request. Method not allowed.");
+            }
+
+
+        } else if (decryptionStatus == 2) {
+            response.sendError(400, "Token expired");
+        } else if (decryptionStatus == 1) {
+            response.sendError(400, "Token decryption error");
+        } else {
+            response.sendError(400, "Unknown error");
+        }
+
+        PrintWriter out = response.getWriter();
+        out.print(responseString);
+        out.flush();
+    }
 
 }
 

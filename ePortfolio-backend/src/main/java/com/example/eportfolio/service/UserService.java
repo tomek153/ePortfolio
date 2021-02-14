@@ -69,4 +69,11 @@ public class UserService {
     }
     // CHANGE PASSWORD METHODS -END-
 
+    // ADD USER PROPERTIES -START-
+    public int addUserWork(UUID id, UserWork userWork) throws SQLException { return userDao.addUserWork(id, userWork); }
+
+    public int addUserEdu(UUID id, UserEdu userEdu) throws SQLException { return userDao.addUserEdu(id, userEdu); }
+
+    public int addUserSkill(UUID id, UserSkill userSkill) throws SQLException { return userDao.addUserSkill(id, userSkill); }
+    // ADD USER PROPERTIES -END-
 }

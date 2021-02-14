@@ -8,6 +8,7 @@ import com.example.eportfolio.smtp.EmailService;
 import com.example.eportfolio.smtp.MailRequestModel;
 import com.example.eportfolio.smtp.MailResponseModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.mail.MailAuthenticationException;
@@ -472,6 +473,58 @@ public class PostgresService implements UserDao, FixedDataDao {
                     resultSet.getString("name")
             );
         });
+    }
+
+    @Override
+    public int addUserWork(UUID id, UserWork userWork) throws SQLException{
+
+        final String sql = "INSERT INTO users_work(id, user_uuid, work_type, work_name, work_time_start, work_time_end, work_place, work_desc, work_industry, work_location)" +
+                " VALUES (uuid_generate_v4(), " +
+                "'" + id + "', "+
+                "'" + userWork.getWork_type() + "', "+
+                "'" + userWork.getWork_name() + "', "+
+                "'" + userWork.getWork_time_start() + "', "+
+                "'" + userWork.getWork_time_end() + "', "+
+                "'" + userWork.getWork_place() + "', "+
+                "'" + userWork.getWork_desc() + "', "+
+                "'" + userWork.getWork_industry() + "', "+
+                "'" + userWork.getWork_location() + "'" +
+                ")";
+        jdbcTemplate.execute(sql);
+        return 1;
+    }
+
+    @Override
+    public int addUserEdu(UUID id, UserEdu userEdu) throws SQLException{
+
+        final String sql = "INSERT INTO users_edu(id, user_uuid, edu_type, edu_name, edu_time_start, edu_time_end, edu_place, edu_desc, edu_spec)" +
+                " VALUES (uuid_generate_v4(), " +
+                "'" + id + "', "+
+                "'" + userEdu.getEdu_type() + "', "+
+                "'" + userEdu.getEdu_name() + "', "+
+                "'" + userEdu.getEdu_time_start() + "', "+
+                "'" + userEdu.getEdu_time_end() + "', "+
+                "'" + userEdu.getEdu_place() + "', "+
+                "'" + userEdu.getEdu_desc() + "', "+
+                "'" + userEdu.getEdu_spec() + "'" +
+                ")";
+        jdbcTemplate.execute(sql);
+        return 1;
+    }
+
+    @Override
+    public int addUserSkill(UUID id, UserSkill userSkill) throws SQLException{
+
+        final String sql = "INSERT INTO users_skill(id, user_uuid, skill_type, skill_name, skill_time_months, skill_level)" +
+                " VALUES (uuid_generate_v4(), " +
+                "'" + id + "', "+
+                "'" + userSkill.getSkill_type() + "', "+
+                "'" + userSkill.getSkill_name() + "', "+
+                "'" + userSkill.getSkill_time_months() + "', "+
+                "'" + userSkill.getSkill_level() + "'" +
+                ")";
+        jdbcTemplate.execute(sql);
+        return 1;
     }
 
 }

@@ -32,7 +32,7 @@ public class PostgresService implements UserDao, FixedDataDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    @Override
+ /*   @Override
     public int addUser(UUID id, User user) {
         final String sqlFirst = "SELECT * FROM users WHERE email = '"+user.getEmail()+"'";
         String emailKey;
@@ -68,6 +68,18 @@ public class PostgresService implements UserDao, FixedDataDao {
                         "(SELECT id FROM users WHERE email IN('"+user.getEmail()+"'))," +
                         "'','','','','','', '')";
                 jdbcTemplate.execute(addUserBioSQL);
+
+                final String addUserSettingSQL = "INSERT INTO users_setting (id, user_id, setting_public, setting_header1, setting_header2, setting_img, setting_consent, setting_allow_contact) " +
+                        "VALUES (uuid_generate_v4(), " +
+                        "(SELECT id FROM users WHERE email IN('"+user.getEmail()+"'))," +
+                        "'true', " +
+                        "'', " +
+                        "'', " +
+                        "'-1',"+
+                        "'true',"+
+                        "'true'" +
+                        ")";
+                jdbcTemplate.execute(addUserSettingSQL);
 
                 final String addConfirmationEmailSQL = "INSERT INTO confirmation_emails (id, user_uuid, status) VALUES (" +
                     "uuid_generate_v4(), " +
@@ -109,6 +121,106 @@ public class PostgresService implements UserDao, FixedDataDao {
             }
         } else
             return 0;
+    }*/
+
+    @Override
+    public int addUser(UUID id, User user) throws SQLException {
+        final String sqlFirst = "SELECT * FROM users WHERE email = '"+user.getEmail()+"'";
+        String emailKey;
+        String idKey;
+
+        List<User> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
+            return new User(
+                    UUID.fromString(resultSet.getString("id")),
+                    resultSet.getString("first_name"),
+                    resultSet.getString("last_name"),
+                    resultSet.getString("email"),
+                    resultSet.getString("password"),
+                    resultSet.getString("role"),
+                    resultSet.getBoolean("confirmed")
+            );
+        });
+        Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
+
+        if (listFind.isEmpty()) {
+            try {
+                conn.setAutoCommit(false);
+                UUID userUUID = UUID.randomUUID();
+
+                final String addUserSQL = "INSERT INTO users (id, first_name, last_name, email, password, role, confirmed) " +
+                        "VALUES (" +
+                        "'"+userUUID+"', " +
+                        "'"+user.getFirstName()+"', " +
+                        "'"+user.getLastName()+"', " +
+                        "'"+user.getEmail()+"', " +
+                        "md5('"+user.getPassword()+"'),"+
+                        "'"+user.getRole()+"',"+
+                        ""+user.isConfirmed()+
+                        ")";
+
+                final String addUserBioSQL = "INSERT INTO users_bio (id, user_uuid, phone, address_main, address_city, address_zip, address_country, date_birth, gender) VALUES (" +
+                        "uuid_generate_v4(), " +
+                        "'"+userUUID+"', " +
+                        "'','','','','','1900-01-01', '')";
+
+                final String addUserSettingSQL = "INSERT INTO users_setting (id, user_uuid, setting_public, setting_header1, setting_header2, setting_img, setting_consent, setting_allow_contact) " +
+                        "VALUES (uuid_generate_v4(), " +
+                        "'"+userUUID+"', " +
+                        "'true', " +
+                        "'', " +
+                        "'', " +
+                        "'-1',"+
+                        "'true',"+
+                        "'true'" +
+                        ")";
+
+                final String addConfirmationEmailSQL = "INSERT INTO confirmation_emails (id, user_uuid, status) VALUES (" +
+                        "uuid_generate_v4(), " +
+                        "'"+userUUID+"', " +
+                        "false )";
+
+                conn.prepareStatement(addUserSQL).executeUpdate();
+                conn.prepareStatement(addUserBioSQL).executeUpdate();
+                conn.prepareStatement(addUserSettingSQL).executeUpdate();
+                conn.prepareStatement(addConfirmationEmailSQL).executeUpdate();
+                conn.commit();
+
+                String getEmailKey = "SELECT id FROM confirmation_emails WHERE user_uuid IN (SELECT id FROM users WHERE email = '"+user.getEmail()+"') AND status = false";
+                emailKey = jdbcTemplate.queryForObject(getEmailKey, new Object[]{}, (resultSet, i) -> {
+                    return new String (resultSet.getString("id"));
+                });
+                String getIdKey = "SELECT id FROM users WHERE email IN ('"+user.getEmail()+"')";
+                idKey = jdbcTemplate.queryForObject(getIdKey, new Object[]{}, (resultSet, i) -> {
+                    return new String (resultSet.getString("id"));
+                });
+
+                Map<String, Object> model = new HashMap<>();
+                model.put("Name", user.getFirstName());
+                model.put("location", "Poznań, Polska");
+                model.put( "idKey", idKey);
+                model.put( "linkKey", emailKey);
+
+                try {
+                    MailRequestModel request = new MailRequestModel(user.getFirstName(), user.getEmail(), "ePortfolio", "ePortfolio | Potwierdzenie rejestracji");
+                    MailResponseModel response = service.sendRegisterEmail(request, model);
+                } catch (MailAuthenticationException mae) {
+                    mae.printStackTrace();
+                    return 3;
+                } catch (MailException me) {
+                    me.printStackTrace();
+                    return 2;
+                }
+                return 1;
+
+            } catch (SQLException e) {
+                conn.rollback();
+                e.printStackTrace();
+                System.err.println("Add user to database error.");
+                return 0;
+            }
+        } else
+            return 0;
+
     }
 
     public int changePassword(ResetPasswordRequest resetPasswordRequest){
@@ -442,14 +554,14 @@ public class PostgresService implements UserDao, FixedDataDao {
             conn.setAutoCommit(false);
 
             DeleteMethods deleteMethods = new DeleteMethods();
-            conn.prepareStatement(deleteMethods.deleteFromTable("users_edu",id)).executeUpdate();;
-            conn.prepareStatement(deleteMethods.deleteFromTable("users_bio",id)).executeUpdate();;
-            conn.prepareStatement(deleteMethods.deleteFromTable("users_work",id)).executeUpdate();;
-            conn.prepareStatement(deleteMethods.deleteFromTable("users_skill",id)).executeUpdate();;
-            conn.prepareStatement(deleteMethods.deleteFromTable("users_setting",id)).executeUpdate();;
-            conn.prepareStatement(deleteMethods.deleteFromTable("confirmation_emails",id)).executeUpdate();;
-            conn.prepareStatement(deleteMethods.deleteFromTable("reset_password_emails",id)).executeUpdate();;
-            conn.prepareStatement(deleteMethods.deleteFromTable("users",id)).executeUpdate();;
+            conn.prepareStatement(deleteMethods.deleteFromTable("users_edu",id)).executeUpdate();
+            conn.prepareStatement(deleteMethods.deleteFromTable("users_bio",id)).executeUpdate();
+            conn.prepareStatement(deleteMethods.deleteFromTable("users_work",id)).executeUpdate();
+            conn.prepareStatement(deleteMethods.deleteFromTable("users_skill",id)).executeUpdate();
+            conn.prepareStatement(deleteMethods.deleteFromTable("users_setting",id)).executeUpdate();
+            conn.prepareStatement(deleteMethods.deleteFromTable("confirmation_emails",id)).executeUpdate();
+            conn.prepareStatement(deleteMethods.deleteFromTable("reset_password_emails",id)).executeUpdate();
+            conn.prepareStatement(deleteMethods.deleteFromTable("users",id)).executeUpdate();
             conn.commit();
             return 0;
 

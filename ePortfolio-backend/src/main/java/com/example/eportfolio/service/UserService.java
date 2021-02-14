@@ -20,7 +20,7 @@ public class UserService {
     }
 
     // ADD USER METHODS -START-
-    public int addUser(User user) {
+    public int addUser(User user) throws SQLException {
         return userDao.addUser(user);
     }
     // ADD USER METHODS -END-

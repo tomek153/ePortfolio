@@ -11,9 +11,9 @@ import java.util.UUID;
 public interface UserDao {
 
     // ADD USER METHODS -START-
-    int addUser(UUID id, User user);
+    int addUser(UUID id, User user) throws SQLException;
 
-    default int addUser(User user) {
+    default int addUser(User user) throws SQLException {
         UUID id = UUID.randomUUID();
         return addUser(id, user);
     }

@@ -33,7 +33,7 @@ public class UserController {
     }
 
     @RequestMapping (value = "/api/users", method = POST)
-    public void addUser (@Valid @NonNull @RequestBody User user, HttpServletResponse response) throws IOException {
+    public void addUser (@Valid @NonNull @RequestBody User user, HttpServletResponse response) throws IOException, SQLException {
         int status = userService.addUser(user);
 
         if (status == 0) {

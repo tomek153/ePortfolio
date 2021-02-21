@@ -400,6 +400,7 @@ public class PostgresService implements UserDao, FixedDataDao {
                 new Object[]{ID},
                 (resultSet, i) -> {
                     return new UserWork(
+                            UUID.fromString(resultSet.getString("id")),
                             UUID.fromString(resultSet.getString("user_uuid")),
                             resultSet.getInt("work_industry"),
                             resultSet.getInt("work_type"),
@@ -424,6 +425,7 @@ public class PostgresService implements UserDao, FixedDataDao {
                 new Object[]{ID},
                 (resultSet, i) -> {
                     return new UserEdu(
+                            UUID.fromString(resultSet.getString("id")),
                             UUID.fromString(resultSet.getString("user_uuid")),
                             resultSet.getInt("edu_spec"),
                             resultSet.getInt("edu_type"),
@@ -447,6 +449,7 @@ public class PostgresService implements UserDao, FixedDataDao {
                 new Object[]{ID},
                 (resultSet, i) -> {
                     return new UserSkill(
+                            UUID.fromString(resultSet.getString("id")),
                             UUID.fromString(resultSet.getString("user_uuid")),
                             resultSet.getInt("skill_type"),
                             resultSet.getInt("skill_time_months"),
@@ -554,14 +557,14 @@ public class PostgresService implements UserDao, FixedDataDao {
             conn.setAutoCommit(false);
 
             DeleteMethods deleteMethods = new DeleteMethods();
-            conn.prepareStatement(deleteMethods.deleteFromTable("users_edu",id)).executeUpdate();
-            conn.prepareStatement(deleteMethods.deleteFromTable("users_bio",id)).executeUpdate();
-            conn.prepareStatement(deleteMethods.deleteFromTable("users_work",id)).executeUpdate();
-            conn.prepareStatement(deleteMethods.deleteFromTable("users_skill",id)).executeUpdate();
-            conn.prepareStatement(deleteMethods.deleteFromTable("users_setting",id)).executeUpdate();
-            conn.prepareStatement(deleteMethods.deleteFromTable("confirmation_emails",id)).executeUpdate();
-            conn.prepareStatement(deleteMethods.deleteFromTable("reset_password_emails",id)).executeUpdate();
-            conn.prepareStatement(deleteMethods.deleteFromTable("users",id)).executeUpdate();
+            conn.prepareStatement(deleteMethods.deleteUserFromTable("users_edu",id)).executeUpdate();
+            conn.prepareStatement(deleteMethods.deleteUserFromTable("users_bio",id)).executeUpdate();
+            conn.prepareStatement(deleteMethods.deleteUserFromTable("users_work",id)).executeUpdate();
+            conn.prepareStatement(deleteMethods.deleteUserFromTable("users_skill",id)).executeUpdate();
+            conn.prepareStatement(deleteMethods.deleteUserFromTable("users_setting",id)).executeUpdate();
+            conn.prepareStatement(deleteMethods.deleteUserFromTable("confirmation_emails",id)).executeUpdate();
+            conn.prepareStatement(deleteMethods.deleteUserFromTable("reset_password_emails",id)).executeUpdate();
+            conn.prepareStatement(deleteMethods.deleteUserFromTable("users",id)).executeUpdate();
             conn.commit();
             return 0;
 
@@ -637,6 +640,131 @@ public class PostgresService implements UserDao, FixedDataDao {
                 ")";
         jdbcTemplate.execute(sql);
         return 1;
+    }
+
+    @Override
+    public int deleteUserWork(UUID userUUID, UUID propertyUUID) throws SQLException{
+
+        final String sqlFirst = "SELECT * FROM users_work WHERE user_uuid = '"+userUUID+"' AND id = '"+propertyUUID+"';";
+
+        List<UserWork> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
+            return new UserWork(
+                    UUID.fromString(resultSet.getString("id")),
+                    UUID.fromString(resultSet.getString("user_uuid")),
+                    resultSet.getInt("work_industry"),
+                    resultSet.getInt("work_type"),
+                    resultSet.getString("work_name"),
+                    resultSet.getString("work_time_start"),
+                    resultSet.getString("work_time_end"),
+                    resultSet.getString("work_place"),
+                    resultSet.getString("work_desc"),
+                    resultSet.getString("work_location")
+            );
+        });
+        Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
+
+        if (!listFind.isEmpty()) {
+            try {
+                conn.setAutoCommit(false);
+
+                DeleteMethods deleteMethods = new DeleteMethods();
+                conn.prepareStatement(deleteMethods.deleteUserPropertyFromTable("users_work", propertyUUID)).executeUpdate();
+                conn.commit();
+                return 0;
+
+            } catch (SQLException e) {
+                conn.rollback();
+                e.printStackTrace();
+                System.err.println("delete userwork error - sql");
+                return 1;
+            }
+        }
+        else {
+            System.err.println("delete userwork error - no record");
+            return 2;
+        }
+    }
+
+    @Override
+    public int deleteUserEdu(UUID userUUID, UUID propertyUUID) throws SQLException{
+
+        final String sqlFirst = "SELECT * FROM users_edu WHERE user_uuid = '"+userUUID+"' AND id = '"+propertyUUID+"';";
+
+        List<UserEdu> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
+            return new UserEdu(
+                    UUID.fromString(resultSet.getString("id")),
+                    UUID.fromString(resultSet.getString("user_uuid")),
+                    resultSet.getInt("edu_spec"),
+                    resultSet.getInt("edu_type"),
+                    resultSet.getString("edu_name"),
+                    resultSet.getString("edu_time_start"),
+                    resultSet.getString("edu_time_end"),
+                    resultSet.getString("edu_place"),
+                    resultSet.getString("edu_desc")
+            );
+        });
+        Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
+
+        if (!listFind.isEmpty()) {
+            try {
+                conn.setAutoCommit(false);
+
+                DeleteMethods deleteMethods = new DeleteMethods();
+                conn.prepareStatement(deleteMethods.deleteUserPropertyFromTable("users_edu", propertyUUID)).executeUpdate();
+                conn.commit();
+                return 0;
+
+            } catch (SQLException e) {
+                conn.rollback();
+                e.printStackTrace();
+                System.err.println("delete useredu error - sql");
+                return 1;
+            }
+        }
+        else {
+            System.err.println("delete useredu error - no record");
+            return 2;
+        }
+    }
+
+    @Override
+    public int deleteUserSkill(UUID userUUID, UUID propertyUUID) throws SQLException{
+
+        final String sqlFirst = "SELECT * FROM users_skill WHERE user_uuid = '"+userUUID+"' AND id = '"+propertyUUID+"';";
+
+        List<UserSkill> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
+            return new UserSkill(
+                    UUID.fromString(resultSet.getString("id")),
+                    UUID.fromString(resultSet.getString("user_uuid")),
+                    resultSet.getInt("skill_type"),
+                    resultSet.getInt("skill_time_months"),
+                    resultSet.getInt("skill_level"),
+                    resultSet.getString("skill_name")
+            );
+        });
+        System.out.println(listFind);
+        Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
+
+        if (!listFind.isEmpty()) {
+            try {
+                conn.setAutoCommit(false);
+
+                DeleteMethods deleteMethods = new DeleteMethods();
+                conn.prepareStatement(deleteMethods.deleteUserPropertyFromTable("users_skill", propertyUUID)).executeUpdate();
+                conn.commit();
+                return 0;
+
+            } catch (SQLException e) {
+                conn.rollback();
+                e.printStackTrace();
+                System.err.println("delete userskill error - sql");
+                return 1;
+            }
+        }
+        else {
+            System.err.println("delete userskill error - no record");
+            return 2;
+        }
     }
 
 }

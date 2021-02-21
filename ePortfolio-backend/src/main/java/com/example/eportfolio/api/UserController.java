@@ -499,5 +499,122 @@ public class UserController {
         out.flush();
     }
 
+    @RequestMapping (value = "/api/users/delete/work/{uuid}", method = DELETE)
+    public void deleteUserWork (@PathVariable ("uuid") UUID userWorkUUID, HttpServletResponse response, HttpServletRequest request) throws IOException {
+        Map<String, Object> profileMap = new HashMap<>();
+        String token = request.getHeader("Authorization");
+        String responseString = "";
+        int decryptionStatus = Login.checkJWT(token);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        if (decryptionStatus == 0) {
+            Map<String, Claim> claims = Login.getClaims();
+
+            profileMap.put("id", claims.get("id").asString());
+            UUID userUUID = UUID.fromString(claims.get("id").asString());
+
+            try {
+                int result = userService.deleteUserWork(userUUID, userWorkUUID);
+                if( result == 0 ) { System.out.println("DELETE OK"); }
+                else if( result == 2 ) { response.sendError(400, "Bad request. Delete not allowed. This UserWork does not exist");}
+                else { response.sendError(400, "Bad request. Delete not allowed."); }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                response.sendError(400, "Bad request. Delete not allowed.");
+            }
+
+
+        } else if (decryptionStatus == 2) {
+            response.sendError(400, "Token expired");
+        } else if (decryptionStatus == 1) {
+            response.sendError(400, "Token decryption error");
+        } else {
+            response.sendError(400, "Unknown error");
+        }
+
+        PrintWriter out = response.getWriter();
+        out.print(responseString);
+        out.flush();
+    }
+
+    @RequestMapping (value = "/api/users/delete/edu/{uuid}", method = DELETE)
+    public void deleteUserEdu (@PathVariable ("uuid") UUID userEduUUID, HttpServletResponse response, HttpServletRequest request) throws IOException {
+        Map<String, Object> profileMap = new HashMap<>();
+        String token = request.getHeader("Authorization");
+        String responseString = "";
+        int decryptionStatus = Login.checkJWT(token);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        if (decryptionStatus == 0) {
+            Map<String, Claim> claims = Login.getClaims();
+
+            profileMap.put("id", claims.get("id").asString());
+            UUID userUUID = UUID.fromString(claims.get("id").asString());
+
+            try {
+                int result = userService.deleteUserEdu(userUUID, userEduUUID);
+                if( result == 0 ) { System.out.println("DELETE OK"); }
+                else if( result == 2 ) { response.sendError(400, "Bad request. Delete not allowed. This UserEdu does not exist");}
+                else { response.sendError(400, "Bad request. Delete not allowed."); }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                response.sendError(400, "Bad request. Delete not allowed.");
+            }
+
+
+        } else if (decryptionStatus == 2) {
+            response.sendError(400, "Token expired");
+        } else if (decryptionStatus == 1) {
+            response.sendError(400, "Token decryption error");
+        } else {
+            response.sendError(400, "Unknown error");
+        }
+
+        PrintWriter out = response.getWriter();
+        out.print(responseString);
+        out.flush();
+    }
+
+    @RequestMapping (value = "/api/users/delete/skill/{uuid}", method = DELETE)
+    public void deleteUserSkill (@PathVariable ("uuid") UUID userSkillUUID, HttpServletResponse response, HttpServletRequest request) throws IOException {
+        Map<String, Object> profileMap = new HashMap<>();
+        String token = request.getHeader("Authorization");
+        String responseString = "";
+        int decryptionStatus = Login.checkJWT(token);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        if (decryptionStatus == 0) {
+            Map<String, Claim> claims = Login.getClaims();
+
+            profileMap.put("id", claims.get("id").asString());
+            UUID userUUID = UUID.fromString(claims.get("id").asString());
+
+            try {
+                int result = userService.deleteUserSkill(userUUID, userSkillUUID);
+                if( result == 0 ) { System.out.println("DELETE OK"); }
+                else if( result == 2 ) { response.sendError(400, "Bad request. Delete not allowed. This UserSkill does not exist");}
+                else { response.sendError(400, "Bad request. Delete not allowed."); }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                response.sendError(400, "Bad request. Delete not allowed.");
+            }
+
+
+        } else if (decryptionStatus == 2) {
+            response.sendError(400, "Token expired");
+        } else if (decryptionStatus == 1) {
+            response.sendError(400, "Token decryption error");
+        } else {
+            response.sendError(400, "Unknown error");
+        }
+
+        PrintWriter out = response.getWriter();
+        out.print(responseString);
+        out.flush();
+    }
+
 }
 

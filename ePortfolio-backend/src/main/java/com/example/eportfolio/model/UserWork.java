@@ -7,6 +7,7 @@ import java.util.UUID;
 public class UserWork {
 
     private final UUID id;
+    private final UUID userID;
     private final int work_industry;
     private final int work_type;
     private final String work_name;
@@ -17,6 +18,7 @@ public class UserWork {
     private final String work_location;
 
     public UserWork(@JsonProperty("id") UUID id,
+                    @JsonProperty("userID") UUID userID,
                     @JsonProperty("industry") int work_industry,
                     @JsonProperty("type") int work_type,
                     @JsonProperty("name") String work_name,
@@ -26,6 +28,7 @@ public class UserWork {
                     @JsonProperty("desc") String work_desc,
                     @JsonProperty("location") String work_location) {
         this.id = id;
+        this.userID = userID;
         this.work_industry = work_industry;
         this.work_type = work_type;
         this.work_name = work_name;
@@ -38,6 +41,10 @@ public class UserWork {
 
     public UUID getUserWorkId() {
         return id;
+    }
+
+    public UUID getUserWorkUserID() {
+        return userID;
     }
 
     public int getWork_industry() {

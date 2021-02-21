@@ -45,6 +45,12 @@ public interface UserDao {
 
     // DELETE USER METHODS -START-
     int deleteUser(UUID id) throws SQLException;
+
+    int deleteUserWork(UUID userID, UUID propertyID) throws SQLException;
+
+    int deleteUserEdu(UUID userID, UUID propertyID) throws SQLException;
+
+    int deleteUserSkill(UUID userID, UUID propertyID) throws SQLException;
     // DELETE USER METHODS -END-
 
     // CHANGE PASSWORD METHODS -START-

@@ -333,20 +333,6 @@ public class UserController {
         out.flush();
     }
 
-    @RequestMapping (value = "/api/users/{email}", method = PUT)
-    public void updateUser (@PathVariable ("email") String email, @Valid @RequestBody User user, HttpServletResponse response) throws IOException {
-        int status = userService.updateUser (email, user);
-        if (status == 0) {
-            System.out.println ("Błąd aktualizacji użytkownika!");
-            response.sendError (405, "Update error");
-        } else if(status == -1) {
-            System.out.println ("Błąd aktualizacji użytkownika! - Email");
-            response.sendError (405, "Update error - email");
-        } else {
-            System.out.println("Aktualizacja użytkownika pomyślna.");
-        }
-    }
-
     @RequestMapping (value = "/api/users/delete", method = DELETE)
     public void deleteUser (HttpServletResponse response, HttpServletRequest request) throws IOException {
         Map<String, Object> profileMap = new HashMap<>();
@@ -616,5 +602,121 @@ public class UserController {
         out.flush();
     }
 
-}
+    @RequestMapping (value = "/api/users/edit/work", method = PUT)
+    public void updateUserWork (@Valid @RequestBody UserWork userWork, HttpServletResponse response, HttpServletRequest request) throws IOException {
+        Map<String, Object> profileMap = new HashMap<>();
+        String token = request.getHeader("Authorization");
+        String responseString = "";
+        int decryptionStatus = Login.checkJWT(token);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
 
+        if (decryptionStatus == 0) {
+            Map<String, Claim> claims = Login.getClaims();
+
+            profileMap.put("id", claims.get("id").asString());
+            UUID userUUID = UUID.fromString(claims.get("id").asString());
+
+            try {
+                int result = userService.updateUserWork(userUUID, userWork);
+                if( result == 0 ) { System.out.println("UPDATE OK"); }
+                else if( result == 2 ) { response.sendError(400, "Bad request. Update not allowed. This UserWork does not exist");}
+                else { response.sendError(400, "Bad request. Update not allowed."); }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                response.sendError(400, "Bad request. Update not allowed.");
+            }
+
+
+        } else if (decryptionStatus == 2) {
+            response.sendError(400, "Token expired");
+        } else if (decryptionStatus == 1) {
+            response.sendError(400, "Token decryption error");
+        } else {
+            response.sendError(400, "Unknown error");
+        }
+
+        PrintWriter out = response.getWriter();
+        out.print(responseString);
+        out.flush();
+    }
+
+    @RequestMapping (value = "/api/users/edit/edu", method = PUT)
+    public void updateUserEdu (@Valid @RequestBody UserEdu userEdu, HttpServletResponse response, HttpServletRequest request) throws IOException {
+        Map<String, Object> profileMap = new HashMap<>();
+        String token = request.getHeader("Authorization");
+        String responseString = "";
+        int decryptionStatus = Login.checkJWT(token);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        if (decryptionStatus == 0) {
+            Map<String, Claim> claims = Login.getClaims();
+
+            profileMap.put("id", claims.get("id").asString());
+            UUID userUUID = UUID.fromString(claims.get("id").asString());
+
+            try {
+                int result = userService.updateUserEdu(userUUID, userEdu);
+                if( result == 0 ) { System.out.println("UPDATE OK"); }
+                else if( result == 2 ) { response.sendError(400, "Bad request. Update not allowed. This UserEdu does not exist");}
+                else { response.sendError(400, "Bad request. Update not allowed."); }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                response.sendError(400, "Bad request. Update not allowed.");
+            }
+
+
+        } else if (decryptionStatus == 2) {
+            response.sendError(400, "Token expired");
+        } else if (decryptionStatus == 1) {
+            response.sendError(400, "Token decryption error");
+        } else {
+            response.sendError(400, "Unknown error");
+        }
+
+        PrintWriter out = response.getWriter();
+        out.print(responseString);
+        out.flush();
+    }
+
+    @RequestMapping (value = "/api/users/edit/skill", method = PUT)
+    public void updateUserSkill (@Valid @RequestBody UserSkill userSkill, HttpServletResponse response, HttpServletRequest request) throws IOException {
+        Map<String, Object> profileMap = new HashMap<>();
+        String token = request.getHeader("Authorization");
+        String responseString = "";
+        int decryptionStatus = Login.checkJWT(token);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        if (decryptionStatus == 0) {
+            Map<String, Claim> claims = Login.getClaims();
+
+            profileMap.put("id", claims.get("id").asString());
+            UUID userUUID = UUID.fromString(claims.get("id").asString());
+
+            try {
+                int result = userService.updateUserSkill(userUUID, userSkill);
+                if( result == 0 ) { System.out.println("UPDATE OK"); }
+                else if( result == 2 ) { response.sendError(400, "Bad request. Update not allowed. This UserSkill does not exist");}
+                else { response.sendError(400, "Bad request. Update not allowed."); }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                response.sendError(400, "Bad request. Update not allowed.");
+            }
+
+
+        } else if (decryptionStatus == 2) {
+            response.sendError(400, "Token expired");
+        } else if (decryptionStatus == 1) {
+            response.sendError(400, "Token decryption error");
+        } else {
+            response.sendError(400, "Unknown error");
+        }
+
+        PrintWriter out = response.getWriter();
+        out.print(responseString);
+        out.flush();
+    }
+
+}

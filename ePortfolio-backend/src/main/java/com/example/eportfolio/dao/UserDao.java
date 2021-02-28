@@ -38,9 +38,11 @@ public interface UserDao {
     // GET USER METHODS -END-
 
     // EDIT USER METHODS -START-
-    int updateUser(String email, User user);
+    int updateUserWork(UUID userUUID, UserWork userWork) throws SQLException;
 
-    int updateUserBio(UUID id, UserBio userBio);
+    int updateUserEdu(UUID userUUID, UserEdu userEdu) throws SQLException;
+
+    int updateUserSkill(UUID userUUID, UserSkill userSkill) throws SQLException;
     // EDIT USER METHODS -END-
 
     // DELETE USER METHODS -START-

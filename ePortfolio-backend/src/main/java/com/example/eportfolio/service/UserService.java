@@ -48,6 +48,18 @@ public class UserService {
     // GET USER METHODS -END-
 
     // EDIT USER METHODS -START-
+    public int editUser(UUID userUUID, User user) throws SQLException {
+        return userDao.editUser(userUUID, user);
+    }
+
+    public int editUserBio(UUID userUUID, UserBio userBio) throws SQLException {
+        return userDao.editUserBio(userUUID, userBio);
+    }
+
+    public int editUserSetting(UUID userUUID, UserSetting userSetting) throws SQLException {
+        return userDao.editUserSetting(userUUID, userSetting);
+    }
+
     public int updateUserWork(UUID userUUID, UserWork userWork) throws SQLException {
         return userDao.updateUserWork(userUUID, userWork);
     }

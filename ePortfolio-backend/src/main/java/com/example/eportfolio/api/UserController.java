@@ -3,6 +3,7 @@ package com.example.eportfolio.api;
 import com.auth0.jwt.interfaces.Claim;
 import com.example.eportfolio.model.*;
 import com.example.eportfolio.service.UserService;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
@@ -699,6 +700,123 @@ public class UserController {
                 int result = userService.updateUserSkill(userUUID, userSkill);
                 if( result == 0 ) { System.out.println("UPDATE OK"); }
                 else if( result == 2 ) { response.sendError(400, "Bad request. Update not allowed. This UserSkill does not exist");}
+                else { response.sendError(400, "Bad request. Update not allowed."); }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                response.sendError(400, "Bad request. Update not allowed.");
+            }
+
+
+        } else if (decryptionStatus == 2) {
+            response.sendError(400, "Token expired");
+        } else if (decryptionStatus == 1) {
+            response.sendError(400, "Token decryption error");
+        } else {
+            response.sendError(400, "Unknown error");
+        }
+
+        PrintWriter out = response.getWriter();
+        out.print(responseString);
+        out.flush();
+    }
+
+    @RequestMapping (value = "/api/users/edit/user", method = PUT)
+    public void updateUser (@Valid @RequestBody User user, HttpServletResponse response, HttpServletRequest request) throws IOException {
+        Map<String, Object> profileMap = new HashMap<>();
+        String token = request.getHeader("Authorization");
+        String responseString = "";
+        int decryptionStatus = Login.checkJWT(token);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        if (decryptionStatus == 0) {
+            Map<String, Claim> claims = Login.getClaims();
+
+            profileMap.put("id", claims.get("id").asString());
+            UUID userUUID = UUID.fromString(claims.get("id").asString());
+
+            try {
+                int result = userService.editUser(userUUID, user);
+                if( result == 0 ) { System.out.println("UPDATE OK"); }
+                else if( result == 2 ) { response.sendError(400, "Bad request. Update not allowed. This User does not exist");}
+                else { response.sendError(400, "Bad request. Update not allowed."); }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                response.sendError(400, "Bad request. Update not allowed.");
+            }
+
+
+        } else if (decryptionStatus == 2) {
+            response.sendError(400, "Token expired");
+        } else if (decryptionStatus == 1) {
+            response.sendError(400, "Token decryption error");
+        } else {
+            response.sendError(400, "Unknown error");
+        }
+
+        PrintWriter out = response.getWriter();
+        out.print(responseString);
+        out.flush();
+    }
+
+    @RequestMapping (value = "/api/users/edit/user-bio", method = PUT)
+    public void updateUserBio (@Valid @RequestBody UserBio userBio, HttpServletResponse response, HttpServletRequest request) throws IOException {
+        Map<String, Object> profileMap = new HashMap<>();
+        String token = request.getHeader("Authorization");
+        String responseString = "";
+        int decryptionStatus = Login.checkJWT(token);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        if (decryptionStatus == 0) {
+            Map<String, Claim> claims = Login.getClaims();
+
+            profileMap.put("id", claims.get("id").asString());
+            UUID userUUID = UUID.fromString(claims.get("id").asString());
+
+            try {
+                int result = userService.editUserBio(userUUID, userBio);
+                if( result == 0 ) { System.out.println("UPDATE OK"); }
+                else if( result == 2 ) { response.sendError(400, "Bad request. Update not allowed. This userBio does not exist");}
+                else { response.sendError(400, "Bad request. Update not allowed."); }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                response.sendError(400, "Bad request. Update not allowed.");
+            }
+
+
+        } else if (decryptionStatus == 2) {
+            response.sendError(400, "Token expired");
+        } else if (decryptionStatus == 1) {
+            response.sendError(400, "Token decryption error");
+        } else {
+            response.sendError(400, "Unknown error");
+        }
+
+        PrintWriter out = response.getWriter();
+        out.print(responseString);
+        out.flush();
+    }
+
+    @RequestMapping (value = "/api/users/edit/user-setting", method = PUT)
+    public void updateUserSetting (@Valid @RequestBody UserSetting userSetting, HttpServletResponse response, HttpServletRequest request) throws IOException {
+        Map<String, Object> profileMap = new HashMap<>();
+        String token = request.getHeader("Authorization");
+        String responseString = "";
+        int decryptionStatus = Login.checkJWT(token);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        if (decryptionStatus == 0) {
+            Map<String, Claim> claims = Login.getClaims();
+
+            profileMap.put("id", claims.get("id").asString());
+            UUID userUUID = UUID.fromString(claims.get("id").asString());
+
+            try {
+                int result = userService.editUserSetting(userUUID, userSetting);
+                if( result == 0 ) { System.out.println("UPDATE OK"); }
+                else if( result == 2 ) { response.sendError(400, "Bad request. Update not allowed. This userSetting does not exist");}
                 else { response.sendError(400, "Bad request. Update not allowed."); }
             } catch (SQLException e) {
                 e.printStackTrace();

@@ -286,6 +286,7 @@ public class PostgresService implements UserDao, FixedDataDao {
                 new Object[]{ID},
                 (resultSet, i) -> {
                     return new UserBio(
+                            UUID.fromString(resultSet.getString("id")),
                             UUID.fromString(resultSet.getString("user_uuid")),
                             resultSet.getString("phone"),
                             resultSet.getString("address_main"),
@@ -379,6 +380,7 @@ public class PostgresService implements UserDao, FixedDataDao {
                 new Object[]{ID},
                 (resultSet, i) -> {
                     return new UserSetting(
+                            UUID.fromString(resultSet.getString("id")),
                             UUID.fromString(resultSet.getString("user_uuid")),
                             resultSet.getBoolean("setting_public"),
                             resultSet.getString("setting_header1"),
@@ -759,6 +761,145 @@ public class PostgresService implements UserDao, FixedDataDao {
             System.err.println("update userskill error - no record");
             return 2;
         }
+    }
+
+    @Override
+    public int editUser(UUID userUUID, User user) throws SQLException {
+        final String sqlFirst = "SELECT * FROM users WHERE id = '"+userUUID+"'";
+
+        List<User> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
+            return new User(
+                    UUID.fromString(resultSet.getString("id")),
+                    resultSet.getString("first_name"),
+                    resultSet.getString("last_name"),
+                    resultSet.getString("email"),
+                    resultSet.getString("password"),
+                    resultSet.getString("role"),
+                    resultSet.getBoolean("confirmed")
+            );
+        });
+        Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
+
+        if (!listFind.isEmpty()) {
+            try {
+                conn.setAutoCommit(false);
+
+                final String updateUserSQL = "UPDATE users SET " +
+                        "first_name ='"+user.getFirstName()+"', " +
+                        "last_name = '"+user.getLastName()+"', " +
+                        "email = '"+user.getEmail()+"' " +
+                        "WHERE id = '" + userUUID + "';";
+
+                conn.prepareStatement(updateUserSQL).executeUpdate();
+                conn.commit();
+                return 0;
+
+            } catch (SQLException e) {
+                conn.rollback();
+                e.printStackTrace();
+                System.err.println("Update user error - SQL");
+                return 1;
+            }
+        } else
+            System.err.println("Update user error - no user");
+        return 2;
+
+    }
+
+    @Override
+    public int editUserBio(UUID userUUID, UserBio userBio) throws SQLException {
+        final String sqlFirst = "SELECT * FROM users_bio WHERE user_uuid = '"+userUUID+"'";
+
+        List<UserBio> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
+            return new UserBio(
+                    UUID.fromString(resultSet.getString("id")),
+                    UUID.fromString(resultSet.getString("user_uuid")),
+                    resultSet.getString("phone"),
+                    resultSet.getString("address_main"),
+                    resultSet.getString("address_city"),
+                    resultSet.getString("address_zip"),
+                    resultSet.getString("address_country"),
+                    resultSet.getString("date_birth"),
+                    resultSet.getString("gender")
+            );
+        });
+        Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
+
+        if (!listFind.isEmpty()) {
+            try {
+                conn.setAutoCommit(false);
+
+                final String updateBioSQL = "UPDATE users_bio SET " +
+                        "phone ='"+userBio.getPhone()+"', " +
+                        "address_main = '"+userBio.getAddress_main()+"', " +
+                        "address_city = '"+userBio.getAddress_city()+"', " +
+                        "address_zip = '"+userBio.getAddress_zip()+"', " +
+                        "address_country = '"+userBio.getAddress_country()+"', " +
+                        "date_birth = '"+userBio.getDate_birth()+"', " +
+                        "gender = '"+userBio.getGender()+"' " +
+                        "WHERE user_uuid = '" + userUUID + "';";
+
+                conn.prepareStatement(updateBioSQL).executeUpdate();
+                conn.commit();
+                return 0;
+
+            } catch (SQLException e) {
+                conn.rollback();
+                e.printStackTrace();
+                System.err.println("Update editUserBio error - SQL");
+                return 1;
+            }
+        } else
+            System.err.println("Update editUserBio error - no user");
+        return 2;
+
+    }
+
+    @Override
+    public int editUserSetting(UUID userUUID, UserSetting userSetting) throws SQLException {
+        final String sqlFirst = "SELECT * FROM users_setting WHERE user_uuid = '"+userUUID+"' ";
+
+        List<UserSetting> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
+            return new UserSetting(
+                    UUID.fromString(resultSet.getString("id")),
+                    UUID.fromString(resultSet.getString("user_uuid")),
+                    resultSet.getBoolean("setting_public"),
+                    resultSet.getString("setting_header1"),
+                    resultSet.getString("setting_header2"),
+                    resultSet.getString("setting_img"),
+                    resultSet.getBoolean("setting_consent"),
+                    resultSet.getBoolean("setting_allow_contact")
+            );
+        });
+        Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
+
+        if (!listFind.isEmpty()) {
+            try {
+                conn.setAutoCommit(false);
+
+                final String updateUserSettingSQL = "UPDATE users_setting SET " +
+                        "setting_public ='"+userSetting.isSetting_public()+"', " +
+                        "setting_header1 = '"+userSetting.getSetting_header1()+"', " +
+                        "setting_header2 = '"+userSetting.getSetting_header2()+"', " +
+                        "setting_img = '"+userSetting.getSetting_img()+"', " +
+                        "setting_consent = '"+userSetting.isSetting_consent()+"', " +
+                        "setting_allow_contact = '"+userSetting.isSetting_allow_contact()+"' " +
+                        "WHERE user_uuid = '" + userUUID + "';";
+
+                conn.prepareStatement(updateUserSettingSQL).executeUpdate();
+                conn.commit();
+                return 0;
+
+            } catch (SQLException e) {
+                conn.rollback();
+                e.printStackTrace();
+                System.err.println("Update UserSetting error - SQL");
+                return 1;
+            }
+        } else
+            System.err.println("Update UserSetting error - no user");
+        return 2;
+
     }
 
 }

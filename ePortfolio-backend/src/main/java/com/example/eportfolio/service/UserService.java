@@ -48,15 +48,39 @@ public class UserService {
     // GET USER METHODS -END-
 
     // EDIT USER METHODS -START-
-    public int updateUser(String email, User user) {
-        return userDao.updateUser(email, user);
+    public int editUser(UUID userUUID, User user) throws SQLException {
+        return userDao.editUser(userUUID, user);
     }
 
-    public int updateUserBio(UUID id, UserBio userBio) { return userDao.updateUserBio(id, userBio); }
+    public int editUserBio(UUID userUUID, UserBio userBio) throws SQLException {
+        return userDao.editUserBio(userUUID, userBio);
+    }
+
+    public int editUserSetting(UUID userUUID, UserSetting userSetting) throws SQLException {
+        return userDao.editUserSetting(userUUID, userSetting);
+    }
+
+    public int updateUserWork(UUID userUUID, UserWork userWork) throws SQLException {
+        return userDao.updateUserWork(userUUID, userWork);
+    }
+
+    public int updateUserEdu(UUID userUUID, UserEdu userEdu) throws SQLException {
+        return userDao.updateUserEdu(userUUID, userEdu);
+    }
+
+    public int updateUserSkill(UUID userUUID, UserSkill userSkill) throws SQLException {
+        return userDao.updateUserSkill(userUUID, userSkill);
+    }
     // EDIT USER METHODS -END-
 
     // DELETE USER METHODS -START-
     public int deleteUser(UUID id) throws SQLException { return userDao.deleteUser(id); }
+
+    public int deleteUserWork(UUID userID, UUID propertyID) throws SQLException { return userDao.deleteUserWork(userID, propertyID); }
+
+    public int deleteUserEdu(UUID userID, UUID propertyID) throws SQLException { return userDao.deleteUserEdu(userID, propertyID); }
+
+    public int deleteUserSkill(UUID userID, UUID propertyID) throws SQLException { return userDao.deleteUserSkill(userID, propertyID); }
     // DELETE USER METHODS -END-
 
     // CHANGE PASSWORD METHODS -START-

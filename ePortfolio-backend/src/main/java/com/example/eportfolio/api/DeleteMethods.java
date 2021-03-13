@@ -8,13 +8,17 @@ import java.util.*;
 
 public class DeleteMethods {
 
-    public String deleteFromTable(String tableName, UUID id) {
+    public String deleteUserFromTable(String tableName, UUID id) {
         if (tableName == "users") {
             return "DELETE FROM " + tableName + " WHERE id = '" + id + "';";
         }
         else {
             return "DELETE FROM " + tableName + " WHERE user_uuid = '" + id + "';";
         }
+    }
+
+    public String deleteUserPropertyFromTable(String tableName, UUID id) {
+        return "DELETE FROM " + tableName + " WHERE id = '" + id + "';";
     }
 
 }

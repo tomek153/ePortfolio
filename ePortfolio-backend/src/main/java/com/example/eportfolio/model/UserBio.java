@@ -7,6 +7,7 @@ import java.util.UUID;
 public class UserBio {
 
     private final UUID id;
+    private final UUID userID;
     private final String phone;
     private final String address_main;
     private final String address_city;
@@ -16,6 +17,7 @@ public class UserBio {
     private final String gender;
 
     public UserBio(@JsonProperty("id") UUID id,
+                   @JsonProperty("userID") UUID userID,
                    @JsonProperty("phone") String phone,
                    @JsonProperty("address") String address_main,
                    @JsonProperty("city") String address_city,
@@ -24,6 +26,7 @@ public class UserBio {
                    @JsonProperty("dateBirth") String date_birth,
                    @JsonProperty("gender") String gender) {
         this.id = id;
+        this.userID = userID;
         this.phone = phone;
         this.address_main = address_main;
         this.address_city = address_city;
@@ -35,6 +38,10 @@ public class UserBio {
 
     public UUID getUserBioId() {
         return id;
+    }
+
+    public UUID getUserId() {
+        return userID;
     }
 
     public String getPhone() {

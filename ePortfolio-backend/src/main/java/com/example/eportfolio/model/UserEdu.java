@@ -7,6 +7,7 @@ import java.util.UUID;
 public class UserEdu {
 
     private final UUID id;
+    private final UUID userID;
     private final int edu_spec;
     private final int edu_type;
     private final String edu_name;
@@ -16,6 +17,7 @@ public class UserEdu {
     private final String edu_desc;
 
     public UserEdu(@JsonProperty("id") UUID id,
+                   @JsonProperty("userID") UUID userID,
                    @JsonProperty("spec") int edu_spec,
                    @JsonProperty("type") int edu_type,
                    @JsonProperty("name") String edu_name,
@@ -24,6 +26,7 @@ public class UserEdu {
                    @JsonProperty("place") String edu_place,
                    @JsonProperty("desc") String edu_desc) {
         this.id = id;
+        this.userID = userID;
         this.edu_spec = edu_spec;
         this.edu_type = edu_type;
         this.edu_name = edu_name;
@@ -35,6 +38,10 @@ public class UserEdu {
 
     public UUID getUserEduId() {
         return id;
+    }
+
+    public UUID getUserEduUserID() {
+        return userID;
     }
 
     public int getEdu_spec() {

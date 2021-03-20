@@ -98,7 +98,6 @@ CREATE TABLE IF NOT EXISTS users_edu (
     FOREIGN KEY (edu_type) REFERENCES edu_type_data (ID)
 );
 
-
 CREATE TABLE IF NOT EXISTS users_skill (
 	ID UUID PRIMARY KEY NOT NULL,
     user_uuid UUID NOT NULL,
@@ -117,19 +116,3 @@ CREATE TABLE IF NOT EXISTS reset_password_emails (
     time_stamp timestamp NOT NULL DEFAULT now(),
     FOREIGN KEY (user_uuid) REFERENCES users (ID)
 );
-
-COPY edu_spec_data FROM 'H:\ePortfolio\ePortfolio-backend\src\main\resources\staticData\edu_spec.csv'
-    WITH (FORMAT csv, DELIMITER ';');
-
-COPY edu_type_data FROM 'H:\ePortfolio\ePortfolio-backend\src\main\resources\staticData\edu_type.csv'
-    WITH (FORMAT csv, DELIMITER ';');
-
-COPY skill_type_data FROM 'H:\ePortfolio\ePortfolio-backend\src\main\resources\staticData\skill_type.csv'
-    WITH (FORMAT csv, DELIMITER ';');
-
-COPY work_type_data FROM 'H:\ePortfolio\ePortfolio-backend\src\main\resources\staticData\work_type.csv'
-    WITH (FORMAT csv, DELIMITER ';');
-
-COPY work_industry_data FROM 'H:\ePortfolio\ePortfolio-backend\src\main\resources\staticData\work_industries.csv'
-    WITH (FORMAT csv, DELIMITER ';');
-

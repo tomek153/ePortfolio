@@ -9,7 +9,6 @@ services:
       - pgdata:/pgdata
       - ../sql/create_database.sql:/docker-entrypoint-initdb.d/1.create_database.sql
       - ../sql/create_user.sql:/docker-entrypoint-initdb.d/2.create_user.sql
-      - ../sql/create_extensions.sql:/docker-entrypoint-initdb.d/3.create_extensions.sql
       - ../sql/test_data:/test_data
     environment:
       - POSTGRES_PASSWORD=mysecretpassword

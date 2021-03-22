@@ -116,3 +116,6 @@ CREATE TABLE IF NOT EXISTS reset_password_emails (
     time_stamp timestamp NOT NULL DEFAULT now(),
     FOREIGN KEY (user_uuid) REFERENCES users (ID)
 );
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS pgcrypto;

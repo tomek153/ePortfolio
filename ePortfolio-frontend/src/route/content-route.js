@@ -1,15 +1,13 @@
 import React from 'react';
 import { Switch, Route, BrowserRouter } from 'react-router-dom';
 
-import HomeContent from '../components/home/home-content';
+import HomeContent from '../components/views/home';
 import NotFoundContent from '../components/page-not-found';
-import LoginContent from '../components/home/home-login-content';
-import RegisterContent from '../components/home/home-register-content';
-import ResetPasswordRequest from '../components/home/home-reset-password-request';
-import ResetPasswordLinkSuccess from '../components/home/home-reset-password-link';
-import RegulationsContent from '../components/home/home-regulations-content';
-import ContactContent from '../components/home/home-contact-content';
-import ConfirmationLinkSuccess from '../components/home/home-register-confirmation-link';
+import LoginContent from '../components/views/home-login';
+import RegisterContent from '../components/views/home-register';
+import ResetPassword from '../components/views/home-reset-password';
+import RegulationsContent from '../components/views/home-regulations';
+import ConfirmationLinkSuccess from '../components/views/home-register-confirmation-link';
 import UserProfile from '../components/user/user-profile';
 import UserProfileEdit from '../components/user/user-profile-edit';
 import UserProfileDelete from '../components/user/user-profile-delete';
@@ -24,11 +22,9 @@ const ContentRoute = () => (
             <Route exact path="/moj-profil" component={UserProfile} />
             <Route exact path="/moj-profil/edytuj" component={UserProfileEdit} />
             <Route exact path="/moj-profil/usun" component={UserProfileDelete} />
-            <Route exact path="/kontakt" component={ContactContent} />
-            <Route exact path="/register_link/:idKey/:registerKey" component={ConfirmationLinkSuccess} />
-            <Route exact path="/reset_password_link/:idKey/:registerKey" component={ResetPasswordLinkSuccess} />
-            <Route exact path="/zapomnialem_hasla" component={ResetPasswordRequest} />
-<Route path='*' component={NotFoundContent}/>
+            <Route exact path="/aktywacja-konta/:idKey/:registerKey" component={ConfirmationLinkSuccess} />
+            <Route exact path="/reset-hasla/:idKey/:registerKey" component={ResetPassword} />
+            <Route path='*' component={NotFoundContent}/>
         </Switch>
     </BrowserRouter>
 )

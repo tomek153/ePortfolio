@@ -1,22 +1,26 @@
 import React, { Component } from 'react';
+import Footer from './views/home-footer';
 
-import ImageNotFound from '../images/not-found.png';
+import ImageNotFound from '../images/not-found.jpg';
 
 class NotFoundContent extends Component {
     
     render() {
-
         return (
-            <div className="container-my">
-                <div className="home-description-my">
-                    <h1>Błąd 404</h1>
-                    <hr />
-                    <p>&nbsp;&nbsp;Strona nie została znaleziona.</p>
+            <div className="home-container">
+                <div className="home-container">
+                    <div className="photo-section" style={{height: "200px", backgroundPosition: "50% 31.5%"}}>
+                        <div className="opacity-background">
+                        </div>
+                    </div>
+                    <div className="not-found-container">
+                            <img 
+                                className="page-not-found-image"
+                                src={ImageNotFound}
+                            />
+                        </div>
+                        <Footer/>
                 </div>
-                <img 
-                    className="page-not-found-image"
-                    src={ImageNotFound}
-                />
             </div>
         )
     }

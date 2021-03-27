@@ -1,227 +1,45 @@
-.fade-out-helper {
-    width: 100%;
-    height: 100%;
-    position: fixed;
-    background-color: #f2f1f1;
-    z-index: 6;
-    display: none;
+.w3-animate-left-in {
+  animation: animateleftin 0.4s
+} @keyframes animateleftin {
+  from {
+    transform: translate(-70%, calc(-50% - 10px));
+    opacity:0;
+  } to {
+    transform: translate(-50%, calc(-50% - 10px));
+    opacity:1;
+  }
 }
 
-.page-loading.hidden {
-    animation: fadeOut 0.2s;
-    animation-fill-mode: forwards;
+.w3-animate-left-out {
+  animation: animateleftout 0.4s
+} @keyframes animateleftout {
+  from {
+    transform: translate(-50%, calc(-50% - 10px));
+    opacity:1;
+  } to {
+    transform: translate(-70%, calc(-50% - 10px));
+    opacity:0;
+  }
 }
-
-.fade-out {
-    animation: fadeOut 0.2s;
+.w3-animate-right-in {
+  animation: animaterightin 0.4s
+} @keyframes animaterightin {
+  from {
+    transform: translate(-30%, calc(-50% - 10px));
+    opacity:0;
+  } to {
+    transform: translate(-50%, calc(-50% - 10px));
+    opacity:1;
+  }
 }
-
-.fade-in {
-    animation: fadeIn 0.2s;
+.w3-animate-right-out {
+  animation: animaterightout 0.4s
+} @keyframes animaterightout {
+  from {
+    transform: translate(-50%, calc(-50% - 10px));
+    opacity:1;
+  } to {
+    transform: translate(-30%, calc(-50% - 10px));
+    opacity:0;
+  }
 }
-
-@keyframes fadeOut {
-    100% {
-        opacity: 0;
-        visibility: hidden;
-    }
-}
-
-@keyframes fadeIn {
-    0% {
-        opacity: 0;
-        visibility: hidden;
-    }
-    100% {
-        opacity: 1;
-        visibility: visible;
-    }
-}
-
-img.loading-page-logo {
-    top: 30%;
-}
-
-div.page-loading {
-    width: 100%;
-    height: 100%;
-    position: fixed;
-    z-index: 6;
-    background-image: url(../images/background.jpg);
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-}
-
-.spinner {
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 150px;
-    height: 150px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-.spinner-sector {
-    border-radius: 50%;
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border: 10px solid transparent;
-    mix-blend-mode: multiply;
-}
-
-.spinner-text {
-    animation: loading-opacity 3s ease-in-out infinite;
-    font-size: 19px;
-    font-weight: 500;
-}
-
-.spinner-sector-blue {
-    animation: rotate 1.5s ease-out infinite;
-    border-top: 10px solid #31b4cb;
-}
-
-.spinner-sector-red {
-    animation: rotate 2.0s ease-in infinite;
-    border-top: 10px solid #eb4a4a;
-}
-
-.spinner-sector-green {
-    animation: rotate 1.0s ease-in-out infinite;
-    border-top: 10px solid #ede576;
-}
-
-@keyframes rotate {
-    from { transform: rotate(0); }
-    to { transform: rotate(360deg); }
-}
-
-@keyframes loading-opacity {
-    0%, 100% {
-        opacity: 1;
-    }
-    25%, 75% {
-        opacity: .5;
-    }
-    50% {
-        opacity: .1;
-    }
-}
-
-
-.w3-animate-opacity {
-    animation: opac 1.0s;
-}
-
-@keyframes opac {
-    from {
-        opacity: 0
-    } to {
-        opacity: 1
-    }
-}
-
-.w3-animate-left-registration {
-    position: relative;
-    animation: animateleft .7s;
-}
-
-.w3-animate-left-out-registration {
-    position: relative;
-    animation: animateoutleft .7s;
-}
-
-/* LOGIN */
-.w3-animate-right-login-container {
-    position: absolute;
-    animation: animateright50percent .7s;
-}
-
-.w3-animate-left-login-container {
-    position: absolute;
-    animation: animateright50percentback .7s;
-}
-
-.w3-animate-right-home-container {
-    position: absolute;
-    animation: animateright60percent .7s;
-}
-
-.w3-animate-left-home-container {
-    position: absolute;
-    animation: animateright60percentback .7s;
-}
-
-@keyframes animateright50percent {from {right: -50%;} to {right: 0%;}}
-@keyframes animateright50percentback {from {right: 0%;} to {right: -50%;}}
-@keyframes animateright60percent {from {right: -60%;} to {right: 0%;}}
-@keyframes animateright60percentback {from {right: 0%;} to {right: -60%;}}
-@keyframes animateright80percent {from {right: -80%;} to {right: 0%;}}
-@keyframes animateright80percentback {from {right: 0%;} to {right: -80%;}}
-@keyframes animateright100percent {from {right: -100%; border-radius: 2em 0em 0em 2em;} to {right: 0%; border-radius: 2em 0em 0em 2em;}}
-@keyframes animateright100percentback {from {right: 0%; border-radius: 2em 0em 0em 2em;} to {right: -100%; border-radius: 2em 0em 0em 2em;}}
-
-.w3-animate-left-login-back-button {
-    position: absolute;
-    animation: w3animateleftloginbackbutton .7s;
-}
-@keyframes w3animateleftloginbackbutton {from {left: -65px;} to {left: 0;}}
-
-.w3-animate-right-login-back-button {
-    position: absolute;
-    animation: w3animaterightloginbackbutton .7s;
-}
-@keyframes w3animaterightloginbackbutton {from {left: 0px;} to {left: -65px;}}
-
-.w3-animate-left-login-header {
-    position: absolute;
-    animation: animateleftloginheader .7s;
-}
-.w3-animate-right-login-header {
-    position: absolute;
-    animation: animaterightloginheader .7s;
-}
-@keyframes animateleftloginheader {from {left: -400px;} to {left: 0;}}
-@keyframes animateleftloginheader100 {from {left: -100%; border-radius: 0em 2em 2em 0em;} to {left: 0; border-radius: 0em 2em 2em 0em;}}
-@keyframes animaterightloginheader {from {left: 0px;} to {left: -400px;}}
-@keyframes animaterightloginheader100 {from {left: 0px; border-radius: 0em 2em 2em 0em;} to {left: -100%; border-radius: 0em 2em 2em 0em;}}
-
-
-.w3-animate-right-out-login {
-    position: relative;
-    animation: animateoutright .7s;
-}
-
-.animate-nav-in {
-    animation: animate-nav-in .7s;
-}
-
-.animate-nav-out {
-    animation: animate-nav-out .7s;
-}
-
-.animate-right-carousel {
-    animation: animate-right-carousel .7s;
-} @keyframes animate-right-carousel {from {right: -2%;opacity: 0;} to {right: 8%;opacity: 1;}}
-
-.animate-right-out-carousel {
-    animation: animate-right-out-carousel .7s;
-} @keyframes animate-right-out-carousel {from {right: 8%;opacity: 1;} to {right: -2%;opacity: 0;}}
-
-.animate-left-content{position:relative;animation:animateleftcontent 0.7s}@keyframes animateleftcontent{from{left:-10%;opacity:0} to{left:0;opacity:1}}
-
-.animate-left-out-content{position:relative;animation:animateleftoutcontent 0.7s}@keyframes animateleftoutcontent{from{left:0%;opacity:1} to{left:-10%;opacity:0}}
-
-@keyframes animateoutright {from {left: 50%;opacity: 1;} to {left: 60%;opacity: 0;}}
-
-@keyframes animate-nav-in {from {top: -96px;opacity: 0} to {top: 0%;opacity: 1}}
-
-@keyframes animate-nav-out {from {top: 0%;opacity: 1;} to {top: -96px;opacity: 0;}}
-
-@keyframes animateleft {from {left: 40%;opacity: 0} to {left: 50%;opacity: 1}}
-
-@keyframes animateoutleft {from {left: 50%;opacity: 1} to {left: 40%;opacity: 0}}

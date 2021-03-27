@@ -18,7 +18,7 @@ import java.util.UUID;
 @Service
 public class Login {
     private static final String KEY = "{%-<Oz#@,EHb0V%qQ#.)g;}B5ONr{L";
-    private final int EXPIRATION_TIME_MINUTES = 30;
+    private final int EXPIRATION_TIME_MINUTES = 30000;
 
     @Autowired
     private final JdbcTemplate jdbcTemplate;

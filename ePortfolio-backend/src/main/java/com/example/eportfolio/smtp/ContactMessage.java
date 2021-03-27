@@ -18,7 +18,7 @@ public class ContactMessage {
     @NotBlank
     private String message;
 
-    public ContactMessage(@JsonProperty("firstName") String firstName,
+    public ContactMessage(@JsonProperty("name") String firstName,
                             @JsonProperty("email") String email,
                             @JsonProperty("message") String message ){
         this.firstName = firstName;

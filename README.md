@@ -1,6 +1,15 @@
 # ePortfolio  
 Praca inżynierska.  
 
+## Uwagi po MERGE z dnia 28.01.2021
+Zmerge-owano nowy frontend (by tomek) + fragment API (by michal) 
+
+Pamiętaj!!! aby przed pierwszym uruchomieniem:
+- ustawić passy do swojej (najlepiej pustej) lokalnej bazy danych w pliku 'application.yml' (backend) 
+- w katalogu resources/db.migration/ w pliku V1-Tables.sql (backend) zmienić ścieżki do plików CSV, aby odpowiadały twoim folderom (jak ktoś znajdzie rozwiązanie aby dało się podawać je jako relatywne - to hotfix byłby super)
+
+Lista metod API dostępnych obecnie w aplikacji znajduje się w pliku api-methods.odt
+
 ## Kolorystyka
 W projekcie korzystamy z 3 podstawowych kolorów (z logo):
 - niebieski: `#31b4cb`
@@ -48,9 +57,10 @@ Instalacja: [Link](https://docs.docker.com/compose/install/)
 Aby utworzyć bazę:
 - Przejdź do katalogu bazy danych `cd ePortfolio-database`,  
 - Nadaj uprawnienia dla skryptów `chmod +x create-db.sh docker-compose.sh postgres-up.sh sql-exec.sh clear-db.sh`,  
-- Utwórz kontener Postgres `./postgres-up.sh`,  
-- Utwórz baze wraz z tabelami `./create-db.sh`.  
+- Utwórz kontener Postgres `./postgres-up.sh`.  
 
 Kiedy baza raz została utworzona, aby ją uruchomić wystarczy wywołać skrypt `./postgres-up.sh` lub `docker container start eportfolio_postgres_1`.  
 
 Aby wyczyścić zawartość bazy danych wykonaj `./clear-db.sh`.  
+
+Dodanie danych testowych `./sql-exec.sh sql/add_test_data.sql`.  

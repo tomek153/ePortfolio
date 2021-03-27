@@ -1,13 +1,6 @@
 package com.example.eportfolio.service;
 
-import com.example.eportfolio.dao.UserBioDao;
-import com.example.eportfolio.model.UserBio;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
-
-import java.util.*;
-
+/*
 @Repository("postgresUserBio")
 public class PostgresUserBioService implements UserBioDao {
 
@@ -65,4 +58,4 @@ public class PostgresUserBioService implements UserBioDao {
         }
     }
 
-}
+}*/

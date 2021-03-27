@@ -1,33 +1,78 @@
 package com.example.eportfolio.dao;
 
-import com.example.eportfolio.model.User;
+import com.example.eportfolio.model.*;
+
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+
 public interface UserDao {
 
-    int addUser(UUID id, User user);
+    // ADD USER METHODS -START-
+    int addUser(UUID id, User user) throws SQLException;
 
-    default int addUser(User user) {
+    default int addUser(User user) throws SQLException {
         UUID id = UUID.randomUUID();
         return addUser(id, user);
     }
+    // ADD USER METHODS -END-
 
+    // GET USER METHODS -START-
     List<User> getUsers();
 
-    int changePassword(User user);
-
-    Optional<User> getUserByEmail(String email);
-
-
-
-    int resetPasswordRequest(User user);
+    boolean checkUserExistByEmail(String email);
 
     Optional<User> getUserByID(UUID id);
 
-    int deleteUser(UUID id);
+    Optional<UserBio> getUserBioByID(UUID id);
 
-    int updateUser(String email, User user);
+    List<UserWork> getUserWorkByID(UUID id);
 
+    List<UserEdu> getUserEduByID(UUID id);
+
+    List<UserSkill> getUserSkillByID(UUID id);
+
+    Optional<UserSetting> getUserSettingByID(UUID id);
+    // GET USER METHODS -END-
+
+    // EDIT USER METHODS -START-
+    int editUser(UUID userUUID, User user) throws SQLException;
+
+    int editUserBio(UUID userUUID, UserBio userBio) throws SQLException;
+
+    int editUserSetting(UUID userUUID, UserSetting userSetting) throws SQLException;
+
+    int updateUserWork(UUID userUUID, UserWork userWork) throws SQLException;
+
+    int updateUserEdu(UUID userUUID, UserEdu userEdu) throws SQLException;
+
+    int updateUserSkill(UUID userUUID, UserSkill userSkill) throws SQLException;
+    // EDIT USER METHODS -END-
+
+    // DELETE USER METHODS -START-
+    int deleteUser(UUID id) throws SQLException;
+
+    int deleteUserWork(UUID userID, UUID propertyID) throws SQLException;
+
+    int deleteUserEdu(UUID userID, UUID propertyID) throws SQLException;
+
+    int deleteUserSkill(UUID userID, UUID propertyID) throws SQLException;
+    // DELETE USER METHODS -END-
+
+    // CHANGE PASSWORD METHODS -START-
+    int changePassword(ResetPasswordRequest resetPasswordRequest);
+
+    int resetPasswordRequest(String email);
+    // CHANGE PASSWORD METHODS -END-
+
+
+    // ADD USER PROPERTIES -START-
+    int addUserWork(UUID id, UserWork userWork) throws SQLException;
+
+    int addUserEdu(UUID id, UserEdu userEdu) throws SQLException;
+
+    int addUserSkill(UUID id, UserSkill userSkill) throws SQLException;
+    // ADD USER PROPERTIES -END-
 }

@@ -309,27 +309,27 @@ public class UserController {
     public void userLogin (@RequestBody Map body, HttpServletResponse response, HttpServletRequest request) throws IOException{
         int status = login.authenticate(body.get("email").toString(), body.get("password").toString());
         Map<String, Object> responseMap = new HashMap<>();
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
 
         if (status == 1)
-            responseMap.put("message", "Authentication failed.");
+            responseMap.put("message", "authentication_failed.");
         else if (status == 2) {
-            responseMap.put("message", "User unconfirmed.");
+            responseMap.put("message", "user_unconfirmed.");
             responseMap.put("userId", login.getUser().getId());
         } else if (status == 0) {
             String token = login.createToken();
-            if (!token.equals("Create token error.")) {
+            if (!token.equals("create_token_error.")) {
 
-                responseMap.put("message", "Authentication success.");
+                responseMap.put("message", "authentication_success.");
                 responseMap.put("token", token);
             } else
-                responseMap.put("message", "Token error.");
+                responseMap.put("message", "token_error.");
         }
 
         String responseString = this.gson.toJson(responseMap);
 
         PrintWriter out = response.getWriter();
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
         out.print(responseString);
         out.flush();
     }

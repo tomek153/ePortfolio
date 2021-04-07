@@ -12,7 +12,7 @@ public interface PersonRepository extends ElasticsearchRepository<Person, String
 
     List<Person> findByWorkIndustries(String workIndustries);
 
-    List<Person> findByWorkDescription(String workDescription);
+    List<Person> findByWorkDescriptions(String workDescriptions);
 
     List<Person> findByEduNames(String eduNames);
 

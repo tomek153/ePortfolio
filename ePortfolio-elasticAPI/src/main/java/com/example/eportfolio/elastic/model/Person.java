@@ -21,7 +21,7 @@ public class Person {
     private String city;
     private List<String> workNames;
     private List<String> workIndustries;
-    private List<String> workDescription;
+    private List<String> workDescriptions;
     private List<String> eduNames;
     private List<String> eduSpec;
     private List<String> eduPlace;

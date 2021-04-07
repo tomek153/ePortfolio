@@ -115,9 +115,9 @@ public class EportfolioElasticApplication {
         return personRepository.findByWorkIndustries(workIndustries);
     }
 
-    @GetMapping("/find/work-description/{workDescription}")
-    public List<Person> findByWorkDescription(@PathVariable String workDescription) {
-        return personRepository.findByWorkDescription(workDescription);
+    @GetMapping("/find/work-descriptions/{workDescriptions}")
+    public List<Person> findByWorkDescriptions(@PathVariable String workDescriptions) {
+        return personRepository.findByWorkDescriptions(workDescriptions);
     }
 
     @GetMapping("/find/edu-name/{eduNames}")

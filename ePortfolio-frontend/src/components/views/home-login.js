@@ -169,7 +169,6 @@ class RegisterContent extends Component {
             fetch(request)
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data);
                     this.setState({modalLoading: false});
 
                     if (data.message == "authentication_failed.")
@@ -179,15 +178,13 @@ class RegisterContent extends Component {
                         this.setState({modalUserUnconfirmed: true});
                         this.setState({reSendButton: "block"});
                     }
-                    else if (data.message == "Authentication success.") {
+                    else if (data.message == "authentication_success.") {
                         localStorage.setItem('token', data.token);
-                        //this.userRedirect("/moj-profil");
-                        console.log(data.token);
+                        window.location.replace("/moj-profil");
                     }
-                    // else {
-                    //     console.log(data);
-                    //     alert("Unknown error.");
-                    // }
+                    else {
+                        alert("Unknown error.");
+                    }
                 });
         } else {
             this.setState({modalLoading: false});
@@ -314,6 +311,32 @@ class RegisterContent extends Component {
 
     }
     componentDidMount() {
+        let token = localStorage.getItem("token");
+
+        if (token != null && token != '') {
+            superagent
+                .get('http://localhost:8080/api/user/check_token')
+                .set('Content-Type', 'application/json')
+                .set('Authorization', token)
+                .set('Accept', 'application/json')
+                .end((err, res) => {
+                    if(!err) {
+                        if(res.text == "token_valid") {
+                            this.props.history.push('/moj-profil');
+                        } else if(res.text == "token_invalid" || res.text == "token_expired") {
+                            console.log("Nieaktywny lub wadliwy token");
+                            localStorage.removeItem("token");
+                        } else {
+                            alert("Nieznany błąd.")
+                            localStorage.removeItem("token");
+                        }
+                    } else {
+                        alert("Nieznany błąd.");
+                        localStorage.removeItem("token");
+                    }
+                });
+        }
+
         this.adjustContent();
     }
     adjustContent() {

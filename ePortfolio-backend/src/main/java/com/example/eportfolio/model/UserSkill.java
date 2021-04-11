@@ -1,9 +1,13 @@
 package com.example.eportfolio.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.UUID;
 
+@Getter
+@Setter
 public class UserSkill {
 
     private final UUID id;
@@ -26,29 +30,5 @@ public class UserSkill {
         this.skill_level = skill_level;
         this.skill_name = skill_name;
 
-    }
-
-    public UUID getUserSkillId() {
-        return id;
-    }
-
-    public UUID getUserEduUserID() {
-        return userID;
-    }
-
-    public int getSkill_type() {
-        return skill_type;
-    }
-
-    public int getSkill_time_months() {
-        return skill_time_months;
-    }
-
-    public int getSkill_level() {
-        return skill_level;
-    }
-
-    public String getSkill_name() {
-        return skill_name;
     }
 }

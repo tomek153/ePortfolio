@@ -11,12 +11,12 @@ import java.util.UUID;
 public interface UserDao {
 
     // ADD USER METHODS -START-
-    int addUser(UUID id, User user) throws SQLException;
+    int addUser(User user) throws SQLException;
 
-    default int addUser(User user) throws SQLException {
-        UUID id = UUID.randomUUID();
-        return addUser(id, user);
-    }
+//    default int addUser(User user) throws SQLException {
+//        UUID id = UUID.randomUUID();
+//        return addUser(id, user);
+//    }
     // ADD USER METHODS -END-
 
     // GET USER METHODS -START-
@@ -75,4 +75,6 @@ public interface UserDao {
 
     int addUserSkill(UUID id, UserSkill userSkill) throws SQLException;
     // ADD USER PROPERTIES -END-
+
+    UserProfileAll getUserProfileAll(UUID id) throws SQLException;
 }

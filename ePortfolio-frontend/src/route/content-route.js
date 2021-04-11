@@ -8,9 +8,7 @@ import RegisterContent from '../components/views/home-register';
 import ResetPassword from '../components/views/home-reset-password';
 import RegulationsContent from '../components/views/home-regulations';
 import ConfirmationLinkSuccess from '../components/views/home-register-confirmation-link';
-import UserProfile from '../components/user/user-profile';
-import UserProfileEdit from '../components/user/user-profile-edit';
-import UserProfileDelete from '../components/user/user-profile-delete';
+import AuthProfile from '../components/elements/auth-profile';
 
 const ContentRoute = () => (
     <BrowserRouter>
@@ -19,9 +17,7 @@ const ContentRoute = () => (
             <Route exact path="/logowanie" component={LoginContent} />
             <Route exact path="/rejestracja" component={RegisterContent} />
             <Route exact path="/regulamin" component={RegulationsContent} />
-            <Route exact path="/moj-profil" component={UserProfile} />
-            <Route exact path="/moj-profil/edytuj" component={UserProfileEdit} />
-            <Route exact path="/moj-profil/usun" component={UserProfileDelete} />
+            <Route exact path="/moj-profil" component={AuthProfile} />
             <Route exact path="/aktywacja-konta/:idKey/:registerKey" component={ConfirmationLinkSuccess} />
             <Route exact path="/reset-hasla/:idKey/:registerKey" component={ResetPassword} />
             <Route path='*' component={NotFoundContent}/>

@@ -194,6 +194,7 @@ class RegisterContent extends Component {
     submitFormAndSend(event) {
         event.preventDefault();
         this.setState({modalLoading: true});
+        console.log(this.state.form);
 
         if (this.state.formControll.firstName &&
             this.state.formControll.lastName &&
@@ -203,6 +204,7 @@ class RegisterContent extends Component {
                 superagent
                     .post('http://localhost:8080/api/users')
                     .send(this.state.form)
+                    .set('Content-Type', 'application/json')
                     .end((err) => {
                         if(err) {
                             this.clearState();

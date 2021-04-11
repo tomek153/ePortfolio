@@ -16,6 +16,8 @@ import Footer from './home-footer';
 
 import ScreenImage from '../../images/system-screen.png';
 
+import '../../css/start.css';
+
 class HomeContent extends Component {
     constructor() {
         super();

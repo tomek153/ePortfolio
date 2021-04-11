@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Spinner from 'react-bootstrap/Spinner';
 import PropTypes from 'prop-types';
+import { CommonLoading } from 'react-loadingg';
 
 class ModalLoading extends Component {
 
@@ -13,7 +14,7 @@ class ModalLoading extends Component {
         return (
             <Modal show={this.props.show} id="spinner-container" aria-labelledby="contained-modal-title-vcenter" centered>
                 <Modal.Body>
-                    <Spinner animation="grow e-spinner"/>
+                    <CommonLoading color="#ede576" size="large" speed="1.8" style={{width: "50px", height: "50px"}}/>
                 </Modal.Body>
             </Modal>
         )

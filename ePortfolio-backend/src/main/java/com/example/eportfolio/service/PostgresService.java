@@ -16,6 +16,7 @@ import org.springframework.mail.MailException;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -33,102 +34,62 @@ public class PostgresService implements UserDao, FixedDataDao {
     }
 
     @Override
-    public int addUser(UUID id, User user) throws SQLException {
-        final String sqlFirst = "SELECT * FROM users WHERE email = '"+user.getEmail()+"'";
+    public int addUser(User user) throws SQLException {
+
         String emailKey;
-        String idKey;
 
-        List<User> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
-            return new User(
-                    UUID.fromString(resultSet.getString("id")),
-                    resultSet.getString("first_name"),
-                    resultSet.getString("last_name"),
-                    resultSet.getString("email"),
-                    resultSet.getString("password"),
-                    resultSet.getString("role"),
-                    resultSet.getBoolean("confirmed")
-            );
-        });
+        final String sqlAddUser = "SELECT add_user('"
+                +user.getFirstName()+"', '"
+                +user.getLastName()+"', '"
+                +user.getEmail()+"', '"
+                +user.getPassword()+"', '"
+                +user.getRole()+"')"
+        ;
+
         Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
+        conn.setAutoCommit(false);
+        try {
+            ResultSet addUserResultSet = conn.prepareStatement(sqlAddUser).executeQuery();
+            addUserResultSet.next();
+            user.setId((UUID)addUserResultSet.getObject("add_user"));
 
-        if (listFind.isEmpty()) {
+            final String sqlAddUserBio = "SELECT add_user_bio('"+user.getId()+"', '', '', '', '', '', null, '')";
+            final String sqlAddUserSettings = "SELECT add_user_settings('"+user.getId()+"', true, '', '', true, true)";
+            final String sqlAddUserConfirmationEmail = "SELECT add_user_confirmation_email('"+user.getId()+"', false)";
+
+            conn.prepareStatement(sqlAddUserBio).execute();
+            conn.prepareStatement(sqlAddUserSettings).execute();
+
+            ResultSet addConfirmationEmailResultSet = conn.prepareStatement(sqlAddUserConfirmationEmail).executeQuery();
+            addConfirmationEmailResultSet.next();
+            emailKey = addConfirmationEmailResultSet.getObject("add_user_confirmation_email").toString();
+
+            conn.commit();
+
+            Map<String, Object> model = new HashMap<>();
+            model.put("Name", user.getFirstName());
+            model.put("location", "Poznań, Polska");
+            model.put( "idKey", user.getId());
+            model.put( "linkKey", emailKey);
+
             try {
-                conn.setAutoCommit(false);
-                UUID userUUID = UUID.randomUUID();
-
-                final String addUserSQL = "INSERT INTO users (id, first_name, last_name, email, password, role, confirmed) " +
-                        "VALUES (" +
-                        "'"+userUUID+"', " +
-                        "'"+user.getFirstName()+"', " +
-                        "'"+user.getLastName()+"', " +
-                        "'"+user.getEmail()+"', " +
-                        "md5('"+user.getPassword()+"'),"+
-                        "'"+user.getRole()+"',"+
-                        ""+user.isConfirmed()+
-                        ")";
-
-                final String addUserBioSQL = "INSERT INTO users_bio (id, user_uuid, phone, address_main, address_city, address_zip, address_country, date_birth, gender) VALUES (" +
-                        "uuid_generate_v4(), " +
-                        "'"+userUUID+"', " +
-                        "'','','','','','1900-01-01', '')";
-
-                final String addUserSettingSQL = "INSERT INTO users_setting (id, user_uuid, setting_public, setting_header1, setting_header2, setting_img, setting_consent, setting_allow_contact) " +
-                        "VALUES (uuid_generate_v4(), " +
-                        "'"+userUUID+"', " +
-                        "'true', " +
-                        "'', " +
-                        "'', " +
-                        "'-1',"+
-                        "'true',"+
-                        "'true'" +
-                        ")";
-
-                final String addConfirmationEmailSQL = "INSERT INTO confirmation_emails (id, user_uuid, status) VALUES (" +
-                        "uuid_generate_v4(), " +
-                        "'"+userUUID+"', " +
-                        "false )";
-
-                conn.prepareStatement(addUserSQL).executeUpdate();
-                conn.prepareStatement(addUserBioSQL).executeUpdate();
-                conn.prepareStatement(addUserSettingSQL).executeUpdate();
-                conn.prepareStatement(addConfirmationEmailSQL).executeUpdate();
-                conn.commit();
-
-                String getEmailKey = "SELECT id FROM confirmation_emails WHERE user_uuid IN (SELECT id FROM users WHERE email = '"+user.getEmail()+"') AND status = false";
-                emailKey = jdbcTemplate.queryForObject(getEmailKey, new Object[]{}, (resultSet, i) -> {
-                    return new String (resultSet.getString("id"));
-                });
-                String getIdKey = "SELECT id FROM users WHERE email IN ('"+user.getEmail()+"')";
-                idKey = jdbcTemplate.queryForObject(getIdKey, new Object[]{}, (resultSet, i) -> {
-                    return new String (resultSet.getString("id"));
-                });
-
-                Map<String, Object> model = new HashMap<>();
-                model.put("Name", user.getFirstName());
-                model.put("location", "Poznań, Polska");
-                model.put( "idKey", idKey);
-                model.put( "linkKey", emailKey);
-
-                try {
-                    MailRequestModel request = new MailRequestModel(user.getFirstName(), user.getEmail(), "ePortfolio", "ePortfolio | Potwierdzenie rejestracji");
-                    MailResponseModel response = service.sendRegisterEmail(request, model);
-                } catch (MailAuthenticationException mae) {
-                    mae.printStackTrace();
-                    return 3;
-                } catch (MailException me) {
-                    me.printStackTrace();
-                    return 2;
-                }
-                return 1;
-
-            } catch (SQLException e) {
-                conn.rollback();
-                e.printStackTrace();
-                System.err.println("Add user to database error.");
-                return 0;
+                MailRequestModel request = new MailRequestModel(user.getFirstName(), user.getEmail(), "ePortfolio", "ePortfolio | Potwierdzenie rejestracji");
+                MailResponseModel response = service.sendRegisterEmail(request, model);
+            } catch (MailAuthenticationException mae) {
+                mae.printStackTrace();
+                return 3;
+            } catch (MailException me) {
+                me.printStackTrace();
+                return 2;
             }
-        } else
+            return 1;
+
+        } catch (SQLException e) {
+            conn.rollback();
+            e.printStackTrace();
+            System.err.println("Add user to database error.");
             return 0;
+        }
 
     }
 
@@ -144,6 +105,7 @@ public class PostgresService implements UserDao, FixedDataDao {
                     resultSet.getString("last_name"),
                     resultSet.getString("email"),
                     resultSet.getString("password"),
+                    resultSet.getString("image"),
                     resultSet.getString("role"),
                     resultSet.getBoolean("confirmed")
             );
@@ -173,6 +135,7 @@ public class PostgresService implements UserDao, FixedDataDao {
                     resultSet.getString("last_name"),
                     resultSet.getString("email"),
                     resultSet.getString("password"),
+                    resultSet.getString("image"),
                     resultSet.getString("role"),
                     resultSet.getBoolean("confirmed")
             );
@@ -230,6 +193,7 @@ public class PostgresService implements UserDao, FixedDataDao {
                     resultSet.getString("last_name"),
                     resultSet.getString("email"),
                     resultSet.getString("password"),
+                    resultSet.getString("image"),
                     resultSet.getString("role"),
                     resultSet.getBoolean("confirmed")
             );
@@ -247,6 +211,7 @@ public class PostgresService implements UserDao, FixedDataDao {
                     resultSet.getString("last_name"),
                     resultSet.getString("email"),
                     resultSet.getString("password"),
+                    resultSet.getString("image"),
                     resultSet.getString("role"),
                     resultSet.getBoolean("confirmed")
             );
@@ -269,6 +234,7 @@ public class PostgresService implements UserDao, FixedDataDao {
                             resultSet.getString("last_name"),
                             resultSet.getString("email"),
                             resultSet.getString("password"),
+                            resultSet.getString("image"),
                             resultSet.getString("role"),
                             resultSet.getBoolean("confirmed")
                     );
@@ -488,6 +454,11 @@ public class PostgresService implements UserDao, FixedDataDao {
     }
 
     @Override
+    public UserProfileAll getUserProfileAll(UUID id) throws SQLException {
+        return null;
+    }
+
+    @Override
     public int deleteUserWork(UUID userUUID, UUID propertyUUID) throws SQLException{
 
         final String sqlFirst = "SELECT * FROM users_work WHERE user_uuid = '"+userUUID+"' AND id = '"+propertyUUID+"';";
@@ -615,7 +586,7 @@ public class PostgresService implements UserDao, FixedDataDao {
     @Override
     public int updateUserWork(UUID userUUID, UserWork userWork) throws SQLException {
 
-        final String sqlFirst = "SELECT * FROM users_work WHERE user_uuid = '"+userUUID+"' AND id = '"+userWork.getUserWorkId()+"';";
+        final String sqlFirst = "SELECT * FROM users_work WHERE user_uuid = '"+userUUID+"' AND id = '"+userWork.getId()+"';";
 
         List<UserWork> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
             return new UserWork(
@@ -647,7 +618,7 @@ public class PostgresService implements UserDao, FixedDataDao {
                         "', work_place = '" + userWork.getWork_place() +
                         "', work_desc = '" + userWork.getWork_desc() +
                         "', work_location = '" + userWork.getWork_location() +
-                        "' WHERE id = '" + userWork.getUserWorkId() + "';";
+                        "' WHERE id = '" + userWork.getId() + "';";
 
                 conn.prepareStatement(sqlUpdate).executeUpdate();
                 conn.commit();
@@ -669,7 +640,7 @@ public class PostgresService implements UserDao, FixedDataDao {
     @Override
     public int updateUserEdu(UUID userUUID, UserEdu userEdu) throws SQLException{
 
-        final String sqlFirst = "SELECT * FROM users_edu WHERE user_uuid = '"+userUUID+"' AND id = '"+userEdu.getUserEduId()+"';";
+        final String sqlFirst = "SELECT * FROM users_edu WHERE user_uuid = '"+userUUID+"' AND id = '"+userEdu.getId()+"';";
 
         List<UserEdu> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
             return new UserEdu(
@@ -698,7 +669,7 @@ public class PostgresService implements UserDao, FixedDataDao {
                         "', edu_time_end = '" + userEdu.getEdu_time_end() +
                         "', edu_place = '" + userEdu.getEdu_place() +
                         "', edu_desc = '" + userEdu.getEdu_desc() +
-                        "' WHERE id = '" + userEdu.getUserEduId() + "';";
+                        "' WHERE id = '" + userEdu.getId() + "';";
 
                 conn.prepareStatement(sqlUpdate).executeUpdate();
                 conn.commit();
@@ -720,7 +691,7 @@ public class PostgresService implements UserDao, FixedDataDao {
     @Override
     public int updateUserSkill(UUID userUUID, UserSkill userSkill) throws SQLException{
 
-        final String sqlFirst = "SELECT * FROM users_skill WHERE user_uuid = '"+userUUID+"' AND id = '"+userSkill.getUserSkillId()+"';";
+        final String sqlFirst = "SELECT * FROM users_skill WHERE user_uuid = '"+userUUID+"' AND id = '"+userSkill.getId()+"';";
 
         List<UserSkill> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
             return new UserSkill(
@@ -744,7 +715,7 @@ public class PostgresService implements UserDao, FixedDataDao {
                         "', skill_time_months = '" + userSkill.getSkill_time_months() +
                         "', skill_level = '" + userSkill.getSkill_level() +
                         "', skill_name = '" + userSkill.getSkill_name() +
-                        "' WHERE id = '" + userSkill.getUserSkillId() + "';";
+                        "' WHERE id = '" + userSkill.getId() + "';";
 
                 conn.prepareStatement(sqlUpdate).executeUpdate();
                 conn.commit();
@@ -774,6 +745,7 @@ public class PostgresService implements UserDao, FixedDataDao {
                     resultSet.getString("last_name"),
                     resultSet.getString("email"),
                     resultSet.getString("password"),
+                    resultSet.getString("image"),
                     resultSet.getString("role"),
                     resultSet.getBoolean("confirmed")
             );

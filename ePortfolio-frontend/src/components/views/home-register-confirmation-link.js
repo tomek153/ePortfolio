@@ -95,6 +95,7 @@ class ConfirmationLinkSuccess extends Component {
             .then(response => {
                 if (response.status == 200) {
                     response.json().then(data => {
+                        console.log(data);
                         if (data.status == true &&
                                    (data.message == "expired" || data.message == "deactivated")) {
                             this.setState({modalLoading: false});

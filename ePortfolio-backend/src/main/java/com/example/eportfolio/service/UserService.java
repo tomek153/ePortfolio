@@ -20,9 +20,7 @@ public class UserService {
     }
 
     // ADD USER METHODS -START-
-    public int addUser(User user) throws SQLException {
-        return userDao.addUser(user);
-    }
+    public int addUser(User user) throws SQLException { return userDao.addUser(user); }
     // ADD USER METHODS -END-
 
     // GET USER METHODS -START-
@@ -100,4 +98,6 @@ public class UserService {
 
     public int addUserSkill(UUID id, UserSkill userSkill) throws SQLException { return userDao.addUserSkill(id, userSkill); }
     // ADD USER PROPERTIES -END-
+
+    public UserProfileAll getUserProfileAll(UUID id) throws SQLException { return userDao.getUserProfileAll(id); }
 }

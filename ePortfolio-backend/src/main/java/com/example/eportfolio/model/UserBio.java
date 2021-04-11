@@ -1,9 +1,13 @@
 package com.example.eportfolio.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.UUID;
 
+@Getter
+@Setter
 public class UserBio {
 
     private final UUID id;
@@ -34,40 +38,5 @@ public class UserBio {
         this.address_country = address_country;
         this.date_birth = date_birth;
         this.gender = gender;
-    }
-
-    public UUID getUserBioId() {
-        return id;
-    }
-
-    public UUID getUserId() {
-        return userID;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public String getAddress_main() {
-        return address_main;
-    }
-
-    public String getAddress_city() {
-        return address_city;
-    }
-
-    public String getAddress_zip() {
-        return address_zip;
-    }
-
-    public String getAddress_country() {
-        return address_country;
-    }
-
-    public String getDate_birth() {
-        return date_birth;
-    }
-    public String getGender() {
-        return gender;
     }
 }

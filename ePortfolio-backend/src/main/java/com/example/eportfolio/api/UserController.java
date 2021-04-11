@@ -93,6 +93,46 @@ public class UserController {
         out.flush();
     }
 
+    @RequestMapping (value = "/api/user/check_token", method = GET)
+    public void checkUserToken (HttpServletResponse response, HttpServletRequest request) throws IOException {
+        String token = request.getHeader("Authorization");
+
+        int decStatus = Login.checkJWT(token);
+        PrintWriter out = response.getWriter();
+
+        if (decStatus == 0) {
+            out.print("token_valid");
+        } else if (decStatus == 1) {
+            out.print("token_invalid");
+        } else if (decStatus == 2) {
+            out.print("token_expired");
+        } else {
+            response.sendError(405, "unknown_error");
+        }
+
+        out.flush();
+    }
+    @RequestMapping (value = "/api/user/my_profile", method = GET)
+    public void getUserProfile (HttpServletResponse response, HttpServletRequest request) throws IOException {
+        String token = request.getHeader("Authorization");
+
+        int decStatus = Login.checkJWT(token);
+        PrintWriter out = response.getWriter();
+
+        if (decStatus == 0) {
+            System.out.println(Login.getClaims().get("id"));
+
+        } else if (decStatus == 1) {
+            out.print("token_invalid");Map<String, Claim> claims = Login.getClaims();
+        } else if (decStatus == 2) {
+            out.print("token_expired");
+        } else {
+            response.sendError(405, "unknown_error");
+        }
+
+        out.flush();
+    }
+
     @RequestMapping (value = "/api/users/profile/all", method = GET)
     public void getUserAll (HttpServletResponse response, HttpServletRequest request) throws IOException {
         Map<String, Object> profile = new HashMap<>();

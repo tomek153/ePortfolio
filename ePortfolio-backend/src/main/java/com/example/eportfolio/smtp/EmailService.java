@@ -60,6 +60,7 @@ public class EmailService {
                                 resultSet.getString("last_name"),
                                 resultSet.getString("email"),
                                 resultSet.getString("password"),
+                                resultSet.getString("image"),
                                 resultSet.getString("role"),
                                 resultSet.getBoolean("confirmed")
                         );
@@ -212,11 +213,16 @@ public class EmailService {
                                 resultSet.getString("last_name"),
                                 resultSet.getString("email"),
                                 resultSet.getString("password"),
+                                resultSet.getString("image"),
                                 resultSet.getString("role"),
                                 resultSet.getBoolean("confirmed")
                         );
                     }
             );
+
+            System.out.println("->"+request.getUserId());
+            System.out.println(user.getId());
+            System.out.println("->"+request.getId());
 
             ConfirmationLink confirmationLink = jdbcTemplate.queryForObject(
                     "SELECT * FROM confirmation_emails WHERE id = ? AND user_uuid = ?",
@@ -230,6 +236,8 @@ public class EmailService {
                         );
                     }
             );
+
+            System.out.println(confirmationLink.getId());
 
             if (user.isConfirmed()) {
                 response.setMessage("user_confirmed");

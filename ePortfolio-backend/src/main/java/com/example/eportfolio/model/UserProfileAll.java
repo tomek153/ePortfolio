@@ -3,11 +3,14 @@ package com.example.eportfolio.model;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.sql.Timestamp;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
 public class UserProfileAll {
+    private UUID id;
     private String firstName;
     private String lastName;
     private String email;
@@ -17,7 +20,7 @@ public class UserProfileAll {
     private String address_city;
     private String address_zip;
     private String address_country;
-    private String date_birth;
+    private Timestamp date_birth;
     private String gender;
     private boolean setting_public;
     private String setting_header1;
@@ -27,7 +30,8 @@ public class UserProfileAll {
     private List<UserSkill> userSkillList;
 
 
-    public UserProfileAll(String firstName,
+    public UserProfileAll(UUID id,
+                          String firstName,
                           String lastName,
                           String email,
                           String image,
@@ -36,11 +40,12 @@ public class UserProfileAll {
                           String address_city,
                           String address_zip,
                           String address_country,
-                          String date_birth,
+                          Timestamp date_birth,
                           String gender,
                           boolean setting_public,
                           String setting_header1,
                           String setting_header2) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;

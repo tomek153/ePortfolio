@@ -100,4 +100,5 @@ public class UserService {
     // ADD USER PROPERTIES -END-
 
     public UserProfileAll getUserProfileAll(UUID id) throws SQLException { return userDao.getUserProfileAll(id); }
+    public int updateImage(String imageUrl, UUID userId) throws SQLException { return userDao.updateImage(imageUrl, userId); }
 }

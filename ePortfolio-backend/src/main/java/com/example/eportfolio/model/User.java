@@ -14,7 +14,7 @@ public class User {
     private String firstName;
     private String lastName;
     private final String email;
-    private final String password;
+    private String password;
     private String image;
     private String role;
     private boolean confirmed;
@@ -24,6 +24,22 @@ public class User {
                 @JsonProperty("lastName") String lastName,
                 @JsonProperty("email") String email,
                 @JsonProperty("password") String password,
+                @JsonProperty("image") String image,
+                @JsonProperty("role") String role,
+                @JsonProperty("confirmed") boolean confirmed) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.image = image;
+        this.role = role;
+        this.confirmed = confirmed;
+    }
+    public User(@JsonProperty("id") UUID id,
+                @JsonProperty("firstName") String firstName,
+                @JsonProperty("lastName") String lastName,
+                @JsonProperty("email") String email,
                 @JsonProperty("image") String image,
                 @JsonProperty("role") String role,
                 @JsonProperty("confirmed") boolean confirmed) {

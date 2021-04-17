@@ -6,11 +6,11 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
 import superagent from 'superagent';
 
-import ModalHeaderError from '../modals/error-header';
-import ModalLoading from '../modals/loading';
-import ModalError from '../modals/error';
-import ModalSuccess from '../modals/success';
-import ModalErrorResendLink from '../modals/error-resend-link';
+import ModalHeaderError from '../Modals/error-header';
+import ModalLoading from '../Modals/loading';
+import ModalError from '../Modals/error';
+import ModalSuccess from '../Modals/success';
+import ModalErrorResendLink from '../Modals/error-resend-link';
 
 class RegisterContent extends Component {
 

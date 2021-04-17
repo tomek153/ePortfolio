@@ -1,8 +1,8 @@
 import React from 'react';
 import { Switch, Route, BrowserRouter } from 'react-router-dom';
 
-import HomeHeader from '../components/views/home-header';
-import AuthHeader from '../components/elements/auth-header';
+import HomeHeader from '../Components/Header/home-header';
+import AuthHeader from '../Components/Header/header';
 
 const HeaderRoute = () => (
     <BrowserRouter>

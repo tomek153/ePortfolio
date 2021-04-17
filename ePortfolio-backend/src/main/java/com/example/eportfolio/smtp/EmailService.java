@@ -220,10 +220,6 @@ public class EmailService {
                     }
             );
 
-            System.out.println("->"+request.getUserId());
-            System.out.println(user.getId());
-            System.out.println("->"+request.getId());
-
             ConfirmationLink confirmationLink = jdbcTemplate.queryForObject(
                     "SELECT * FROM confirmation_emails WHERE id = ? AND user_uuid = ?",
                     new Object[]{request.getId(), request.getUserId()},
@@ -236,8 +232,6 @@ public class EmailService {
                         );
                     }
             );
-
-            System.out.println(confirmationLink.getId());
 
             if (user.isConfirmed()) {
                 response.setMessage("user_confirmed");

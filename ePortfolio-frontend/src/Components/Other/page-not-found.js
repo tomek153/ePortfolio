@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import Footer from './views/home-footer';
 
-import ImageNotFound from '../images/not-found.jpg';
+import Footer from '../Home/home-footer';
+import ImageNotFound from '../../Images/not-found.jpg';
 
 class NotFoundContent extends Component {
     

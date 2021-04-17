@@ -44,7 +44,7 @@ h2 {
     padding-bottom: 0px;
 }
 ul.pass-req-list {
-    list-style-image: url(../images/check-solid.png);
+    list-style-image: url(../Images/check-solid.png);
 }
 ul.pass-req-list > li {
     margin-left: -15px;

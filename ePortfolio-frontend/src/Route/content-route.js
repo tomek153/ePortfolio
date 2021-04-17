@@ -1,14 +1,14 @@
 import React from 'react';
 import { Switch, Route, BrowserRouter } from 'react-router-dom';
 
-import HomeContent from '../components/views/home';
-import NotFoundContent from '../components/page-not-found';
-import LoginContent from '../components/views/home-login';
-import RegisterContent from '../components/views/home-register';
-import ResetPassword from '../components/views/home-reset-password';
-import RegulationsContent from '../components/views/home-regulations';
-import ConfirmationLinkSuccess from '../components/views/home-register-confirmation-link';
-import AuthProfile from '../components/elements/auth-profile';
+import HomeContent from '../Components/Home/home';
+import NotFoundContent from '../Components/Other/page-not-found';
+import LoginContent from '../Components/Login/login';
+import RegisterContent from '../Components/Register/register';
+import ResetPassword from '../Components/Login/reset-password';
+import RegulationsContent from '../Components/Other/regulations';
+import ConfirmationLinkSuccess from '../Components/Home/register-confirmation-link';
+import AuthProfile from '../Components/UserProfile/user-profile';
 
 const ContentRoute = () => (
     <BrowserRouter>

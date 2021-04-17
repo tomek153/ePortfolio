@@ -40,7 +40,6 @@ public class Login {
                         resultSet.getString("first_name"),
                         resultSet.getString("last_name"),
                         resultSet.getString("email"),
-                        resultSet.getString("password"),
                         resultSet.getString("image"),
                         resultSet.getString("role"),
                         resultSet.getBoolean("confirmed")

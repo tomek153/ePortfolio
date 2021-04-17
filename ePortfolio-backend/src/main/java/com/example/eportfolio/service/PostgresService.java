@@ -455,7 +455,91 @@ public class PostgresService implements UserDao, FixedDataDao {
 
     @Override
     public UserProfileAll getUserProfileAll(UUID id) throws SQLException {
-        return null;
+
+        UserProfileAll userProfileAll = jdbcTemplate.queryForObject(
+                "SELECT * FROM user_info_all WHERE id = ?",
+                new Object[] {id},
+                (resultSet, i) -> { return new UserProfileAll(
+                        UUID.fromString(resultSet.getString("id")),
+                        resultSet.getString("first_name"),
+                        resultSet.getString("last_name"),
+                        resultSet.getString("email"),
+                        resultSet.getString("image"),
+                        resultSet.getString("phone"),
+                        resultSet.getString("address_main"),
+                        resultSet.getString("address_city"),
+                        resultSet.getString("address_zip"),
+                        resultSet.getString("address_country"),
+                        resultSet.getTimestamp("date_birth"),
+                        resultSet.getString("gender"),
+                        resultSet.getBoolean("setting_public"),
+                        resultSet.getString("setting_header1"),
+                        resultSet.getString("setting_header2")
+                ); }
+        );
+
+        userProfileAll.setUserEduList(jdbcTemplate.query(
+                "SELECT * FROM users_edu WHERE user_uuid = ?",
+                new Object[] {id},
+                (resultSet, i) -> { return new UserEdu(
+                        UUID.fromString(resultSet.getString("id")),
+                        UUID.fromString(resultSet.getString("user_uuid")),
+                        resultSet.getInt("edu_spec"),
+                        resultSet.getInt("edu_type"),
+                        resultSet.getString("edu_name"),
+                        resultSet.getString("edu_time_start"),
+                        resultSet.getString("edu_time_end"),
+                        resultSet.getString("edu_place"),
+                        resultSet.getString("edu_desc")
+                ); }
+        ));
+
+        userProfileAll.setUserWorkList(jdbcTemplate.query(
+                "SELECT * FROM users_work WHERE user_uuid = ?",
+                new Object[] {id},
+                (resultSet, i) -> { return new UserWork(
+                        UUID.fromString(resultSet.getString("id")),
+                        UUID.fromString(resultSet.getString("user_uuid")),
+                        resultSet.getInt("work_industry"),
+                        resultSet.getInt("work_type"),
+                        resultSet.getString("work_name"),
+                        resultSet.getString("work_time_start"),
+                        resultSet.getString("work_time_end"),
+                        resultSet.getString("work_place"),
+                        resultSet.getString("work_desc"),
+                        resultSet.getString("work_location")
+                ); }
+        ));
+
+        userProfileAll.setUserSkillList(jdbcTemplate.query(
+                "SELECT * FROM users_skill WHERE user_uuid = ?",
+                new Object[] {id},
+                (resultSet, i) -> { return new UserSkill(
+                        UUID.fromString(resultSet.getString("id")),
+                        UUID.fromString(resultSet.getString("user_uuid")),
+                        resultSet.getInt("skill_type"),
+                        resultSet.getInt("skill_time_months"),
+                        resultSet.getInt("skill_level"),
+                        resultSet.getString("skill_name")
+                ); }
+        ));
+
+        return userProfileAll;
+    }
+
+    @Override
+    public int updateImage(String imageUrl, UUID userId) {
+
+        try {
+            jdbcTemplate.update(
+                    "UPDATE users SET image = ? WHERE id = ?",
+                    new Object[]{imageUrl, userId}
+            );
+        } catch(DataAccessException dataAccessException) {
+            return 1;
+        }
+
+        return 0;
     }
 
     @Override

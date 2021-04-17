@@ -9,9 +9,8 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
 
-import '../../css/auth-header.css';
-import LogoImage from '../../images/logo-3.png';
-import Avatar from '../../images/avatar.png';
+import LogoImage from '../../Images/logo-3.png';
+import Avatar from '../../Images/avatar.png';
 
 class HomeHeader extends Component {
 

@@ -5,6 +5,8 @@ import com.example.eportfolio.model.*;
 import com.example.eportfolio.service.UserService;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
@@ -48,6 +50,23 @@ public class UserController {
             response.sendError (405, "SMTP error.");
         } else {
             System.out.println("User dodany.");
+        }
+    }
+
+    @RequestMapping (value = "/api/user/update/image", method = PUT)
+    public void updateImage (@RequestBody String imageUrl, HttpServletResponse response, HttpServletRequest request) throws IOException, SQLException {
+
+        String token = request.getHeader("Authorization");
+        int decStatus = Login.checkJWT(token);
+
+        if (decStatus == 0) {
+            int updateStatus = userService.updateImage(imageUrl, UUID.fromString(Login.getClaims().get("id").asString()));
+
+            if (updateStatus != 0) {
+                response.sendError(405, "token_error");
+            }
+        } else {
+            response.sendError(405, "token_error");
         }
     }
 
@@ -113,19 +132,25 @@ public class UserController {
         out.flush();
     }
     @RequestMapping (value = "/api/user/my_profile", method = GET)
-    public void getUserProfile (HttpServletResponse response, HttpServletRequest request) throws IOException {
-        String token = request.getHeader("Authorization");
+    public void getUserProfile (HttpServletResponse response, HttpServletRequest request) throws IOException, SQLException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        JsonObject resJson = new JsonObject();
 
+        String token = request.getHeader("Authorization");
         int decStatus = Login.checkJWT(token);
         PrintWriter out = response.getWriter();
 
         if (decStatus == 0) {
-            System.out.println(Login.getClaims().get("id"));
+            UserProfileAll userProfileAll = userService.getUserProfileAll(UUID.fromString(Login.getClaims().get("id").asString()));
+            out.print(this.gson.toJson(userProfileAll));
 
         } else if (decStatus == 1) {
-            out.print("token_invalid");Map<String, Claim> claims = Login.getClaims();
+            response.sendError(400, "token_invalid");
+
         } else if (decStatus == 2) {
-            out.print("token_expired");
+            out.print(this.gson.toJson(new JsonParser().parse("{\"error\": \"token_expired\"}")));
+
         } else {
             response.sendError(405, "unknown_error");
         }
@@ -361,6 +386,7 @@ public class UserController {
 
                 responseMap.put("message", "authentication_success.");
                 responseMap.put("token", token);
+                responseMap.put("user", login.getUser());
             } else
                 responseMap.put("message", "token_error.");
         }

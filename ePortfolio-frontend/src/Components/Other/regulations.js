@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import Footer from './home-footer';
 
-import ImageReg from "../../images/background-second.jpg"
+import Footer from '../Home/home-footer';
+import ImageReg from "../../Images/background-second.jpg"
 
 class RegulationsContent extends Component {
     

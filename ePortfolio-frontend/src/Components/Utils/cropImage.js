@@ -68,7 +68,8 @@ export const updateImage = async (imageSrc, crop, rotation) => {
 
 	const canvas = await getCroppedImg(imageSrc, crop, rotation);
 
-	console.log(canvas);
-	var imageUrl = canvas.toDataURL();
-	console.log(imageUrl);
+	// console.log(canvas);
+	// var imageUrl = canvas.toDataURL();
+	// console.log(imageUrl);
+	return canvas.toDataURL();
 };

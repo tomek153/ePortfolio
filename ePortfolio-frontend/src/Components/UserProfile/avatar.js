@@ -4,18 +4,23 @@ import Modal from 'react-bootstrap/Modal';
 import Row from 'react-bootstrap/esm/Row';
 import Col from 'react-bootstrap/esm/Col';
 import Container from 'react-bootstrap/esm/Container';
+import Spinner from 'react-bootstrap/esm/Spinner';
+
 import Slider from '@material-ui/core/Slider';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 
-import { updateImage } from '../utils/cropImage';
+import { updateImage } from '../Utils/cropImage';
 
-export default function Avatar() {
+export default function Avatar(props) {
 
     const inputRef = React.useRef();
 
     const triggerFileSelectPopup = () => inputRef.current.click();
 
+    const [disabledSaveButton, setDisabledSaveButton] = React.useState(false);
+    const [updateStatus, setUpdateStatus] = React.useState(false);
+    const [saveButton, setSaveButton] = React.useState("Zapisz");
     const [image, setImage] = React.useState(null);
     const [croppedArea, setCroppedArea] = React.useState(null);
     const [crop, setCrop] = React.useState({x:0, y:0});
@@ -23,7 +28,6 @@ export default function Avatar() {
     const [rotation, setRotation] = React.useState(0);
 
     const onCropComplete = (croppedAreaPercentage, croppedAreaPixels) => {
-        console.log(croppedAreaPercentage, croppedAreaPixels);
         setCroppedArea(croppedAreaPixels);
     };
 
@@ -32,18 +36,48 @@ export default function Avatar() {
             const fileReader = new FileReader();
             fileReader.readAsDataURL(event.target.files[0]);
             fileReader.addEventListener('load', () => {
-                console.log(fileReader.result);
                 setImage(fileReader.result);
             });
         }
     };
 
-    const onSave = () => {
-        updateImage(image, croppedArea, rotation);
+    const clearAll = () => {
+        setSaveButton("Zapisz");
+        setImage(null);
+        setCroppedArea(null);
+        setCrop({x:0, y:0});
+        setZoom(1);
+        setRotation(0);
+        setUpdateStatus(false);
+    };
+
+    const close = () => {
+        clearAll();
+        var onClose = props.onClose;
+        document.querySelector("body > div.fade.modal-backdrop.show").classList.remove("show");
+        document.querySelector("body > div.fade.modal.show").classList.remove("show");
+
+        setTimeout(function() {
+            onClose();
+        }, 150);
+    }
+
+    const onSave = async () => {
+        setDisabledSaveButton(true);
+        setSaveButton(<Spinner animation="border" style={{width: "24px", height: "24px", color: "#fff"}}/>);
+        
+        var newImageUrl = await updateImage(image, croppedArea, rotation);
+        
+        if (newImageUrl != null) {
+            await props.update(newImageUrl, close);
+        } else {
+            setSaveButton("Zapisz");
+        }
+        setDisabledSaveButton(false);
     };
 
     return (
-        <Modal size="lg" show={true}>
+        <Modal size="lg" show={props.show} onHide={props.onClose}>
             <Modal.Header closeButton>
                 <Modal.Title>Ustaw swoje zdjęcie.</Modal.Title>
             </Modal.Header>
@@ -111,8 +145,7 @@ export default function Avatar() {
                     </Row>
                     <Row>
                         <Col>
-                            <Button variant="contained" color="secondary" className="avatar-manipulation-save-Button" onClick={onSave}>Zapisz</Button>
-                            <Button variant="contained" style={{float: "right", marginRight: "5px"}}>Zamknij</Button>
+                            <Button disabled={disabledSaveButton} id="profile-save-avatar" variant="contained" color="secondary" className="avatar-manipulation-save-Button" onClick={onSave}>{saveButton}</Button>
                         </Col>
                     </Row>
                 </Container>

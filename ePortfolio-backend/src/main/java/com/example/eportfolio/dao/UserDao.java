@@ -77,4 +77,5 @@ public interface UserDao {
     // ADD USER PROPERTIES -END-
 
     UserProfileAll getUserProfileAll(UUID id) throws SQLException;
+    int updateImage(String imageUrl, UUID userId) throws SQLException;
 }

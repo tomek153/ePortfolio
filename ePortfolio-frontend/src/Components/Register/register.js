@@ -3,15 +3,14 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
-import Modal from 'react-bootstrap/Modal';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
 import superagent from 'superagent';
 
-import ModalHeaderError from '../modals/error-header';
-import ModalLoading from '../modals/loading';
-import ModalError from '../modals/error';
-import ModalSuccess from '../modals/success';
+import ModalHeaderError from '../Modals/error-header';
+import ModalLoading from '../Modals/loading';
+import ModalError from '../Modals/error';
+import ModalSuccess from '../Modals/success';
 
 class RegisterContent extends Component {
 

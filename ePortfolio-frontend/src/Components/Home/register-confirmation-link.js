@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import superagent from 'superagent';
 
 import HomeContent from './home';
-import ModalHeaderError from '../modals/error-header';
-import ModalLoading from '../modals/loading';
-import ModalSuccess from '../modals/success';
-import ModalErrorResendLink from '../modals/error-resend-link';
+import ModalHeaderError from '../Modals/error-header';
+import ModalLoading from '../Modals/loading';
+import ModalSuccess from '../Modals/success';
+import ModalErrorResendLink from '../Modals/error-resend-link';
 
 class ConfirmationLinkSuccess extends Component {
     constructor() {

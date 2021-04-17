@@ -9,14 +9,12 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
 import superagent from 'superagent';
 
-import ModalHeaderError from '../modals/error-header';
-import ModalHeaderSuccess from '../modals/success-header';
-import ModalLoading from '../modals/loading';
+import ModalHeaderError from '../Modals/error-header';
+import ModalHeaderSuccess from '../Modals/success-header';
+import ModalLoading from '../Modals/loading';
 import Footer from './home-footer';
 
-import ScreenImage from '../../images/system-screen.png';
-
-import '../../css/start.css';
+import ScreenImage from '../../Images/system-screen.png';
 
 class HomeContent extends Component {
     constructor() {

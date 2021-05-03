@@ -1,6 +1,7 @@
 package com.example.eportfolio.service;
 
 import com.example.eportfolio.api.DeleteMethods;
+import com.example.eportfolio.dao.ChatDao;
 import com.example.eportfolio.dao.FixedDataDao;
 import com.example.eportfolio.dao.UserDao;
 import com.example.eportfolio.model.*;
@@ -8,7 +9,6 @@ import com.example.eportfolio.smtp.EmailService;
 import com.example.eportfolio.smtp.MailRequestModel;
 import com.example.eportfolio.smtp.MailResponseModel;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.mail.MailAuthenticationException;
@@ -17,10 +17,11 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.*;
 
 @Repository("postgres")
-public class PostgresService implements UserDao, FixedDataDao {
+public class PostgresService implements UserDao, FixedDataDao, ChatDao {
 
     @Autowired
     private EmailService service;
@@ -28,13 +29,13 @@ public class PostgresService implements UserDao, FixedDataDao {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public PostgresService (JdbcTemplate jdbcTemplate) {
+    public PostgresService(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     public int addUser(UUID id, User user) throws SQLException {
-        final String sqlFirst = "SELECT * FROM users WHERE email = '"+user.getEmail()+"'";
+        final String sqlFirst = "SELECT * FROM users WHERE email = '" + user.getEmail() + "'";
         String emailKey;
         String idKey;
 
@@ -58,34 +59,34 @@ public class PostgresService implements UserDao, FixedDataDao {
 
                 final String addUserSQL = "INSERT INTO users (id, first_name, last_name, email, password, role, confirmed) " +
                         "VALUES (" +
-                        "'"+userUUID+"', " +
-                        "'"+user.getFirstName()+"', " +
-                        "'"+user.getLastName()+"', " +
-                        "'"+user.getEmail()+"', " +
-                        "md5('"+user.getPassword()+"'),"+
-                        "'"+user.getRole()+"',"+
-                        ""+user.isConfirmed()+
+                        "'" + userUUID + "', " +
+                        "'" + user.getFirstName() + "', " +
+                        "'" + user.getLastName() + "', " +
+                        "'" + user.getEmail() + "', " +
+                        "md5('" + user.getPassword() + "')," +
+                        "'" + user.getRole() + "'," +
+                        "" + user.isConfirmed() +
                         ")";
 
                 final String addUserBioSQL = "INSERT INTO users_bio (id, user_uuid, phone, address_main, address_city, address_zip, address_country, date_birth, gender) VALUES (" +
                         "uuid_generate_v4(), " +
-                        "'"+userUUID+"', " +
+                        "'" + userUUID + "', " +
                         "'','','','','','1900-01-01', '')";
 
                 final String addUserSettingSQL = "INSERT INTO users_setting (id, user_uuid, setting_public, setting_header1, setting_header2, setting_img, setting_consent, setting_allow_contact) " +
                         "VALUES (uuid_generate_v4(), " +
-                        "'"+userUUID+"', " +
+                        "'" + userUUID + "', " +
                         "'true', " +
                         "'', " +
                         "'', " +
-                        "'-1',"+
-                        "'true',"+
+                        "'-1'," +
+                        "'true'," +
                         "'true'" +
                         ")";
 
                 final String addConfirmationEmailSQL = "INSERT INTO confirmation_emails (id, user_uuid, status) VALUES (" +
                         "uuid_generate_v4(), " +
-                        "'"+userUUID+"', " +
+                        "'" + userUUID + "', " +
                         "false )";
 
                 conn.prepareStatement(addUserSQL).executeUpdate();
@@ -94,20 +95,20 @@ public class PostgresService implements UserDao, FixedDataDao {
                 conn.prepareStatement(addConfirmationEmailSQL).executeUpdate();
                 conn.commit();
 
-                String getEmailKey = "SELECT id FROM confirmation_emails WHERE user_uuid IN (SELECT id FROM users WHERE email = '"+user.getEmail()+"') AND status = false";
+                String getEmailKey = "SELECT id FROM confirmation_emails WHERE user_uuid IN (SELECT id FROM users WHERE email = '" + user.getEmail() + "') AND status = false";
                 emailKey = jdbcTemplate.queryForObject(getEmailKey, new Object[]{}, (resultSet, i) -> {
-                    return new String (resultSet.getString("id"));
+                    return new String(resultSet.getString("id"));
                 });
-                String getIdKey = "SELECT id FROM users WHERE email IN ('"+user.getEmail()+"')";
+                String getIdKey = "SELECT id FROM users WHERE email IN ('" + user.getEmail() + "')";
                 idKey = jdbcTemplate.queryForObject(getIdKey, new Object[]{}, (resultSet, i) -> {
-                    return new String (resultSet.getString("id"));
+                    return new String(resultSet.getString("id"));
                 });
 
                 Map<String, Object> model = new HashMap<>();
                 model.put("Name", user.getFirstName());
                 model.put("location", "Poznań, Polska");
-                model.put( "idKey", idKey);
-                model.put( "linkKey", emailKey);
+                model.put("idKey", idKey);
+                model.put("linkKey", emailKey);
 
                 try {
                     MailRequestModel request = new MailRequestModel(user.getFirstName(), user.getEmail(), "ePortfolio", "ePortfolio | Potwierdzenie rejestracji");
@@ -132,7 +133,7 @@ public class PostgresService implements UserDao, FixedDataDao {
 
     }
 
-    public int changePassword(ResetPasswordRequest resetPasswordRequest){
+    public int changePassword(ResetPasswordRequest resetPasswordRequest) {
 
         final String sqlFirst = "SELECT * FROM users WHERE id = ?";
         String sqlChangePassword;
@@ -151,9 +152,9 @@ public class PostgresService implements UserDao, FixedDataDao {
 
         if (listFind.isEmpty()) {
             return 0;
-        } else{
-            sqlChangePassword = "UPDATE users SET password = "+
-                    "md5('" + resetPasswordRequest.getPassword() + "')"+
+        } else {
+            sqlChangePassword = "UPDATE users SET password = " +
+                    "md5('" + resetPasswordRequest.getPassword() + "')" +
                     "where id ='" + resetPasswordRequest.getUser_uuid() + "'";
             jdbcTemplate.execute(sqlChangePassword);
             jdbcTemplate.execute("UPDATE reset_password_emails SET status = true WHERE user_uuid IN('" + resetPasswordRequest.getUser_uuid() + "');");
@@ -163,7 +164,7 @@ public class PostgresService implements UserDao, FixedDataDao {
     }
 
     @Override
-    public int resetPasswordRequest(String email){
+    public int resetPasswordRequest(String email) {
         String sqlFirst = "SELECT * FROM users WHERE email = ?";
 
         List<User> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
@@ -179,12 +180,12 @@ public class PostgresService implements UserDao, FixedDataDao {
         }, email);
 
         if (listFind.isEmpty()) {
-           return 0;
+            return 0;
         } else {
             try {
                 User user = listFind.get(0);
 
-                final String deactivateExistingResetPasswordLinks = "UPDATE reset_password_emails SET status = true WHERE user_uuid = '"+user.getId()+"'";
+                final String deactivateExistingResetPasswordLinks = "UPDATE reset_password_emails SET status = true WHERE user_uuid = '" + user.getId() + "'";
                 jdbcTemplate.execute(deactivateExistingResetPasswordLinks);
 
                 final String addResetPasswordEmailSQL = "INSERT INTO reset_password_emails (id, user_uuid, status) VALUES (" +
@@ -219,6 +220,7 @@ public class PostgresService implements UserDao, FixedDataDao {
             }
         }
     }
+
     @Override
     public List<User> getUsers() {
         final String sql = "SELECT * FROM users";
@@ -238,7 +240,7 @@ public class PostgresService implements UserDao, FixedDataDao {
 
     @Override
     public boolean checkUserExistByEmail(String email) {
-        final String sql = "SELECT * FROM users WHERE email = '"+email+"'";
+        final String sql = "SELECT * FROM users WHERE email = '" + email + "'";
 
         List<User> listFind = jdbcTemplate.query(sql, (resultSet, i) -> {
             return new User(
@@ -402,14 +404,14 @@ public class PostgresService implements UserDao, FixedDataDao {
             conn.setAutoCommit(false);
 
             DeleteMethods deleteMethods = new DeleteMethods();
-            conn.prepareStatement(deleteMethods.deleteUserFromTable("users_edu",id)).executeUpdate();
-            conn.prepareStatement(deleteMethods.deleteUserFromTable("users_bio",id)).executeUpdate();
-            conn.prepareStatement(deleteMethods.deleteUserFromTable("users_work",id)).executeUpdate();
-            conn.prepareStatement(deleteMethods.deleteUserFromTable("users_skill",id)).executeUpdate();
-            conn.prepareStatement(deleteMethods.deleteUserFromTable("users_setting",id)).executeUpdate();
-            conn.prepareStatement(deleteMethods.deleteUserFromTable("confirmation_emails",id)).executeUpdate();
-            conn.prepareStatement(deleteMethods.deleteUserFromTable("reset_password_emails",id)).executeUpdate();
-            conn.prepareStatement(deleteMethods.deleteUserFromTable("users",id)).executeUpdate();
+            conn.prepareStatement(deleteMethods.deleteUserFromTable("users_edu", id)).executeUpdate();
+            conn.prepareStatement(deleteMethods.deleteUserFromTable("users_bio", id)).executeUpdate();
+            conn.prepareStatement(deleteMethods.deleteUserFromTable("users_work", id)).executeUpdate();
+            conn.prepareStatement(deleteMethods.deleteUserFromTable("users_skill", id)).executeUpdate();
+            conn.prepareStatement(deleteMethods.deleteUserFromTable("users_setting", id)).executeUpdate();
+            conn.prepareStatement(deleteMethods.deleteUserFromTable("confirmation_emails", id)).executeUpdate();
+            conn.prepareStatement(deleteMethods.deleteUserFromTable("reset_password_emails", id)).executeUpdate();
+            conn.prepareStatement(deleteMethods.deleteUserFromTable("users", id)).executeUpdate();
             conn.commit();
             return 0;
 
@@ -436,18 +438,18 @@ public class PostgresService implements UserDao, FixedDataDao {
     }
 
     @Override
-    public int addUserWork(UUID id, UserWork userWork) throws SQLException{
+    public int addUserWork(UUID id, UserWork userWork) throws SQLException {
 
         final String sql = "INSERT INTO users_work(id, user_uuid, work_type, work_name, work_time_start, work_time_end, work_place, work_desc, work_industry, work_location)" +
                 " VALUES (uuid_generate_v4(), " +
-                "'" + id + "', "+
-                "'" + userWork.getWork_type() + "', "+
-                "'" + userWork.getWork_name() + "', "+
-                "'" + userWork.getWork_time_start() + "', "+
-                "'" + userWork.getWork_time_end() + "', "+
-                "'" + userWork.getWork_place() + "', "+
-                "'" + userWork.getWork_desc() + "', "+
-                "'" + userWork.getWork_industry() + "', "+
+                "'" + id + "', " +
+                "'" + userWork.getWork_type() + "', " +
+                "'" + userWork.getWork_name() + "', " +
+                "'" + userWork.getWork_time_start() + "', " +
+                "'" + userWork.getWork_time_end() + "', " +
+                "'" + userWork.getWork_place() + "', " +
+                "'" + userWork.getWork_desc() + "', " +
+                "'" + userWork.getWork_industry() + "', " +
                 "'" + userWork.getWork_location() + "'" +
                 ")";
         jdbcTemplate.execute(sql);
@@ -455,17 +457,17 @@ public class PostgresService implements UserDao, FixedDataDao {
     }
 
     @Override
-    public int addUserEdu(UUID id, UserEdu userEdu) throws SQLException{
+    public int addUserEdu(UUID id, UserEdu userEdu) throws SQLException {
 
         final String sql = "INSERT INTO users_edu(id, user_uuid, edu_type, edu_name, edu_time_start, edu_time_end, edu_place, edu_desc, edu_spec)" +
                 " VALUES (uuid_generate_v4(), " +
-                "'" + id + "', "+
-                "'" + userEdu.getEdu_type() + "', "+
-                "'" + userEdu.getEdu_name() + "', "+
-                "'" + userEdu.getEdu_time_start() + "', "+
-                "'" + userEdu.getEdu_time_end() + "', "+
-                "'" + userEdu.getEdu_place() + "', "+
-                "'" + userEdu.getEdu_desc() + "', "+
+                "'" + id + "', " +
+                "'" + userEdu.getEdu_type() + "', " +
+                "'" + userEdu.getEdu_name() + "', " +
+                "'" + userEdu.getEdu_time_start() + "', " +
+                "'" + userEdu.getEdu_time_end() + "', " +
+                "'" + userEdu.getEdu_place() + "', " +
+                "'" + userEdu.getEdu_desc() + "', " +
                 "'" + userEdu.getEdu_spec() + "'" +
                 ")";
         jdbcTemplate.execute(sql);
@@ -473,14 +475,14 @@ public class PostgresService implements UserDao, FixedDataDao {
     }
 
     @Override
-    public int addUserSkill(UUID id, UserSkill userSkill) throws SQLException{
+    public int addUserSkill(UUID id, UserSkill userSkill) throws SQLException {
 
         final String sql = "INSERT INTO users_skill(id, user_uuid, skill_type, skill_name, skill_time_months, skill_level)" +
                 " VALUES (uuid_generate_v4(), " +
-                "'" + id + "', "+
-                "'" + userSkill.getSkill_type() + "', "+
-                "'" + userSkill.getSkill_name() + "', "+
-                "'" + userSkill.getSkill_time_months() + "', "+
+                "'" + id + "', " +
+                "'" + userSkill.getSkill_type() + "', " +
+                "'" + userSkill.getSkill_name() + "', " +
+                "'" + userSkill.getSkill_time_months() + "', " +
                 "'" + userSkill.getSkill_level() + "'" +
                 ")";
         jdbcTemplate.execute(sql);
@@ -488,9 +490,9 @@ public class PostgresService implements UserDao, FixedDataDao {
     }
 
     @Override
-    public int deleteUserWork(UUID userUUID, UUID propertyUUID) throws SQLException{
+    public int deleteUserWork(UUID userUUID, UUID propertyUUID) throws SQLException {
 
-        final String sqlFirst = "SELECT * FROM users_work WHERE user_uuid = '"+userUUID+"' AND id = '"+propertyUUID+"';";
+        final String sqlFirst = "SELECT * FROM users_work WHERE user_uuid = '" + userUUID + "' AND id = '" + propertyUUID + "';";
 
         List<UserWork> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
             return new UserWork(
@@ -523,17 +525,16 @@ public class PostgresService implements UserDao, FixedDataDao {
                 System.err.println("delete userwork error - sql");
                 return 1;
             }
-        }
-        else {
+        } else {
             System.err.println("delete userwork error - no record");
             return 2;
         }
     }
 
     @Override
-    public int deleteUserEdu(UUID userUUID, UUID propertyUUID) throws SQLException{
+    public int deleteUserEdu(UUID userUUID, UUID propertyUUID) throws SQLException {
 
-        final String sqlFirst = "SELECT * FROM users_edu WHERE user_uuid = '"+userUUID+"' AND id = '"+propertyUUID+"';";
+        final String sqlFirst = "SELECT * FROM users_edu WHERE user_uuid = '" + userUUID + "' AND id = '" + propertyUUID + "';";
 
         List<UserEdu> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
             return new UserEdu(
@@ -565,17 +566,16 @@ public class PostgresService implements UserDao, FixedDataDao {
                 System.err.println("delete useredu error - sql");
                 return 1;
             }
-        }
-        else {
+        } else {
             System.err.println("delete useredu error - no record");
             return 2;
         }
     }
 
     @Override
-    public int deleteUserSkill(UUID userUUID, UUID propertyUUID) throws SQLException{
+    public int deleteUserSkill(UUID userUUID, UUID propertyUUID) throws SQLException {
 
-        final String sqlFirst = "SELECT * FROM users_skill WHERE user_uuid = '"+userUUID+"' AND id = '"+propertyUUID+"';";
+        final String sqlFirst = "SELECT * FROM users_skill WHERE user_uuid = '" + userUUID + "' AND id = '" + propertyUUID + "';";
 
         List<UserSkill> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
             return new UserSkill(
@@ -605,8 +605,7 @@ public class PostgresService implements UserDao, FixedDataDao {
                 System.err.println("delete userskill error - sql");
                 return 1;
             }
-        }
-        else {
+        } else {
             System.err.println("delete userskill error - no record");
             return 2;
         }
@@ -615,7 +614,7 @@ public class PostgresService implements UserDao, FixedDataDao {
     @Override
     public int updateUserWork(UUID userUUID, UserWork userWork) throws SQLException {
 
-        final String sqlFirst = "SELECT * FROM users_work WHERE user_uuid = '"+userUUID+"' AND id = '"+userWork.getUserWorkId()+"';";
+        final String sqlFirst = "SELECT * FROM users_work WHERE user_uuid = '" + userUUID + "' AND id = '" + userWork.getUserWorkId() + "';";
 
         List<UserWork> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
             return new UserWork(
@@ -659,17 +658,16 @@ public class PostgresService implements UserDao, FixedDataDao {
                 System.err.println("update userwork error - sql");
                 return 1;
             }
-        }
-        else {
+        } else {
             System.err.println("update userwork error - no record");
             return 2;
         }
     }
 
     @Override
-    public int updateUserEdu(UUID userUUID, UserEdu userEdu) throws SQLException{
+    public int updateUserEdu(UUID userUUID, UserEdu userEdu) throws SQLException {
 
-        final String sqlFirst = "SELECT * FROM users_edu WHERE user_uuid = '"+userUUID+"' AND id = '"+userEdu.getUserEduId()+"';";
+        final String sqlFirst = "SELECT * FROM users_edu WHERE user_uuid = '" + userUUID + "' AND id = '" + userEdu.getUserEduId() + "';";
 
         List<UserEdu> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
             return new UserEdu(
@@ -710,17 +708,16 @@ public class PostgresService implements UserDao, FixedDataDao {
                 System.err.println("update useredu error - sql");
                 return 1;
             }
-        }
-        else {
+        } else {
             System.err.println("update useredu error - no record");
             return 2;
         }
     }
 
     @Override
-    public int updateUserSkill(UUID userUUID, UserSkill userSkill) throws SQLException{
+    public int updateUserSkill(UUID userUUID, UserSkill userSkill) throws SQLException {
 
-        final String sqlFirst = "SELECT * FROM users_skill WHERE user_uuid = '"+userUUID+"' AND id = '"+userSkill.getUserSkillId()+"';";
+        final String sqlFirst = "SELECT * FROM users_skill WHERE user_uuid = '" + userUUID + "' AND id = '" + userSkill.getUserSkillId() + "';";
 
         List<UserSkill> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
             return new UserSkill(
@@ -756,8 +753,7 @@ public class PostgresService implements UserDao, FixedDataDao {
                 System.err.println("update userskill error - sql");
                 return 1;
             }
-        }
-        else {
+        } else {
             System.err.println("update userskill error - no record");
             return 2;
         }
@@ -765,7 +761,7 @@ public class PostgresService implements UserDao, FixedDataDao {
 
     @Override
     public int editUser(UUID userUUID, User user) throws SQLException {
-        final String sqlFirst = "SELECT * FROM users WHERE id = '"+userUUID+"'";
+        final String sqlFirst = "SELECT * FROM users WHERE id = '" + userUUID + "'";
 
         List<User> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
             return new User(
@@ -785,9 +781,9 @@ public class PostgresService implements UserDao, FixedDataDao {
                 conn.setAutoCommit(false);
 
                 final String updateUserSQL = "UPDATE users SET " +
-                        "first_name ='"+user.getFirstName()+"', " +
-                        "last_name = '"+user.getLastName()+"', " +
-                        "email = '"+user.getEmail()+"' " +
+                        "first_name ='" + user.getFirstName() + "', " +
+                        "last_name = '" + user.getLastName() + "', " +
+                        "email = '" + user.getEmail() + "' " +
                         "WHERE id = '" + userUUID + "';";
 
                 conn.prepareStatement(updateUserSQL).executeUpdate();
@@ -808,7 +804,7 @@ public class PostgresService implements UserDao, FixedDataDao {
 
     @Override
     public int editUserBio(UUID userUUID, UserBio userBio) throws SQLException {
-        final String sqlFirst = "SELECT * FROM users_bio WHERE user_uuid = '"+userUUID+"'";
+        final String sqlFirst = "SELECT * FROM users_bio WHERE user_uuid = '" + userUUID + "'";
 
         List<UserBio> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
             return new UserBio(
@@ -830,13 +826,13 @@ public class PostgresService implements UserDao, FixedDataDao {
                 conn.setAutoCommit(false);
 
                 final String updateBioSQL = "UPDATE users_bio SET " +
-                        "phone ='"+userBio.getPhone()+"', " +
-                        "address_main = '"+userBio.getAddress_main()+"', " +
-                        "address_city = '"+userBio.getAddress_city()+"', " +
-                        "address_zip = '"+userBio.getAddress_zip()+"', " +
-                        "address_country = '"+userBio.getAddress_country()+"', " +
-                        "date_birth = '"+userBio.getDate_birth()+"', " +
-                        "gender = '"+userBio.getGender()+"' " +
+                        "phone ='" + userBio.getPhone() + "', " +
+                        "address_main = '" + userBio.getAddress_main() + "', " +
+                        "address_city = '" + userBio.getAddress_city() + "', " +
+                        "address_zip = '" + userBio.getAddress_zip() + "', " +
+                        "address_country = '" + userBio.getAddress_country() + "', " +
+                        "date_birth = '" + userBio.getDate_birth() + "', " +
+                        "gender = '" + userBio.getGender() + "' " +
                         "WHERE user_uuid = '" + userUUID + "';";
 
                 conn.prepareStatement(updateBioSQL).executeUpdate();
@@ -857,7 +853,7 @@ public class PostgresService implements UserDao, FixedDataDao {
 
     @Override
     public int editUserSetting(UUID userUUID, UserSetting userSetting) throws SQLException {
-        final String sqlFirst = "SELECT * FROM users_setting WHERE user_uuid = '"+userUUID+"' ";
+        final String sqlFirst = "SELECT * FROM users_setting WHERE user_uuid = '" + userUUID + "' ";
 
         List<UserSetting> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
             return new UserSetting(
@@ -878,12 +874,12 @@ public class PostgresService implements UserDao, FixedDataDao {
                 conn.setAutoCommit(false);
 
                 final String updateUserSettingSQL = "UPDATE users_setting SET " +
-                        "setting_public ='"+userSetting.isSetting_public()+"', " +
-                        "setting_header1 = '"+userSetting.getSetting_header1()+"', " +
-                        "setting_header2 = '"+userSetting.getSetting_header2()+"', " +
-                        "setting_img = '"+userSetting.getSetting_img()+"', " +
-                        "setting_consent = '"+userSetting.isSetting_consent()+"', " +
-                        "setting_allow_contact = '"+userSetting.isSetting_allow_contact()+"' " +
+                        "setting_public ='" + userSetting.isSetting_public() + "', " +
+                        "setting_header1 = '" + userSetting.getSetting_header1() + "', " +
+                        "setting_header2 = '" + userSetting.getSetting_header2() + "', " +
+                        "setting_img = '" + userSetting.getSetting_img() + "', " +
+                        "setting_consent = '" + userSetting.isSetting_consent() + "', " +
+                        "setting_allow_contact = '" + userSetting.isSetting_allow_contact() + "' " +
                         "WHERE user_uuid = '" + userUUID + "';";
 
                 conn.prepareStatement(updateUserSettingSQL).executeUpdate();
@@ -902,4 +898,120 @@ public class PostgresService implements UserDao, FixedDataDao {
 
     }
 
+
+    @Override
+    public int createChat(UUID chatId, String name, List<String> members) throws SQLException {
+
+        Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
+        conn.setAutoCommit(false);
+        try {
+            final String addChatSQL = "INSERT INTO Chats(id, chat_name) " +
+                    "VALUES (" +
+                    "'" + chatId + "', " +
+                    "'" + name + "'" +
+                    ")";
+
+
+            conn.prepareStatement(addChatSQL).executeUpdate();
+            conn.commit();
+            System.err.println(members);
+            for (String member : members) {
+                System.err.println(member);
+                if (member != null) {
+                    addChatMember(chatId, UUID.fromString(member));
+                }
+            }
+
+            return 1;
+        } catch (SQLException e) {
+            conn.rollback();
+            e.printStackTrace();
+            System.err.println("Add chat to database error.");
+            return 0;
+        }
+    }
+
+
+    @Override
+    public int sendMessage(String chatId, String senderId, String message) throws SQLException {
+
+        Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
+        conn.setAutoCommit(false);
+        try {
+            final String addChatSQL = "INSERT INTO messages(chat_id, sender_id, message) " +
+                    "VALUES (" +
+                    "'" + chatId + "', " +
+                    "'" + senderId + "', " +
+                    "'" + message+ "'" +
+                    ")";
+
+            System.err.println(addChatSQL);
+            conn.prepareStatement(addChatSQL).executeUpdate();
+            conn.commit();
+            return 1;
+        } catch (SQLException e) {
+            conn.rollback();
+            e.printStackTrace();
+            System.err.println("Add message to database error.");
+            return 0;
+        }
+    }
+
+    @Override
+    public int addChatMember(UUID chatId, UUID memberID) throws SQLException {
+        final String sqlFirst = "SELECT * FROM chat_members WHERE chat_id = '" + chatId + "' AND member_id = '" + memberID + "'";
+
+        List<UUID> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
+            return UUID.fromString(resultSet.getString("id"));
+        });
+        if (listFind.isEmpty()) {
+            System.err.println("Adding chat member.");
+            Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
+            conn.setAutoCommit(false);
+            try {
+                final String addChatSQL = "INSERT INTO chat_members(chat_id, member_id) " +
+                        "VALUES (" +
+                        "'" + chatId + "', " +
+                        "'" + memberID + "'" +
+                        ")";
+
+
+                conn.prepareStatement(addChatSQL).executeUpdate();
+                conn.commit();
+                System.err.println("Added chat member." + addChatSQL);
+                return 1;
+            } catch (SQLException e) {
+                conn.rollback();
+                e.printStackTrace();
+                System.err.println("Add chat member to database error.");
+                return 0;
+            }
+        } else
+            return 0;
+    }
+
+    @Override
+    public List<Message> getChatMessages(String chatId) throws SQLException {
+        final String sql = "SELECT * FROM messages WHERE chat_id = '" + chatId + "'";
+
+        return jdbcTemplate.query(sql, (resultSet, i) -> {
+            return new Message(
+                    resultSet.getInt("id"),
+                    UUID.fromString(resultSet.getString("chat_id")),
+                    UUID.fromString(resultSet.getString("sender_id")),
+                    resultSet.getString("message"),
+                    Timestamp.valueOf(resultSet.getString("send_date"))
+            );
+        });
+    }
+
+    @Override
+    public int getChatHeaders(UUID memberId) throws SQLException {
+        return 0;
+    }
+
+    @Override
+    public int getChatMembers(UUID chatId) throws SQLException {
+        return 0;
+    }
 }

@@ -22,12 +22,6 @@ public class UserProfileAll {
     private String address_country;
     private Timestamp date_birth;
     private String gender;
-    private boolean setting_public;
-    private String setting_header1;
-    private String setting_header2;
-    private List<UserEdu> userEduList;
-    private List<UserWork> userWorkList;
-    private List<UserSkill> userSkillList;
 
 
     public UserProfileAll(UUID id,
@@ -41,10 +35,7 @@ public class UserProfileAll {
                           String address_zip,
                           String address_country,
                           Timestamp date_birth,
-                          String gender,
-                          boolean setting_public,
-                          String setting_header1,
-                          String setting_header2) {
+                          String gender) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -57,8 +48,5 @@ public class UserProfileAll {
         this.address_country = address_country;
         this.date_birth = date_birth;
         this.gender = gender;
-        this.setting_public = setting_public;
-        this.setting_header1 = setting_header1;
-        this.setting_header2 = setting_header2;
     }
 }

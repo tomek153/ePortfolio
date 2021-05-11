@@ -11,8 +11,9 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 
 import { updateImage } from '../Utils/cropImage';
+import PropTypes from 'prop-types';
 
-export default function Avatar(props) {
+function Avatar(props) {
 
     const inputRef = React.useRef();
 
@@ -65,11 +66,11 @@ export default function Avatar(props) {
     const onSave = async () => {
         setDisabledSaveButton(true);
         setSaveButton(<Spinner animation="border" style={{width: "24px", height: "24px", color: "#fff"}}/>);
-        
-        var newImageUrl = await updateImage(image, croppedArea, rotation);
-        
+
+        const newImageUrl = await updateImage(image, croppedArea, rotation);
+
         if (newImageUrl != null) {
-            await props.update(newImageUrl, close);
+            await props.update(newImageUrl[0], newImageUrl[1], close);
         } else {
             setSaveButton("Zapisz");
         }
@@ -78,7 +79,7 @@ export default function Avatar(props) {
 
     return (
         <Modal size="lg" show={props.show} onHide={props.onClose}>
-            <Modal.Header closeButton>
+            <Modal.Header closeButton style={{backgroundColor: "#fff", color: "#444"}}>
                 <Modal.Title>Ustaw swoje zdjęcie.</Modal.Title>
             </Modal.Header>
 
@@ -153,3 +154,11 @@ export default function Avatar(props) {
         </Modal>
     );
 }
+
+Avatar.propTypes = {
+    show: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
+    update: PropTypes.func.isRequired
+}
+
+export default Avatar;

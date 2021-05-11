@@ -148,7 +148,6 @@ ul.pass-req-list > li {
 }
 .modal-header > button.close {
     margin-left: 0;
-    color: #fefefe;
 }
 .modal-header-error {
     background-color: #a65555;
@@ -161,4 +160,45 @@ ul.pass-req-list > li {
     text-decoration: underline;
     cursor: pointer;
     color: #de473c;
+}
+#footer-auth {
+    padding: 10px 0px;
+    height: 70px;
+    width: 100%;
+    background-color: #343a40;
+    margin-top: 70px;
+    color: #fefefe;
+    text-align: right;
+}
+#footer-auth > div > p {
+    margin: 0px auto;
+
+}
+#footer-auth > div > p:nth-child(1) {
+    font-size: 18px;
+}
+#footer-auth > div > p:nth-child(2) {
+    font-size: 13px;
+}
+.primary-button {
+    background-color: #31b4cb;
+    border-color: #31b4cb;
+    margin: 0 8px;
+}
+.primary-button:hover {
+    background-color: #1092a9;
+    border-color: #1092a9;
+}
+.primary-button:focus {
+    background-color: #31b4cb;
+    border-color: #31b4cb;
+    box-shadow: 0 0px 0px 3px rgba(49, 180, 203, 0.4)!important;
+
+}
+.primary-button:active {
+    background-color: #31b4cb!important;
+    border-color: #31b4cb!important;;
+}
+.text-error {
+    color: #de473c!important;
 }

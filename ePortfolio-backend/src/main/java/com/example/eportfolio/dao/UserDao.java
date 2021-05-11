@@ -4,6 +4,7 @@ import com.example.eportfolio.model.*;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,7 +25,7 @@ public interface UserDao {
 
     boolean checkUserExistByEmail(String email);
 
-    Optional<User> getUserByID(UUID id);
+    User getUserByID(UUID id);
 
     Optional<UserBio> getUserBioByID(UUID id);
 
@@ -77,5 +78,8 @@ public interface UserDao {
     // ADD USER PROPERTIES -END-
 
     UserProfileAll getUserProfileAll(UUID id) throws SQLException;
-    int updateImage(String imageUrl, UUID userId) throws SQLException;
+
+    int updateUserProfile(Map profile, UUID id) throws SQLException;
+
+    int updateImage(String imageUrl, String imageSmallUrl, UUID userId) throws SQLException;
 }

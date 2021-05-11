@@ -394,6 +394,15 @@ textarea.form-control:focus {
     background-color: unset;
     border: none;
 }
+.logo-spin {
+    animation: logo-spin 3s infinite linear
+} @keyframes logo-spin {
+      0% {
+          transform: rotate3d(0, 0, 0, 360deg)
+      } 100% {
+          transform: rotate3d(0, 1, 0, 360deg)
+      }
+}
 .photo-login-register {
     height: 100%;
 }

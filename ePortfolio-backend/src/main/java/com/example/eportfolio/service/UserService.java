@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -32,7 +33,7 @@ public class UserService {
         return userDao.checkUserExistByEmail(email);
     }
 
-    public Optional<User> getUserByID(UUID id) { return userDao.getUserByID(id); }
+    public User getUserByID(UUID id) { return userDao.getUserByID(id); }
 
     public Optional<UserBio> getUserBioByID(UUID id) { return userDao.getUserBioByID(id); }
 
@@ -100,5 +101,7 @@ public class UserService {
     // ADD USER PROPERTIES -END-
 
     public UserProfileAll getUserProfileAll(UUID id) throws SQLException { return userDao.getUserProfileAll(id); }
-    public int updateImage(String imageUrl, UUID userId) throws SQLException { return userDao.updateImage(imageUrl, userId); }
+    public int updateImage(String imageUrl, String imageSmallUrl, UUID userId) throws SQLException { return userDao.updateImage(imageUrl, imageSmallUrl, userId); }
+
+    public int updateUserProfile(Map profile, UUID id) throws SQLException { return userDao.updateUserProfile(profile, id); }
 }

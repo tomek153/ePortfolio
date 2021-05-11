@@ -36,18 +36,17 @@ public class User {
         this.role = role;
         this.confirmed = confirmed;
     }
-    public User(@JsonProperty("id") UUID id,
-                @JsonProperty("firstName") String firstName,
-                @JsonProperty("lastName") String lastName,
-                @JsonProperty("email") String email,
-                @JsonProperty("image") String image,
-                @JsonProperty("role") String role,
-                @JsonProperty("confirmed") boolean confirmed) {
+    public User(UUID id,
+                String firstName,
+                String lastName,
+                String email,
+                String image,
+                String role,
+                boolean confirmed) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.password = password;
         this.image = image;
         this.role = role;
         this.confirmed = confirmed;

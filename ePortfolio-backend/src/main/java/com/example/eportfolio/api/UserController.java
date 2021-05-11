@@ -36,7 +36,7 @@ public class UserController {
     }
 
     @RequestMapping (value = "/api/users", method = POST)
-    public void addUser (@Valid @NonNull @RequestBody User user, HttpServletResponse response) throws IOException, SQLException {
+    public void addUser (@RequestBody User user, HttpServletResponse response) throws SQLException, IOException {
         int status = userService.addUser(user);
 
         if (status == 0) {
@@ -54,13 +54,17 @@ public class UserController {
     }
 
     @RequestMapping (value = "/api/user/update/image", method = PUT)
-    public void updateImage (@RequestBody String imageUrl, HttpServletResponse response, HttpServletRequest request) throws IOException, SQLException {
+    public void updateImage (@RequestBody Map imageUrl, HttpServletResponse response, HttpServletRequest request) throws IOException, SQLException {
 
         String token = request.getHeader("Authorization");
         int decStatus = Login.checkJWT(token);
 
         if (decStatus == 0) {
-            int updateStatus = userService.updateImage(imageUrl, UUID.fromString(Login.getClaims().get("id").asString()));
+            int updateStatus = userService.updateImage(
+                    imageUrl.get("image").toString(),
+                    imageUrl.get("image_small").toString(),
+                    UUID.fromString(Login.getClaims().get("id").asString())
+            );
 
             if (updateStatus != 0) {
                 response.sendError(405, "token_error");
@@ -115,19 +119,27 @@ public class UserController {
     @RequestMapping (value = "/api/user/check_token", method = GET)
     public void checkUserToken (HttpServletResponse response, HttpServletRequest request) throws IOException {
         String token = request.getHeader("Authorization");
+        Map<String, Object> responseMap = new HashMap<>();
 
         int decStatus = Login.checkJWT(token);
         PrintWriter out = response.getWriter();
 
         if (decStatus == 0) {
-            out.print("token_valid");
+            responseMap.put("message", "token_valid.");
+            User user = userService.getUserByID(UUID.fromString(Login.getClaims().get("id").asString()));
+            responseMap.put("user", user);
         } else if (decStatus == 1) {
-            out.print("token_invalid");
+            responseMap.put("message", "token_invalid.");
         } else if (decStatus == 2) {
-            out.print("token_expired");
+            responseMap.put("message", "token_expired.");
         } else {
             response.sendError(405, "unknown_error");
         }
+
+        String responseString = this.gson.toJson(responseMap);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        out.print(responseString);
 
         out.flush();
     }
@@ -151,6 +163,29 @@ public class UserController {
         } else if (decStatus == 2) {
             out.print(this.gson.toJson(new JsonParser().parse("{\"error\": \"token_expired\"}")));
 
+        } else {
+            response.sendError(405, "unknown_error");
+        }
+
+        out.flush();
+    }
+
+    @RequestMapping (value = "/api/user/my_profile", method = POST)
+    public void updateUserProfile (@RequestBody Map updateMap, HttpServletResponse response, HttpServletRequest request) throws IOException, SQLException {
+        String token = request.getHeader("Authorization");
+        int decStatus = Login.checkJWT(token);
+        PrintWriter out = response.getWriter();
+
+        System.out.println(updateMap.keySet());
+
+        if (decStatus == 0) {
+            int updateStatus = userService.updateUserProfile(updateMap, UUID.fromString(Login.getClaims().get("id").asString()));
+            if (updateStatus != 0)
+                response.sendError(405, "unknown_error");
+        } else if (decStatus == 1) {
+            response.sendError(400, "token_invalid");
+        } else if (decStatus == 2) {
+            response.sendError(400, "token_expired");
         } else {
             response.sendError(405, "unknown_error");
         }
@@ -383,10 +418,8 @@ public class UserController {
         } else if (status == 0) {
             String token = login.createToken();
             if (!token.equals("create_token_error.")) {
-
                 responseMap.put("message", "authentication_success.");
                 responseMap.put("token", token);
-                responseMap.put("user", login.getUser());
             } else
                 responseMap.put("message", "token_error.");
         }

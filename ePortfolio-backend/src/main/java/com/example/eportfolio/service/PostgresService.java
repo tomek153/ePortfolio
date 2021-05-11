@@ -221,10 +221,10 @@ public class PostgresService implements UserDao, FixedDataDao {
     }
 
     @Override
-    public Optional<User> getUserByID(UUID id) {
+    public User getUserByID(UUID id) {
         final String sql = "SELECT * FROM users WHERE id = ?";
 
-        User user = jdbcTemplate.queryForObject(
+        return jdbcTemplate.queryForObject(
                 sql,
                 new Object[]{id},
                 (resultSet, i) -> {
@@ -233,14 +233,12 @@ public class PostgresService implements UserDao, FixedDataDao {
                             resultSet.getString("first_name"),
                             resultSet.getString("last_name"),
                             resultSet.getString("email"),
-                            resultSet.getString("password"),
                             resultSet.getString("image"),
                             resultSet.getString("role"),
                             resultSet.getBoolean("confirmed")
                     );
                 }
         );
-        return Optional.ofNullable(user);
     }
 
     @Override
@@ -260,7 +258,8 @@ public class PostgresService implements UserDao, FixedDataDao {
                             resultSet.getString("address_zip"),
                             resultSet.getString("address_country"),
                             resultSet.getString("date_birth"),
-                            resultSet.getString("gender")
+                            resultSet.getString("gender"),
+                            resultSet.getString("image")
                     );
                 }
         );
@@ -456,7 +455,7 @@ public class PostgresService implements UserDao, FixedDataDao {
     @Override
     public UserProfileAll getUserProfileAll(UUID id) throws SQLException {
 
-        UserProfileAll userProfileAll = jdbcTemplate.queryForObject(
+        return jdbcTemplate.queryForObject(
                 "SELECT * FROM user_info_all WHERE id = ?",
                 new Object[] {id},
                 (resultSet, i) -> { return new UserProfileAll(
@@ -471,68 +470,104 @@ public class PostgresService implements UserDao, FixedDataDao {
                         resultSet.getString("address_zip"),
                         resultSet.getString("address_country"),
                         resultSet.getTimestamp("date_birth"),
-                        resultSet.getString("gender"),
-                        resultSet.getBoolean("setting_public"),
-                        resultSet.getString("setting_header1"),
-                        resultSet.getString("setting_header2")
+                        resultSet.getString("gender")
                 ); }
         );
 
-        userProfileAll.setUserEduList(jdbcTemplate.query(
-                "SELECT * FROM users_edu WHERE user_uuid = ?",
-                new Object[] {id},
-                (resultSet, i) -> { return new UserEdu(
-                        UUID.fromString(resultSet.getString("id")),
-                        UUID.fromString(resultSet.getString("user_uuid")),
-                        resultSet.getInt("edu_spec"),
-                        resultSet.getInt("edu_type"),
-                        resultSet.getString("edu_name"),
-                        resultSet.getString("edu_time_start"),
-                        resultSet.getString("edu_time_end"),
-                        resultSet.getString("edu_place"),
-                        resultSet.getString("edu_desc")
-                ); }
-        ));
+//        userProfileAll.setUserEduList(jdbcTemplate.query(
+//                "SELECT * FROM users_edu WHERE user_uuid = ?",
+//                new Object[] {id},
+//                (resultSet, i) -> { return new UserEdu(
+//                        UUID.fromString(resultSet.getString("id")),
+//                        UUID.fromString(resultSet.getString("user_uuid")),
+//                        resultSet.getInt("edu_spec"),
+//                        resultSet.getInt("edu_type"),
+//                        resultSet.getString("edu_name"),
+//                        resultSet.getString("edu_time_start"),
+//                        resultSet.getString("edu_time_end"),
+//                        resultSet.getString("edu_place"),
+//                        resultSet.getString("edu_desc")
+//                ); }
+//        ));
 
-        userProfileAll.setUserWorkList(jdbcTemplate.query(
-                "SELECT * FROM users_work WHERE user_uuid = ?",
-                new Object[] {id},
-                (resultSet, i) -> { return new UserWork(
-                        UUID.fromString(resultSet.getString("id")),
-                        UUID.fromString(resultSet.getString("user_uuid")),
-                        resultSet.getInt("work_industry"),
-                        resultSet.getInt("work_type"),
-                        resultSet.getString("work_name"),
-                        resultSet.getString("work_time_start"),
-                        resultSet.getString("work_time_end"),
-                        resultSet.getString("work_place"),
-                        resultSet.getString("work_desc"),
-                        resultSet.getString("work_location")
-                ); }
-        ));
+//        userProfileAll.setUserWorkList(jdbcTemplate.query(
+//                "SELECT * FROM users_work WHERE user_uuid = ?",
+//                new Object[] {id},
+//                (resultSet, i) -> { return new UserWork(
+//                        UUID.fromString(resultSet.getString("id")),
+//                        UUID.fromString(resultSet.getString("user_uuid")),
+//                        resultSet.getInt("work_industry"),
+//                        resultSet.getInt("work_type"),
+//                        resultSet.getString("work_name"),
+//                        resultSet.getString("work_time_start"),
+//                        resultSet.getString("work_time_end"),
+//                        resultSet.getString("work_place"),
+//                        resultSet.getString("work_desc"),
+//                        resultSet.getString("work_location")
+//                ); }
+//        ));
 
-        userProfileAll.setUserSkillList(jdbcTemplate.query(
-                "SELECT * FROM users_skill WHERE user_uuid = ?",
-                new Object[] {id},
-                (resultSet, i) -> { return new UserSkill(
-                        UUID.fromString(resultSet.getString("id")),
-                        UUID.fromString(resultSet.getString("user_uuid")),
-                        resultSet.getInt("skill_type"),
-                        resultSet.getInt("skill_time_months"),
-                        resultSet.getInt("skill_level"),
-                        resultSet.getString("skill_name")
-                ); }
-        ));
-
-        return userProfileAll;
+//        userProfileAll.setUserSkillList(jdbcTemplate.query(
+//                "SELECT * FROM users_skill WHERE user_uuid = ?",
+//                new Object[] {id},
+//                (resultSet, i) -> { return new UserSkill(
+//                        UUID.fromString(resultSet.getString("id")),
+//                        UUID.fromString(resultSet.getString("user_uuid")),
+//                        resultSet.getInt("skill_type"),
+//                        resultSet.getInt("skill_time_months"),
+//                        resultSet.getInt("skill_level"),
+//                        resultSet.getString("skill_name")
+//                ); }
+//        ));
     }
 
     @Override
-    public int updateImage(String imageUrl, UUID userId) {
+    public int updateUserProfile(Map profile, UUID id) throws SQLException {
+
+        try {
+            jdbcTemplate.update(
+                    "UPDATE users SET first_name = ?, last_name = ?, email = ? WHERE id = ?",
+                    profile.get("first_name"),
+                    profile.get("last_name"),
+                    profile.get("email"),
+                    id);
+
+            Date date;
+            if (profile.get("date_birth") == null) {
+                date = null;
+            } else {
+                date = new Date((long)profile.get("date_birth"));
+            }
+
+            jdbcTemplate.update(
+                    "update users_bio SET phone = ?, address_main = ?, address_city = ?, address_zip = ?, address_country = ?, date_birth = ?, gender = ? WHERE user_uuid = ?",
+                    profile.get("phone"),
+                    profile.get("address_main"),
+                    profile.get("address_city"),
+                    profile.get("address_zip"),
+                    profile.get("address_country"),
+                    date,
+                    profile.get("gender"),
+                    id);
+
+        } catch(DataAccessException dataAccessException) {
+            dataAccessException.printStackTrace();
+            return 1;
+        }
+
+        return 0;
+    }
+
+    @Override
+    public int updateImage(String imageUrl, String imageSmallUrl, UUID userId) {
 
         try {
             jdbcTemplate.update(
                     "UPDATE users SET image = ? WHERE id = ?",
+                    new Object[]{imageSmallUrl, userId}
+            );
+            jdbcTemplate.update(
+                    "UPDATE users_bio SET image = ? WHERE user_uuid = ?",
                     new Object[]{imageUrl, userId}
             );
         } catch(DataAccessException dataAccessException) {

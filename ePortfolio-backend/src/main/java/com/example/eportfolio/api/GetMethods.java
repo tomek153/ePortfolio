@@ -10,12 +10,12 @@ public class GetMethods {
 
     public Map getUserMainData(Map<String, Object> map, UserService userService, UUID id) {
 
-        Optional<User> user = userService.getUserByID(id);
-        if (user.isPresent()) {
+        User user = userService.getUserByID(id);
+        if (user != null) {
             Map<String, Object> userMainData = new HashMap<>();
 
-            userMainData.put("firstName", user.get().getFirstName());
-            userMainData.put("lastName", user.get().getLastName());
+            userMainData.put("firstName", user.getFirstName());
+            userMainData.put("lastName", user.getLastName());
 
             map.put("user", userMainData);
         }

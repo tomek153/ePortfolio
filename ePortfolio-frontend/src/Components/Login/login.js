@@ -46,20 +46,15 @@ class RegisterContent extends Component {
         }
     }
     checkFormDataValid() {
-        var element = document.getElementsByClassName("auth-button-my")[0];
+        const element = document.getElementsByClassName("auth-button-my")[0];
 
-        if (this.state.formControll.email &&
-            this.state.formControll.password
-        ) {
-            element.disabled = false;
-        } else {
-            element.disabled = true;
-        }
+        element.disabled = !(this.state.formControll.email &&
+            this.state.formControll.password);
     }
     handleEmailChanged(event) {
         let value = event.target.value;
         this.state.form.email = value;
-        var regex = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
+        const regex = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
         let wronCharRegex = /[^a-zA-Z0-9@_.-]/;
         let isProperValue = false;
         let length = event.target.value.length;
@@ -171,14 +166,14 @@ class RegisterContent extends Component {
                 .then(data => {
                     this.setState({modalLoading: false});
 
-                    if (data.message == "authentication_failed.")
+                    if (data.message === "authentication_failed.")
                         this.setState({modalAuthFailed: true});
-                    else if (data.message == "user_unconfirmed.") {
+                    else if (data.message === "user_unconfirmed.") {
                         this.state.userId = data.userId;
                         this.setState({modalUserUnconfirmed: true});
                         this.setState({reSendButton: "block"});
                     }
-                    else if (data.message == "authentication_success.") {
+                    else if (data.message === "authentication_success.") {
                         localStorage.setItem('token', data.token);
                         window.location.replace("/moj-profil");
                     }
@@ -311,38 +306,12 @@ class RegisterContent extends Component {
 
     }
     componentDidMount() {
-        let token = localStorage.getItem("token");
-
-        if (token != null && token != '') {
-            superagent
-                .get('http://localhost:8080/api/user/check_token')
-                .set('Content-Type', 'application/json')
-                .set('Authorization', token)
-                .set('Accept', 'application/json')
-                .end((err, res) => {
-                    if(!err) {
-                        if(res.text == "token_valid") {
-                            this.props.history.push('/moj-profil');
-                        } else if(res.text == "token_invalid" || res.text == "token_expired") {
-                            console.log("Nieaktywny lub wadliwy token");
-                            localStorage.removeItem("token");
-                        } else {
-                            alert("Nieznany błąd.")
-                            localStorage.removeItem("token");
-                        }
-                    } else {
-                        alert("Nieznany błąd.");
-                        localStorage.removeItem("token");
-                    }
-                });
-        }
-
         this.adjustContent();
     }
     adjustContent() {
         document.getElementsByClassName("auth-button-my")[0].disabled = true;
         document.getElementById("root").style.height = "100%";
-        document.querySelector("#root > div.navbar-header > div > div.navbar-buttons").innerHTML = "<a href=\"/rejestracja\">Załóż konto</a><a class=\"navbar-button-active\" style=\"margin-right: 10px\">Zaloguj się</a>";
+        document.querySelector("div.navbar-header > div > div.navbar-buttons").innerHTML = "<a href=\"/rejestracja\">Załóż konto</a><a class=\"navbar-button-active\" style=\"margin-right: 10px\">Zaloguj się</a>";
         document.getElementById("password-reset-form").style.display = "none";
     }
     clearState() {

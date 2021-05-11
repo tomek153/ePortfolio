@@ -10,12 +10,12 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
 
 import LogoImage from '../../Images/logo-3.png';
-import Avatar from '../../Images/avatar.png';
 
 class HomeHeader extends Component {
 
-    logoutRedirect() {
+    logoutRedirect(event) {
         localStorage.removeItem('token');
+        window.location.replace("/");
     }
 
     renderTooltip = (props) => (
@@ -24,34 +24,39 @@ class HomeHeader extends Component {
         </Tooltip>
     );
 
-    componentDidMount() {
-        // console.log(this.props.activePage)
-    }
+    componentDidMount() {}
 
     render() {
         return (
             <>
-                <Navbar bg="dark" variant="dark" style={{minHeight: "70px"}}>
-                    <Image src={LogoImage} className="logo-image"/>
-                    <Navbar.Brand href="#home">ePortfolio</Navbar.Brand>
-                    <Nav className="mr-auto">
-                        <Nav.Link href="#home">Home</Nav.Link>
-                        <Nav.Link href="#features">Features</Nav.Link>
-                        <Nav.Link href="#pricing">Pricing</Nav.Link>
-                    </Nav>
-                    <Form inline>
-                        <FormControl type="text" placeholder="Search" className="mr-sm-2" />
-                        <Button variant="outline-light">Search</Button>
-                    </Form>
-                    <DropdownButton className="header-itmes" menuAlign="right" id="dropdown-menu-align-right" title={ <Image src={Avatar}/> } >
-                        <Dropdown.Header>Tomasz Weiss</Dropdown.Header>
-                        <Dropdown.Item eventKey="1" active disabled><i className="fas fa-user dropdown-icons"></i>Profil</Dropdown.Item>
-                        <Dropdown.Item eventKey="2"><i className="fas fa-comment dropdown-icons"></i>Wiadomości</Dropdown.Item>
-                        <Dropdown.Item eventKey="3"><i className="fas fa-cog dropdown-icons"></i>Ustawienia</Dropdown.Item>
-                        <Dropdown.Divider />
-                        <Dropdown.Item eventKey="4"><i className="fas fa-sign-out-alt dropdown-icons"></i>Wyloguj</Dropdown.Item>
-                    </DropdownButton>
-                </Navbar>
+                {!this.props.userInfo.tokenValid
+                    ? <></>
+                    : <Navbar bg="dark" variant="dark" style={{minHeight: "70px"}}>
+                        <Image src={LogoImage} className="logo-image"/>
+                        <Navbar.Brand href="#home">ePortfolio</Navbar.Brand>
+                        <Nav className="mr-auto">
+                            <Nav.Link href="#home">Home</Nav.Link>
+                            <Nav.Link href="#features">Features</Nav.Link>
+                            <Nav.Link href="#pricing">Pricing</Nav.Link>
+                        </Nav>
+                        <Form inline>
+                            <FormControl type="text" placeholder="Search" className="mr-sm-2"/>
+                            <Button variant="outline-light">Search</Button>
+                        </Form>
+                        <DropdownButton className="header-itmes" menuAlign="right" id="dropdown-menu-align-right"
+                                        title={<Image src={this.props.userInfo.userInfo.image} roundedCircle style={{boxShadow: "0px 5px 5px -5px #000"}}/>}>
+                            <Dropdown.Header>{this.props.userInfo.userInfo.firstName} {this.props.userInfo.userInfo.lastName}</Dropdown.Header>
+                            <Dropdown.Item eventKey="1" active disabled><i className="fas fa-user dropdown-icons"/>Profil</Dropdown.Item>
+                            <Dropdown.Item eventKey="2"><i
+                                className="fas fa-comment dropdown-icons"/>Wiadomości</Dropdown.Item>
+                            <Dropdown.Item eventKey="3"><i
+                                className="fas fa-cog dropdown-icons"/>Ustawienia</Dropdown.Item>
+                            <Dropdown.Divider/>
+                            <Dropdown.Item eventKey="4" onClick={this.logoutRedirect.bind(this)}><i
+                                className="fas fa-sign-out-alt dropdown-icons"/>Wyloguj</Dropdown.Item>
+                        </DropdownButton>
+                    </Navbar>
+                }
             </>
         )
     }

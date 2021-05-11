@@ -53,6 +53,7 @@ CREATE TABLE IF NOT EXISTS users_bio (
     address_country VARCHAR NOT NULL,
     date_birth DATE,
     gender VARCHAR NOT NULL,
+    image VARCHAR NOT NULL,
     FOREIGN KEY (user_uuid) REFERENCES users (ID)
 );
 

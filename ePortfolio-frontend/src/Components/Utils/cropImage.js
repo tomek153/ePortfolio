@@ -58,7 +58,20 @@ export default async function getCroppedImg(imageSrc, pixelCrop, rotation) {
 
 	// As Base64 string
 	// return canvas.toDataURL("image/jpeg");
+	// console.log();
 	return canvas;
+}
+
+const getSmallImage = async (imageSrc) => {
+	const image = await createImage(imageSrc);
+
+	const canvas_small = document.createElement("canvas");
+	canvas_small.width = 50;
+	canvas_small.height = 50;
+
+	const ctx_small = canvas_small.getContext("2d");
+	ctx_small.drawImage(image, 0, 0, canvas_small.width, canvas_small.height);
+	return ctx_small.canvas.toDataURL(image, "image/jpeg");
 }
 
 export const updateImage = async (imageSrc, crop, rotation) => {
@@ -67,9 +80,10 @@ export const updateImage = async (imageSrc, crop, rotation) => {
 	}
 
 	const canvas = await getCroppedImg(imageSrc, crop, rotation);
+	const imageUrl = canvas.toDataURL();
+	const imageSmallUrl = await getSmallImage(imageUrl);
 
-	// console.log(canvas);
-	// var imageUrl = canvas.toDataURL();
-	// console.log(imageUrl);
-	return canvas.toDataURL();
+	console.log(imageSmallUrl);
+
+	return [imageUrl, imageSmallUrl];
 };

@@ -900,7 +900,7 @@ public class PostgresService implements UserDao, FixedDataDao, ChatDao {
 
 
     @Override
-    public int createChat(UUID chatId, String name, List<String> members) throws SQLException {
+    public int createChat(UUID chatId, List<ChatMember> members) throws SQLException {
 
         Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
         conn.setAutoCommit(false);
@@ -908,17 +908,17 @@ public class PostgresService implements UserDao, FixedDataDao, ChatDao {
             final String addChatSQL = "INSERT INTO Chats(id, chat_name) " +
                     "VALUES (" +
                     "'" + chatId + "', " +
-                    "'" + name + "'" +
+                    "'Konwersacja'" +
                     ")";
 
 
             conn.prepareStatement(addChatSQL).executeUpdate();
             conn.commit();
             System.err.println(members);
-            for (String member : members) {
+            for (ChatMember member : members) {
                 System.err.println(member);
                 if (member != null) {
-                    addChatMember(chatId, UUID.fromString(member));
+                    addChatMember(chatId, member.getMemberId());
                 }
             }
 
@@ -933,16 +933,16 @@ public class PostgresService implements UserDao, FixedDataDao, ChatDao {
 
 
     @Override
-    public int sendMessage(String chatId, String senderId, String message) throws SQLException {
+    public int sendMessage(Message message) throws SQLException {
 
         Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
         conn.setAutoCommit(false);
         try {
             final String addChatSQL = "INSERT INTO messages(chat_id, sender_id, message) " +
                     "VALUES (" +
-                    "'" + chatId + "', " +
-                    "'" + senderId + "', " +
-                    "'" + message+ "'" +
+                    "'" + message.getChatId() + "', " +
+                    "'" + message.getSenderId() + "', " +
+                    "'" + message.getMessage()+ "'" +
                     ")";
 
             System.err.println(addChatSQL);
@@ -991,8 +991,8 @@ public class PostgresService implements UserDao, FixedDataDao, ChatDao {
     }
 
     @Override
-    public List<Message> getChatMessages(String chatId) throws SQLException {
-        final String sql = "SELECT * FROM messages WHERE chat_id = '" + chatId + "'";
+    public List<Message> getChatMessages(Chat chat) throws SQLException {
+        final String sql = "SELECT * FROM messages WHERE chat_id = '" + chat.getId() + "'";
 
         return jdbcTemplate.query(sql, (resultSet, i) -> {
             return new Message(
@@ -1006,12 +1006,41 @@ public class PostgresService implements UserDao, FixedDataDao, ChatDao {
     }
 
     @Override
-    public int getChatHeaders(UUID memberId) throws SQLException {
-        return 0;
+    public List<Message> getChatHeaders(UUID memberId) throws SQLException {
+        final String sql = "Select DISTINCT on (chat_id)" +
+                "id,chat_id, message, sender_id, send_date " +
+                "from messages where " +
+                "                                                                  chat_id in " +
+                "                                                                  (select chat_id from chat_members where member_id ='" +
+                memberId+
+                "') " +
+                "order by chat_id, send_date desc";
+
+        return jdbcTemplate.query(sql, (resultSet, i) -> {
+            return new Message(
+                    resultSet.getInt("id"),
+                    UUID.fromString(resultSet.getString("chat_id")),
+                    UUID.fromString(resultSet.getString("sender_id")),
+                    resultSet.getString("message"),
+                    Timestamp.valueOf(resultSet.getString("send_date"))
+            );
+        });
     }
 
     @Override
-    public int getChatMembers(UUID chatId) throws SQLException {
-        return 0;
+    public List<ChatMember> getChatMembers(Chat chat) throws SQLException {
+
+        final String sql = "select member_id from chat_members where chat_id ='" +
+                chat.getId() +
+                "'";
+
+        return jdbcTemplate.query(sql, (resultSet, i) -> {
+            return new ChatMember(
+                   null ,
+                    null,
+                    UUID.fromString(resultSet.getString("member_id"))
+            );
+        });
+
     }
 }

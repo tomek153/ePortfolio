@@ -8,13 +8,19 @@ import javax.validation.constraints.NotBlank;
 import java.util.UUID;
 
 public class ChatMember {
-    @NotBlank @Getter @Setter private Integer id;
-    @NotBlank @Getter @Setter private java.util.UUID chatId;
-    @NotBlank @Getter @Setter private java.util.UUID memberId;
+    @Getter
+    @Setter
+    private Integer id;
+    @Getter
+    @Setter
+    private java.util.UUID chatId;
+    @Getter
+    @Setter
+    private java.util.UUID memberId;
 
     public ChatMember(@JsonProperty("id") Integer id,
                       @JsonProperty("chatId") UUID chatId,
-                      @JsonProperty("memberId") UUID memberId){
+                      @JsonProperty("memberId") UUID memberId) {
         this.id = id;
         this.chatId = chatId;
         this.memberId = memberId;

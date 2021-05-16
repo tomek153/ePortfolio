@@ -10,14 +10,14 @@ import java.util.UUID;
 public interface ChatDao{
 
     // ADD DATA METHODS -START-
-    int createChat(UUID chatId, String name, List<String> members) throws SQLException;
+    int createChat(UUID chatId, List<ChatMember> members) throws SQLException;
 
-    default int createChat(String name, List<String> members) throws SQLException {
+    default int createChat(List<ChatMember> members) throws SQLException {
         UUID chatId = UUID.randomUUID();
-        return createChat(chatId, name, members);
+        return createChat(chatId, members);
     }
 
-    int sendMessage(String chatId, String senderId, String message) throws SQLException;
+    int sendMessage(Message message) throws SQLException;
 
     int addChatMember(UUID chatId, UUID memberID) throws SQLException;
 
@@ -25,11 +25,11 @@ public interface ChatDao{
 
     // GET DATA METHODS -START-
 
-    List<Message> getChatMessages(String chatId) throws SQLException;
+    List<Message> getChatMessages(Chat chat) throws SQLException;
 
-    int getChatHeaders(UUID memberId) throws SQLException;
+    List<Message> getChatHeaders(UUID memberId) throws SQLException;
 
-    int getChatMembers(UUID chatId) throws SQLException;
+    List<ChatMember> getChatMembers(Chat chat) throws SQLException;
 
     // GET DATA METHODS -END-
 

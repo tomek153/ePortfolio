@@ -8,8 +8,8 @@ import javax.validation.constraints.NotBlank;
 import java.util.UUID;
 
 public class Chat {
-    @NotBlank @Getter @Setter private java.util.UUID id;
-    @NotBlank @Getter @Setter private String name;
+    @Getter @Setter private java.util.UUID id;
+    @Getter @Setter private String name;
 
     public Chat(@JsonProperty("id") UUID id,
                             @JsonProperty("name") String name){

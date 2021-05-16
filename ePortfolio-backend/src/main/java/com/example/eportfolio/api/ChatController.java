@@ -1,20 +1,13 @@
 package com.example.eportfolio.api;
-import com.auth0.jwt.interfaces.Claim;
 import com.example.eportfolio.model.*;
 import com.example.eportfolio.service.ChatService;
-import com.example.eportfolio.service.UserService;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.lang.reflect.Member;
 import java.sql.SQLException;
 import java.util.*;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -29,12 +22,23 @@ public class ChatController {
     @Autowired
     private ChatService service;
 
+//Ex.
+//    POST /chat/send HTTP/1.1
+//    Host: localhost:8080
+//    Content-Type: application/json
+//    Content-Length: 217
+//
+//    {
+//        "id": 1,
+//            "chatId": "b944aaee-30b8-4560-aefb-164078f90ea2",
+//            "senderId": "65593dc1-d6cf-446c-96c8-0eabfe1f39b1",
+//            "message": "Wiadomosctestowa z dzisiaj",
+//            "send_date": ""
+//
+//    }
     @RequestMapping(value = "/chat/send", method = POST)
-    public void SendMessage(@Valid @NonNull @RequestParam String chatId, String senderId, String message, HttpServletResponse response) throws SQLException, IOException {
-        System.out.println (chatId + "  " + senderId + "  " + message);
-       int status = service.sendMessage(chatId,senderId,message);
-        //int status = 0;
-
+    public void SendMessage(@Valid @RequestBody Message message, HttpServletResponse response) throws SQLException, IOException {
+       int status = service.sendMessage(message);
         if (status == 0) {
             System.out.println ("Sending message failure!");
             response.sendError (405, "Message not send");
@@ -44,17 +48,31 @@ public class ChatController {
         }
     }
 
-    @RequestMapping(value = "/chat/test", method = GET)
-    public void test(HttpServletResponse response) throws IOException {
-        response.sendError(200,"Ok");
-    }
-
+//Ex.
+//    POST /chat/create HTTP/1.1
+//    Host: localhost:8080
+//    Content-Type: application/json
+//    Content-Length: 232
+//
+//            [
+//    {
+//        "id":"",
+//            "chatId":"",
+//            "memberId":"65593dc1-d6cf-446c-96c8-0eabfe1f39b1"
+//    },
+//    {
+//
+//        "id":"",
+//            "chatId":"",
+//            "memberId":"68d7f3a6-8c2f-4ae5-bef3-9eaa26f1f321"
+//    }
+//
+//]
     @RequestMapping(value = "/chat/create", method = POST)
-    public void CreateChat(@RequestParam List<String> membersId, HttpServletResponse response) throws SQLException, IOException {
+    public void CreateChat(@Valid @RequestBody List<ChatMember> members, HttpServletResponse response) throws SQLException, IOException {
 
-
-
-        int status = service.addChat("Konwersacja", membersId);
+        int status = service.addChat(members);
+        //int status = 0;
 
         if (status == 0) {
             System.out.println ("Creating chat failure!");
@@ -65,9 +83,51 @@ public class ChatController {
         }
     }
 
+//Ex.
+//    GET /chat/get HTTP/1.1
+//    Host: localhost:8080
+//    Content-Type: application/json
+//    Content-Length: 68
+//
+//    {
+//        "id":"b944aaee-30b8-4560-aefb-164078f90ea2",
+//            "name":""
+//    }
     @RequestMapping (value = "/chat/get", method = GET)
-    public List<Message> getMessages (@RequestParam String chatId, HttpServletRequest request) throws SQLException {
-
-        return service.getChatMessages(chatId);
+    public List<Message> getMessages (@Valid @RequestBody Chat chat, HttpServletRequest request) throws SQLException {
+        return service.getChatMessages(chat);
     }
+
+
+//Ex.
+//    GET /chat/getHeaders HTTP/1.1
+//    Host: localhost:8080
+//    Content-Type: application/json
+//    Content-Length: 104
+//
+//    {
+//        "id":"",
+//            "chatId":"",
+//            "memberId":"65593dc1-d6cf-446c-96c8-0eabfe1f39b1"
+//    }
+    @RequestMapping (value = "/chat/getHeaders", method = GET)
+    public List<Message> getHeaders (@Valid @RequestBody ChatMember member, HttpServletRequest request) throws SQLException {
+        return service.getChatHeaders(member);
+    }
+
+//Ex.
+//    GET /chat/getMembers HTTP/1.1
+//    Host: localhost:8080
+//    Content-Type: application/json
+//    Content-Length: 66
+//
+//    {
+//        "id":"b944aaee-30b8-4560-aefb-164078f90ea2",
+//            "name":""
+//    }
+    @RequestMapping (value = "/chat/getMembers", method = GET)
+    public List<ChatMember> getHeaders (@Valid @RequestBody Chat chat, HttpServletRequest request) throws SQLException {
+        return service.getChatMembers(chat);
+    }
+
 }

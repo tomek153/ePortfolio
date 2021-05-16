@@ -64,6 +64,9 @@ public class Message {
         this.chatId = chatId;
         this.senderId = senderId;
         this.message = message;
+        if(send_date == null){
+            send_date = new Timestamp(System.currentTimeMillis());
+        }
         this.send_date = send_date;
 
     }

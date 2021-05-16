@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import javax.print.DocFlavor;
+import java.lang.reflect.Member;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
@@ -21,21 +22,27 @@ public class ChatService {
     public ChatService(@Qualifier("postgres") ChatDao chatDao){this.chatDao = chatDao;}
     // GET CHAT METHODS -START-
 
-    public List<Message> getChatMessages(String chatId) throws SQLException {
-        return chatDao.getChatMessages(chatId);
+    public List<Message> getChatMessages(Chat chat) throws SQLException {
+        return chatDao.getChatMessages(chat);
     }
 
+    public List<Message> getChatHeaders(ChatMember member) throws SQLException {
+        return chatDao.getChatHeaders(member.getMemberId());
+    }
 
+    public List<ChatMember> getChatMembers(Chat chat) throws SQLException {
+        return chatDao.getChatMembers(chat);
+    }
     // GET CHAT METHODS -END-
 
     // ADD CHAT METHODS -START-
 
-    public int addChat(String name, List<String> members) throws SQLException {
-        return chatDao.createChat(name,members);
+    public int addChat(List<ChatMember> members) throws SQLException {
+        return chatDao.createChat(members);
     }
 
-    public int sendMessage(String chatId, String senderId, String message) throws SQLException {
-        return chatDao.sendMessage(chatId,senderId,message);
+    public int sendMessage(Message message) throws SQLException {
+        return chatDao.sendMessage(message);
     }
 
     // ADD CHAT METHODS -END-

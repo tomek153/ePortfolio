@@ -59,14 +59,6 @@ public class UserService {
         return userDao.editUserSetting(userUUID, userSetting);
     }
 
-    public int updateUserWork(UUID userUUID, UserWork userWork) throws SQLException {
-        return userDao.updateUserWork(userUUID, userWork);
-    }
-
-    public int updateUserEdu(UUID userUUID, UserEdu userEdu) throws SQLException {
-        return userDao.updateUserEdu(userUUID, userEdu);
-    }
-
     public int updateUserSkill(UUID userUUID, UserSkill userSkill) throws SQLException {
         return userDao.updateUserSkill(userUUID, userSkill);
     }
@@ -95,12 +87,14 @@ public class UserService {
     // ADD USER PROPERTIES -START-
     public int addUserWork(UUID id, UserWork userWork) throws SQLException { return userDao.addUserWork(id, userWork); }
 
-    public int addUserEdu(UUID id, UserEdu userEdu) throws SQLException { return userDao.addUserEdu(id, userEdu); }
+    public int addUserEdu(Map addMap, UUID id) { return userDao.addUserEdu(addMap, id); }
 
     public int addUserSkill(UUID id, UserSkill userSkill) throws SQLException { return userDao.addUserSkill(id, userSkill); }
     // ADD USER PROPERTIES -END-
 
     public UserProfileAll getUserProfileAll(UUID id) throws SQLException { return userDao.getUserProfileAll(id); }
+    public List<UserEdu> getUserEdu(UUID id) { return userDao.getUserEdu(id); }
+
     public int updateImage(String imageUrl, String imageSmallUrl, UUID userId) throws SQLException { return userDao.updateImage(imageUrl, imageSmallUrl, userId); }
 
     public int updateUserProfile(Map profile, UUID id) throws SQLException { return userDao.updateUserProfile(profile, id); }

@@ -166,8 +166,29 @@ div.tooltip > .arrow::before {
 }
 .profile-fields:focus {
     box-shadow: 0 5px 5px -5px black!important;
-    border-color: #ced4da;
+    border-color: #ced4da!important;
+}
+.profile-fields > div:nth-child(2) {
+    border-color: #ced4da!important;
+    box-shadow: none!important;
 }
 .button-profile-edit-save:disabled:hover {
     background-color: #007bff!important;
+}
+.profile-card-data {
+    margin-bottom: 10px;
+    transition: ease .2s;
+}
+.profile-card-data:hover {
+    background-color: rgba(52, 58, 64, 0.04);
+}
+.profile-remove-button {
+    color: #eb4a4a;
+    float: right;
+}
+.profile-remove-button:hover {
+    color: #c92828;
+}
+.react-datepicker-wrapper {
+    width: 100%;
 }

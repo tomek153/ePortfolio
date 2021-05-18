@@ -189,6 +189,15 @@ ul.pass-req-list > li {
     background-color: #1092a9;
     border-color: #1092a9;
 }
+.primary-button:disabled:hover {
+    background-color: #53d6ed;
+    border-color: #53d6ed;
+    cursor: default;
+}
+.primary-button:disabled {
+    background-color: #53d6ed;
+    border-color: #53d6ed;
+}
 .primary-button:focus {
     background-color: #31b4cb;
     border-color: #31b4cb;

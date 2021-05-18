@@ -13,7 +13,6 @@ import FormLabel from 'react-bootstrap/FormLabel';
 
 import DatePicker, {registerLocale} from "react-datepicker";
 import Avatar from '../UserProfile/avatar';
-import FooterAuth from "../Other/footer-auth";
 import LoadingElement from "../Other/loading-element";
 
 import "react-datepicker/dist/react-datepicker.css";
@@ -377,7 +376,7 @@ class PersonalData extends Component {
         if (token != null && token != "") {
 
             var myHeaders = new Headers();
-            myHeaders.append('Content-Type', 'application/json');
+            myHeaders.append('Content-Type', 'application/json; charset=utf-8');
             myHeaders.append('Authorization', localStorage.getItem("token"));
 
             const request = new Request(
@@ -639,7 +638,7 @@ class PersonalData extends Component {
                                                         <Col xs={5}>
                                                             <Form.Group>
                                                                 <Form.Label>Data urodzenia</Form.Label>
-                                                                <DatePicker id="profileBirthDate" className="form-control profile-fields" selected={this.state.new_date_birth} onChange={date => (this.changeBirthDate(date))} locale="pl" disabled={this.state.inputsDisabled}/>
+                                                                <DatePicker id="profileBirthDate" className="form-control profile-fields" selected={this.state.new_date_birth} onChange={date => (this.changeBirthDate(date))} locale="pl" disabled={this.state.inputsDisabled} autoComplete="off"/>
                                                             </Form.Group>
                                                         </Col>
                                                     </Form.Row>
@@ -734,7 +733,6 @@ class PersonalData extends Component {
                         </Row>
                     </Paper>
                 </Container>
-                <FooterAuth/>
                 <Avatar show={this.state.modalAvatar} onClose={this.closeModal} update={this.updatePhoto}/>
                 <ModalSuccess show={this.state.modal_update_success} onClose={this.closeModal} title="Zapisano zmiany">
                     Pomyślnie zaktualizowano profil.

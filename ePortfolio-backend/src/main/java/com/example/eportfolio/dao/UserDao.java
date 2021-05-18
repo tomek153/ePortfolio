@@ -14,10 +14,6 @@ public interface UserDao {
     // ADD USER METHODS -START-
     int addUser(User user) throws SQLException;
 
-//    default int addUser(User user) throws SQLException {
-//        UUID id = UUID.randomUUID();
-//        return addUser(id, user);
-//    }
     // ADD USER METHODS -END-
 
     // GET USER METHODS -START-
@@ -45,10 +41,6 @@ public interface UserDao {
 
     int editUserSetting(UUID userUUID, UserSetting userSetting) throws SQLException;
 
-    int updateUserWork(UUID userUUID, UserWork userWork) throws SQLException;
-
-    int updateUserEdu(UUID userUUID, UserEdu userEdu) throws SQLException;
-
     int updateUserSkill(UUID userUUID, UserSkill userSkill) throws SQLException;
     // EDIT USER METHODS -END-
 
@@ -72,12 +64,13 @@ public interface UserDao {
     // ADD USER PROPERTIES -START-
     int addUserWork(UUID id, UserWork userWork) throws SQLException;
 
-    int addUserEdu(UUID id, UserEdu userEdu) throws SQLException;
+    int addUserEdu(Map addMap, UUID id);
 
     int addUserSkill(UUID id, UserSkill userSkill) throws SQLException;
     // ADD USER PROPERTIES -END-
 
     UserProfileAll getUserProfileAll(UUID id) throws SQLException;
+    List<UserEdu> getUserEdu(UUID id);
 
     int updateUserProfile(Map profile, UUID id) throws SQLException;
 

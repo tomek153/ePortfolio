@@ -8,6 +8,16 @@ CREATE TABLE IF NOT EXISTS work_type_data (
     name VARCHAR NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS work_professions (
+    ID INTEGER PRIMARY KEY NOT NULL,
+    name VARCHAR NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS locations (
+    ID SERIAL PRIMARY KEY,
+    name VARCHAR NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS skill_type_data (
 	ID INTEGER PRIMARY KEY NOT NULL,
     name VARCHAR NOT NULL
@@ -78,10 +88,13 @@ CREATE TABLE IF NOT EXISTS users_work (
     work_place VARCHAR NOT NULL,
     work_desc VARCHAR NOT NULL,
     work_industry INTEGER NOT NULL,
-    work_location VARCHAR NOT NULL,
+    work_location INTEGER NOT NULL,
+    work_profession INTEGER NOT NULL,
     FOREIGN KEY (user_uuid) REFERENCES users (ID),
     FOREIGN KEY (work_industry) REFERENCES work_industry_data (ID),
-    FOREIGN KEY (work_type) REFERENCES work_type_data (ID)
+    FOREIGN KEY (work_type) REFERENCES work_type_data (ID),
+    FOREIGN KEY (work_profession) REFERENCES work_professions (ID),
+    FOREIGN KEY (work_location) REFERENCES locations (ID)
 );
 
 CREATE TABLE IF NOT EXISTS users_edu (

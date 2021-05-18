@@ -1,8 +1,10 @@
 package com.example.eportfolio.service;
 
 import com.example.eportfolio.api.DeleteMethods;
+import com.example.eportfolio.dao.EduDao;
 import com.example.eportfolio.dao.FixedDataDao;
 import com.example.eportfolio.dao.UserDao;
+import com.example.eportfolio.dao.WorkDao;
 import com.example.eportfolio.model.*;
 import com.example.eportfolio.smtp.EmailService;
 import com.example.eportfolio.smtp.MailRequestModel;
@@ -21,7 +23,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 @Repository("postgres")
-public class PostgresService implements UserDao, FixedDataDao {
+public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao {
 
     @Autowired
     private EmailService service;
@@ -182,6 +184,7 @@ public class PostgresService implements UserDao, FixedDataDao {
             }
         }
     }
+
     @Override
     public List<User> getUsers() {
         final String sql = "SELECT * FROM users";
@@ -268,7 +271,7 @@ public class PostgresService implements UserDao, FixedDataDao {
 
     @Override
     public List<UserWork> getUserWorkByID(UUID ID) {
-        final String sql = "SELECT * FROM users_work WHERE user_uuid = ?";
+        final String sql = "SELECT * FROM user_work_profile WHERE user_uuid = ? ORDER BY work_time_start DESC";
 
         return jdbcTemplate.query(
                 sql,
@@ -277,14 +280,15 @@ public class PostgresService implements UserDao, FixedDataDao {
                     return new UserWork(
                             UUID.fromString(resultSet.getString("id")),
                             UUID.fromString(resultSet.getString("user_uuid")),
-                            resultSet.getInt("work_industry"),
-                            resultSet.getInt("work_type"),
+                            resultSet.getString("work_industry"),
+                            resultSet.getString("work_type"),
                             resultSet.getString("work_name"),
                             resultSet.getString("work_time_start"),
                             resultSet.getString("work_time_end"),
                             resultSet.getString("work_place"),
                             resultSet.getString("work_desc"),
-                            resultSet.getString("work_location")
+                            resultSet.getString("work_location"),
+                            resultSet.getString("work_profession")
                     );
                 }
         );
@@ -302,8 +306,8 @@ public class PostgresService implements UserDao, FixedDataDao {
                     return new UserEdu(
                             UUID.fromString(resultSet.getString("id")),
                             UUID.fromString(resultSet.getString("user_uuid")),
-                            resultSet.getInt("edu_spec"),
-                            resultSet.getInt("edu_type"),
+                            resultSet.getString("edu_spec"),
+                            resultSet.getString("edu_type"),
                             resultSet.getString("edu_name"),
                             resultSet.getString("edu_time_start"),
                             resultSet.getString("edu_time_end"),
@@ -420,21 +424,28 @@ public class PostgresService implements UserDao, FixedDataDao {
     }
 
     @Override
-    public int addUserEdu(UUID id, UserEdu userEdu) throws SQLException{
+    public int addUserEdu(Map addMap, UUID id) {
 
         final String sql = "INSERT INTO users_edu(id, user_uuid, edu_type, edu_name, edu_time_start, edu_time_end, edu_place, edu_desc, edu_spec)" +
                 " VALUES (uuid_generate_v4(), " +
                 "'" + id + "', "+
-                "'" + userEdu.getEdu_type() + "', "+
-                "'" + userEdu.getEdu_name() + "', "+
-                "'" + userEdu.getEdu_time_start() + "', "+
-                "'" + userEdu.getEdu_time_end() + "', "+
-                "'" + userEdu.getEdu_place() + "', "+
-                "'" + userEdu.getEdu_desc() + "', "+
-                "'" + userEdu.getEdu_spec() + "'" +
+                "'" + addMap.get("edu_type") + "', "+
+                "'" + addMap.get("edu_name") + "', "+
+                "'" + new Date((long)addMap.get("edu_time_start")) + "', "+
+                "'" + new Date((long)addMap.get("edu_time_end")) + "', "+
+                "'" + addMap.get("edu_place") + "', "+
+                "'" + addMap.get("edu_desc") + "', "+
+                "'" + addMap.get("edu_spec") + "'" +
                 ")";
-        jdbcTemplate.execute(sql);
-        return 1;
+        try {
+            jdbcTemplate.execute(sql);
+        } catch (DataAccessException dataAccessException) {
+            System.err.println("addUserEdu() error");
+            dataAccessException.printStackTrace();
+            return 1;
+        }
+
+        return 0;
     }
 
     @Override
@@ -474,22 +485,6 @@ public class PostgresService implements UserDao, FixedDataDao {
                 ); }
         );
 
-//        userProfileAll.setUserEduList(jdbcTemplate.query(
-//                "SELECT * FROM users_edu WHERE user_uuid = ?",
-//                new Object[] {id},
-//                (resultSet, i) -> { return new UserEdu(
-//                        UUID.fromString(resultSet.getString("id")),
-//                        UUID.fromString(resultSet.getString("user_uuid")),
-//                        resultSet.getInt("edu_spec"),
-//                        resultSet.getInt("edu_type"),
-//                        resultSet.getString("edu_name"),
-//                        resultSet.getString("edu_time_start"),
-//                        resultSet.getString("edu_time_end"),
-//                        resultSet.getString("edu_place"),
-//                        resultSet.getString("edu_desc")
-//                ); }
-//        ));
-
 //        userProfileAll.setUserWorkList(jdbcTemplate.query(
 //                "SELECT * FROM users_work WHERE user_uuid = ?",
 //                new Object[] {id},
@@ -519,6 +514,26 @@ public class PostgresService implements UserDao, FixedDataDao {
 //                        resultSet.getString("skill_name")
 //                ); }
 //        ));
+    }
+
+    @Override
+    public List<UserEdu> getUserEdu(UUID id) {
+
+        return jdbcTemplate.query(
+                "SELECT * FROM user_edu_profile WHERE user_uuid = ? ORDER BY edu_time_start DESC",
+                new Object[] {id},
+                (resultSet, i) -> { return new UserEdu(
+                        UUID.fromString(resultSet.getString("id")),
+                        UUID.fromString(resultSet.getString("user_uuid")),
+                        resultSet.getString("edu_spec"),
+                        resultSet.getString("edu_type"),
+                        resultSet.getString("edu_name"),
+                        resultSet.getString("edu_time_start"),
+                        resultSet.getString("edu_time_end"),
+                        resultSet.getString("edu_place"),
+                        resultSet.getString("edu_desc")
+                ); }
+        );
     }
 
     @Override
@@ -586,14 +601,15 @@ public class PostgresService implements UserDao, FixedDataDao {
             return new UserWork(
                     UUID.fromString(resultSet.getString("id")),
                     UUID.fromString(resultSet.getString("user_uuid")),
-                    resultSet.getInt("work_industry"),
-                    resultSet.getInt("work_type"),
+                    resultSet.getString("work_industry"),
+                    resultSet.getString("work_type"),
                     resultSet.getString("work_name"),
                     resultSet.getString("work_time_start"),
                     resultSet.getString("work_time_end"),
                     resultSet.getString("work_place"),
                     resultSet.getString("work_desc"),
-                    resultSet.getString("work_location")
+                    resultSet.getString("work_location"),
+                    resultSet.getString("work_profession")
             );
         });
         Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
@@ -621,45 +637,17 @@ public class PostgresService implements UserDao, FixedDataDao {
     }
 
     @Override
-    public int deleteUserEdu(UUID userUUID, UUID propertyUUID) throws SQLException{
+    public int deleteUserEdu(UUID id, UUID userId) throws SQLException{
 
-        final String sqlFirst = "SELECT * FROM users_edu WHERE user_uuid = '"+userUUID+"' AND id = '"+propertyUUID+"';";
-
-        List<UserEdu> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
-            return new UserEdu(
-                    UUID.fromString(resultSet.getString("id")),
-                    UUID.fromString(resultSet.getString("user_uuid")),
-                    resultSet.getInt("edu_spec"),
-                    resultSet.getInt("edu_type"),
-                    resultSet.getString("edu_name"),
-                    resultSet.getString("edu_time_start"),
-                    resultSet.getString("edu_time_end"),
-                    resultSet.getString("edu_place"),
-                    resultSet.getString("edu_desc")
-            );
-        });
-        Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
-
-        if (!listFind.isEmpty()) {
-            try {
-                conn.setAutoCommit(false);
-
-                DeleteMethods deleteMethods = new DeleteMethods();
-                conn.prepareStatement(deleteMethods.deleteUserPropertyFromTable("users_edu", propertyUUID)).executeUpdate();
-                conn.commit();
-                return 0;
-
-            } catch (SQLException e) {
-                conn.rollback();
-                e.printStackTrace();
-                System.err.println("delete useredu error - sql");
-                return 1;
-            }
+        try {
+            jdbcTemplate.update(
+                    "DELETE FROM users_edu WHERE user_uuid = ? AND id = ?",
+                    userId, id);
+        } catch(DataAccessException dataAccessException) {
+            return 1;
         }
-        else {
-            System.err.println("delete useredu error - no record");
-            return 2;
-        }
+
+        return 0;
     }
 
     @Override
@@ -698,111 +686,6 @@ public class PostgresService implements UserDao, FixedDataDao {
         }
         else {
             System.err.println("delete userskill error - no record");
-            return 2;
-        }
-    }
-
-    @Override
-    public int updateUserWork(UUID userUUID, UserWork userWork) throws SQLException {
-
-        final String sqlFirst = "SELECT * FROM users_work WHERE user_uuid = '"+userUUID+"' AND id = '"+userWork.getId()+"';";
-
-        List<UserWork> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
-            return new UserWork(
-                    UUID.fromString(resultSet.getString("id")),
-                    UUID.fromString(resultSet.getString("user_uuid")),
-                    resultSet.getInt("work_industry"),
-                    resultSet.getInt("work_type"),
-                    resultSet.getString("work_name"),
-                    resultSet.getString("work_time_start"),
-                    resultSet.getString("work_time_end"),
-                    resultSet.getString("work_place"),
-                    resultSet.getString("work_desc"),
-                    resultSet.getString("work_location")
-            );
-        });
-        System.out.println(listFind);
-        Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
-
-        if (!listFind.isEmpty()) {
-            try {
-                conn.setAutoCommit(false);
-
-                final String sqlUpdate = "UPDATE users_work SET" +
-                        " work_industry = '" + userWork.getWork_industry() +
-                        "', work_type = '" + userWork.getWork_type() +
-                        "', work_name = '" + userWork.getWork_name() +
-                        "', work_time_start = '" + userWork.getWork_time_start() +
-                        "', work_time_end = '" + userWork.getWork_time_end() +
-                        "', work_place = '" + userWork.getWork_place() +
-                        "', work_desc = '" + userWork.getWork_desc() +
-                        "', work_location = '" + userWork.getWork_location() +
-                        "' WHERE id = '" + userWork.getId() + "';";
-
-                conn.prepareStatement(sqlUpdate).executeUpdate();
-                conn.commit();
-                return 0;
-
-            } catch (SQLException e) {
-                conn.rollback();
-                e.printStackTrace();
-                System.err.println("update userwork error - sql");
-                return 1;
-            }
-        }
-        else {
-            System.err.println("update userwork error - no record");
-            return 2;
-        }
-    }
-
-    @Override
-    public int updateUserEdu(UUID userUUID, UserEdu userEdu) throws SQLException{
-
-        final String sqlFirst = "SELECT * FROM users_edu WHERE user_uuid = '"+userUUID+"' AND id = '"+userEdu.getId()+"';";
-
-        List<UserEdu> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
-            return new UserEdu(
-                    UUID.fromString(resultSet.getString("id")),
-                    UUID.fromString(resultSet.getString("user_uuid")),
-                    resultSet.getInt("edu_spec"),
-                    resultSet.getInt("edu_type"),
-                    resultSet.getString("edu_name"),
-                    resultSet.getString("edu_time_start"),
-                    resultSet.getString("edu_time_end"),
-                    resultSet.getString("edu_place"),
-                    resultSet.getString("edu_desc")
-            );
-        });
-        Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
-
-        if (!listFind.isEmpty()) {
-            try {
-                conn.setAutoCommit(false);
-
-                final String sqlUpdate = "UPDATE users_edu SET" +
-                        " edu_spec = '" + userEdu.getEdu_spec() +
-                        "', edu_type = '" + userEdu.getEdu_type() +
-                        "', edu_name = '" + userEdu.getEdu_name() +
-                        "', edu_time_start = '" + userEdu.getEdu_time_start() +
-                        "', edu_time_end = '" + userEdu.getEdu_time_end() +
-                        "', edu_place = '" + userEdu.getEdu_place() +
-                        "', edu_desc = '" + userEdu.getEdu_desc() +
-                        "' WHERE id = '" + userEdu.getId() + "';";
-
-                conn.prepareStatement(sqlUpdate).executeUpdate();
-                conn.commit();
-                return 0;
-
-            } catch (SQLException e) {
-                conn.rollback();
-                e.printStackTrace();
-                System.err.println("update useredu error - sql");
-                return 1;
-            }
-        }
-        else {
-            System.err.println("update useredu error - no record");
             return 2;
         }
     }
@@ -993,4 +876,33 @@ public class PostgresService implements UserDao, FixedDataDao {
 
     }
 
+    @Override
+    public EduData getEduData() {
+
+        EduData eduData = new EduData();
+        final String sqlEduType = "SELECT * FROM edu_type_data";
+        final String sqlEduSpec = "SELECT * FROM edu_spec_data";
+
+        eduData.setEduType(jdbcTemplate.queryForList(sqlEduType));
+        eduData.setEduSpec(jdbcTemplate.queryForList(sqlEduSpec));
+
+        return eduData;
+    }
+
+    @Override
+    public WorkData getWorkData() {
+
+        WorkData workData = new WorkData();
+        final String sqlWorkIndustry = "SELECT * FROM work_industry_data";
+        final String sqlWorkType = "SELECT * FROM work_type_data;";
+        final String sqlWorkProfessions = "SELECT * FROM work_professions;";
+        final String sqlLocations = "SELECT * FROM locations;";
+
+        workData.setWorkIndustry(jdbcTemplate.queryForList(sqlWorkIndustry));
+        workData.setWorkType(jdbcTemplate.queryForList(sqlWorkType));
+        workData.setWorkProfessions(jdbcTemplate.queryForList(sqlWorkProfessions));
+        workData.setLocations(jdbcTemplate.queryForList(sqlLocations));
+
+        return workData;
+    }
 }

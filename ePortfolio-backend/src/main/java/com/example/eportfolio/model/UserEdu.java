@@ -12,8 +12,8 @@ public class UserEdu {
 
     private final UUID id;
     private final UUID userID;
-    private final int edu_spec;
-    private final int edu_type;
+    private final String edu_spec;
+    private final String edu_type;
     private final String edu_name;
     private final String edu_time_start;
     private final String edu_time_end;
@@ -22,8 +22,8 @@ public class UserEdu {
 
     public UserEdu(@JsonProperty("id") UUID id,
                    @JsonProperty("userID") UUID userID,
-                   @JsonProperty("spec") int edu_spec,
-                   @JsonProperty("type") int edu_type,
+                   @JsonProperty("spec") String edu_spec,
+                   @JsonProperty("type") String edu_type,
                    @JsonProperty("name") String edu_name,
                    @JsonProperty("timeStart") String edu_time_start,
                    @JsonProperty("timeEnd") String edu_time_end,

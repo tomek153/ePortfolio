@@ -6,7 +6,7 @@ import Spinner from "react-bootstrap/Spinner";
 
 import Paper from '@material-ui/core/Paper';
 import LoadingElement from "../Other/loading-element";
-import EducationSingle from "./edu-single";
+import WorkSingle from "./work-single";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
@@ -14,14 +14,14 @@ import DatePicker from "react-datepicker";
 import Select from 'react-select';
 import ModalHeaderError from "../Modals/error-header";
 
-class EducationData extends Component {
+class WorkData extends Component {
     _isMounted = false;
 
     constructor() {
         super();
         this.state = {
-            edu: [],
-            edu_data: null,
+            work: [],
+            work_data: null,
             form_institution: "",
             form_type: null,
             form_name: "",
@@ -60,7 +60,7 @@ class EducationData extends Component {
             myHeaders.append('Authorization', localStorage.getItem("token"));
 
             const request = new Request(
-                'http://localhost:8080/api/users/profile/edu',
+                'http://localhost:8080/api/users/profile/work',
                 {
                     method: 'GET',
                     headers: myHeaders
@@ -82,7 +82,9 @@ class EducationData extends Component {
                             response.json()
                                 .then(data => {
                                     if (!data.error) {
-                                        this.state.edu = data;
+                                        this.state.work = data;
+
+                                        console.log(data);
 
                                         fetch(request_edu)
                                             .then(response => {
@@ -107,7 +109,7 @@ class EducationData extends Component {
                                                                     ["id", "name"].forEach(key => delete row[key]);
                                                                 });
 
-                                                                this.state.edu_data = data;
+                                                                this.state.work_data = data;
                                                                 this.setState({_dataLoaded: true});
 
                                                                 document.getElementById("eduInstitution_err").style.display = "none";
@@ -142,10 +144,10 @@ class EducationData extends Component {
         this._isMounted = false;
     }
     removeItem(index) {
-        let edu = this.state.edu;
+        let edu = this.state.work;
 
         edu.splice(index, 1);
-        this.state.edu = edu;
+        this.state.work = edu;
     }
     changeInstitution(event) {
         var value = event.target.value;
@@ -325,7 +327,7 @@ class EducationData extends Component {
                     <Paper className="paper-custom" elevation={1}>
                         <Row>
                             <Card className="paper-custom-header">
-                                <Card.Header className="card-header-custom">Edukacja</Card.Header>
+                                <Card.Header className="card-header-custom">Praca</Card.Header>
                                 {!this.state._dataLoaded
                                     ? <LoadingElement/>
                                     : <Card.Body>
@@ -345,14 +347,14 @@ class EducationData extends Component {
                                                 <Col xs={3}>
                                                     <Form.Group controlId="eduType">
                                                         <Form.Label className="profile-label">Typ<span className="text-error">*</span></Form.Label>
-                                                        <Select id="eduType" className="profile-fields" value={this.state.form_type} options={this.state.edu_data.eduType} placeholder="Wybierz..." onChange={this.changeType}/>
+                                                        <Select id="eduType" className="profile-fields" value={this.state.form_type} options={this.state.work_data.eduType} placeholder="Wybierz..." onChange={this.changeType}/>
                                                     </Form.Group>
                                                 </Col>
 
                                                 <Col xs={4}>
                                                     <Form.Group controlId="eduSpec">
                                                         <Form.Label className="profile-label">Dziedzina<span className="text-error">*</span></Form.Label>
-                                                        <Select id="eduSpec" className="profile-fields" value={this.state.form_spec} options={this.state.edu_data.eduSpec} placeholder="Wybierz..." onChange={this.changeSpec}/>
+                                                        <Select id="eduSpec" className="profile-fields" value={this.state.form_spec} options={this.state.work_data.eduSpec} placeholder="Wybierz..." onChange={this.changeSpec}/>
                                                     </Form.Group>
                                                 </Col>
                                             </Form.Row>
@@ -389,12 +391,12 @@ class EducationData extends Component {
 
                                             <Row style={{justifyContent: "center", marginTop: "20px"}}>
                                                 {this.state.edu_add_btn_load
-                                                ? <Button variant="primary" type="button" className="primary-button" disabled={true}>
-                                                    Ładowanie &nbsp;<Spinner animation="border" style={{width: "1.3rem", height: "1.3rem"}}/>
-                                                </Button>
-                                                : <Button variant="primary" type="button" className="primary-button" id="button-edu-edit-save" disabled={this.state.profile_button_save_disabled} onClick={this.addEdu.bind(this)}>
-                                                    Zapisz
-                                                </Button>
+                                                    ? <Button variant="primary" type="button" className="primary-button" disabled={true}>
+                                                        Ładowanie &nbsp;<Spinner animation="border" style={{width: "1.3rem", height: "1.3rem"}}/>
+                                                    </Button>
+                                                    : <Button variant="primary" type="button" className="primary-button" id="button-edu-edit-save" disabled={this.state.profile_button_save_disabled} onClick={this.addEdu.bind(this)}>
+                                                        Zapisz
+                                                    </Button>
                                                 }
                                                 <Button variant="light" id="button-edu-edit-close" onClick={this.hideForm.bind(this)}>
                                                     Anuluj
@@ -408,7 +410,7 @@ class EducationData extends Component {
                                             </Button>
                                         </Row>
 
-                                        {this.state.edu.map((edu, index) => <EducationSingle data={edu} index={index} delete={this.removeItem.bind(this)}/>)}
+                                        {this.state.work.map((edu, index) => <WorkSingle data={edu} index={index} delete={this.removeItem.bind(this)}/>)}
                                     </Card.Body>
                                 }
                             </Card>
@@ -421,4 +423,4 @@ class EducationData extends Component {
     }
 }
 
-export default EducationData;
+export default WorkData;

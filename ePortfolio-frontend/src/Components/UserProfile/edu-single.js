@@ -58,8 +58,14 @@ class EducationSingle extends Component {
         const row_group = {
             marginBottom: "0px"
         };
+
         const row_group_title = {
             fontWeight: 600
+        };
+
+        const data_text = {
+            padding: ".375rem 0",
+            margin: "0"
         };
 
         return (
@@ -70,51 +76,51 @@ class EducationSingle extends Component {
                         <Card className="profile-card-data">
                             <Card.Body>
                                 <Form.Group style={row_group} as={Row}>
-                                    <Form.Label style={row_group_title} column sm="2">
+                                    <Form.Label style={row_group_title} column sm="3">
                                         Instytucja:
                                     </Form.Label>
-                                    <Col sm="10">
-                                        <Form.Control plaintext readOnly defaultValue={this.props.data.edu_place} />
+                                    <Col sm="9">
+                                        <p style={data_text}>{this.props.data.edu_place}</p>
                                     </Col>
                                 </Form.Group>
                                 <Form.Group style={row_group} as={Row}>
-                                    <Form.Label style={row_group_title} column sm="2">
+                                    <Form.Label style={row_group_title} column sm="3">
                                         Typ:
                                     </Form.Label>
-                                    <Col sm="10">
-                                        <Form.Control plaintext readOnly defaultValue={this.props.data.edu_type} />
+                                    <Col sm="9">
+                                        <p style={data_text}>{this.props.data.edu_type}</p>
                                     </Col>
                                 </Form.Group>
                                 <Form.Group style={row_group} as={Row}>
-                                    <Form.Label style={row_group_title} column sm="2">
+                                    <Form.Label style={row_group_title} column sm="3">
                                         Dziedzina:
                                     </Form.Label>
-                                    <Col sm="10">
-                                        <Form.Control plaintext readOnly defaultValue={this.props.data.edu_spec} />
+                                    <Col sm="9">
+                                        <p style={data_text}>{this.props.data.edu_spec}</p>
                                     </Col>
                                 </Form.Group>
                                 <Form.Group style={row_group} as={Row}>
-                                    <Form.Label style={row_group_title} column sm="2">
+                                    <Form.Label style={row_group_title} column sm="3">
                                         Czas rozpoczęcia:
                                     </Form.Label>
-                                    <Col sm="10">
-                                        <Form.Control plaintext readOnly defaultValue={this.props.data.edu_time_start} />
+                                    <Col sm="9">
+                                        <p style={data_text}>{this.props.data.edu_time_start}</p>
                                     </Col>
                                 </Form.Group>
                                 <Form.Group style={row_group} as={Row}>
-                                    <Form.Label style={row_group_title} column sm="2">
+                                    <Form.Label style={row_group_title} column sm="3">
                                         Czas zakończenia:
                                     </Form.Label>
-                                    <Col sm="10">
-                                        <Form.Control plaintext readOnly defaultValue={this.props.data.edu_time_end} />
+                                    <Col sm="9">
+                                        <p style={data_text}>{this.props.data.edu_time_end}</p>
                                     </Col>
                                 </Form.Group>
                                 <Form.Group style={row_group} as={Row}>
-                                    <Form.Label style={row_group_title} column sm="2">
+                                    <Form.Label style={row_group_title} column sm="3">
                                         Opis:
                                     </Form.Label>
-                                    <Col sm="10">
-                                        <Form.Control plaintext readOnly defaultValue={this.props.data.edu_desc} />
+                                    <Col sm="9">
+                                        <p style={data_text}>{this.props.data.edu_desc}</p>
                                     </Col>
                                 </Form.Group>
                                 <Button variant="link" className="profile-remove-button" onClick={this.removeItem.bind(this)}>

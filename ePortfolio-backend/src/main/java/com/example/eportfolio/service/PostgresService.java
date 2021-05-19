@@ -405,22 +405,31 @@ public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao {
     }
 
     @Override
-    public int addUserWork(UUID id, UserWork userWork) throws SQLException{
+    public int addUserWork(Map workMap, UUID id) {
 
-        final String sql = "INSERT INTO users_work(id, user_uuid, work_type, work_name, work_time_start, work_time_end, work_place, work_desc, work_industry, work_location)" +
+        final String sql = "INSERT INTO users_work(id, user_uuid, work_type, work_name, work_time_start, work_time_end, work_place, work_desc, work_industry, work_location, work_profession)" +
                 " VALUES (uuid_generate_v4(), " +
                 "'" + id + "', "+
-                "'" + userWork.getWork_type() + "', "+
-                "'" + userWork.getWork_name() + "', "+
-                "'" + userWork.getWork_time_start() + "', "+
-                "'" + userWork.getWork_time_end() + "', "+
-                "'" + userWork.getWork_place() + "', "+
-                "'" + userWork.getWork_desc() + "', "+
-                "'" + userWork.getWork_industry() + "', "+
-                "'" + userWork.getWork_location() + "'" +
+                "'" + workMap.get("work_type") + "', "+
+                "'" + workMap.get("work_name") + "', "+
+                "'" + new Date((long)workMap.get("work_start_date")) + "', "+
+                "'" + new Date((long)workMap.get("work_end_date")) + "', "+
+                "'" + workMap.get("work_place") + "', "+
+                "'" + workMap.get("work_description") + "', "+
+                "'" + workMap.get("work_industry") + "', " +
+                "'" + workMap.get("work_location") + "', " +
+                "'" + workMap.get("work_profession") + "'" +
                 ")";
-        jdbcTemplate.execute(sql);
-        return 1;
+
+        try {
+            jdbcTemplate.execute(sql);
+        } catch (DataAccessException dataAccessException) {
+            System.err.println("addUserWork() error");
+            dataAccessException.printStackTrace();
+            return 1;
+        }
+
+        return 0;
     }
 
     @Override
@@ -593,51 +602,21 @@ public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao {
     }
 
     @Override
-    public int deleteUserWork(UUID userUUID, UUID propertyUUID) throws SQLException{
+    public int deleteUserWork(UUID id, UUID userId) {
 
-        final String sqlFirst = "SELECT * FROM users_work WHERE user_uuid = '"+userUUID+"' AND id = '"+propertyUUID+"';";
-
-        List<UserWork> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
-            return new UserWork(
-                    UUID.fromString(resultSet.getString("id")),
-                    UUID.fromString(resultSet.getString("user_uuid")),
-                    resultSet.getString("work_industry"),
-                    resultSet.getString("work_type"),
-                    resultSet.getString("work_name"),
-                    resultSet.getString("work_time_start"),
-                    resultSet.getString("work_time_end"),
-                    resultSet.getString("work_place"),
-                    resultSet.getString("work_desc"),
-                    resultSet.getString("work_location"),
-                    resultSet.getString("work_profession")
-            );
-        });
-        Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
-
-        if (!listFind.isEmpty()) {
-            try {
-                conn.setAutoCommit(false);
-
-                DeleteMethods deleteMethods = new DeleteMethods();
-                conn.prepareStatement(deleteMethods.deleteUserPropertyFromTable("users_work", propertyUUID)).executeUpdate();
-                conn.commit();
-                return 0;
-
-            } catch (SQLException e) {
-                conn.rollback();
-                e.printStackTrace();
-                System.err.println("delete userwork error - sql");
-                return 1;
-            }
+        try {
+            jdbcTemplate.update(
+                    "DELETE FROM users_work WHERE user_uuid = ? AND id = ?",
+                    userId, id);
+        } catch(DataAccessException dataAccessException) {
+            return 1;
         }
-        else {
-            System.err.println("delete userwork error - no record");
-            return 2;
-        }
+
+        return 0;
     }
 
     @Override
-    public int deleteUserEdu(UUID id, UUID userId) throws SQLException{
+    public int deleteUserEdu(UUID id, UUID userId) {
 
         try {
             jdbcTemplate.update(

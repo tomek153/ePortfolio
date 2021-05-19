@@ -47,9 +47,9 @@ public interface UserDao {
     // DELETE USER METHODS -START-
     int deleteUser(UUID id) throws SQLException;
 
-    int deleteUserWork(UUID userID, UUID propertyID) throws SQLException;
+    int deleteUserWork(UUID id, UUID userId);
 
-    int deleteUserEdu(UUID userID, UUID propertyID) throws SQLException;
+    int deleteUserEdu(UUID id, UUID userId);
 
     int deleteUserSkill(UUID userID, UUID propertyID) throws SQLException;
     // DELETE USER METHODS -END-
@@ -62,7 +62,7 @@ public interface UserDao {
 
 
     // ADD USER PROPERTIES -START-
-    int addUserWork(UUID id, UserWork userWork) throws SQLException;
+    int addUserWork(Map workMap, UUID id);
 
     int addUserEdu(Map addMap, UUID id);
 

@@ -13,6 +13,7 @@ import Col from "react-bootstrap/Col";
 import DatePicker from "react-datepicker";
 import Select from 'react-select';
 import ModalHeaderError from "../Modals/error-header";
+import MenuList from "../Other/custom-select-fast";
 
 class WorkData extends Component {
     _isMounted = false;
@@ -22,21 +23,25 @@ class WorkData extends Component {
         this.state = {
             work: [],
             work_data: null,
-            form_institution: "",
+            form_place: "",
+            form_location: null,
+            form_industry: null,
             form_type: null,
+            form_profession: null,
             form_name: "",
-            form_spec: null,
             form_start_date: "",
             form_end_date: "",
             form_description: "",
             form_display: "none",
 
-            status_institution: false,
+            status_place: false,
+            status_location: false,
+            status_industry: false,
             status_type: false,
-            status_spec: false,
+            status_profession: false,
             status_start_date: false,
             status_end_date: false,
-            status_description: true,
+            status_description: false,
 
             _dataLoaded: false,
             profile_button_add: "block",
@@ -67,8 +72,8 @@ class WorkData extends Component {
                 }
             );
 
-            const request_edu = new Request(
-                'http://localhost:8080/api/edu/data',
+            const request_work = new Request(
+                'http://localhost:8080/api/work/data',
                 {
                     method: 'GET',
                     headers: myHeaders
@@ -84,16 +89,14 @@ class WorkData extends Component {
                                     if (!data.error) {
                                         this.state.work = data;
 
-                                        console.log(data);
-
-                                        fetch(request_edu)
+                                        fetch(request_work)
                                             .then(response => {
                                                 if (response.status === 200) {
                                                     response.json()
                                                         .then(data => {
                                                             if (!data.error) {
 
-                                                                (data.eduType).forEach((row) => {
+                                                                (data.locations).forEach((row) => {
                                                                     Object.defineProperties(row, {
                                                                         "value": Object.getOwnPropertyDescriptor(row, "id"),
                                                                         "label": Object.getOwnPropertyDescriptor(row, "name")
@@ -101,7 +104,23 @@ class WorkData extends Component {
                                                                     ["id", "name"].forEach(key => delete row[key]);
                                                                 });
 
-                                                                (data.eduSpec).forEach((row) => {
+                                                                (data.workIndustry).forEach((row) => {
+                                                                    Object.defineProperties(row, {
+                                                                        "value": Object.getOwnPropertyDescriptor(row, "id"),
+                                                                        "label": Object.getOwnPropertyDescriptor(row, "name")
+                                                                    });
+                                                                    ["id", "name"].forEach(key => delete row[key]);
+                                                                });
+
+                                                                (data.workProfessions).forEach((row) => {
+                                                                    Object.defineProperties(row, {
+                                                                        "value": Object.getOwnPropertyDescriptor(row, "id"),
+                                                                        "label": Object.getOwnPropertyDescriptor(row, "name")
+                                                                    });
+                                                                    ["id", "name"].forEach(key => delete row[key]);
+                                                                });
+
+                                                                (data.workType).forEach((row) => {
                                                                     Object.defineProperties(row, {
                                                                         "value": Object.getOwnPropertyDescriptor(row, "id"),
                                                                         "label": Object.getOwnPropertyDescriptor(row, "name")
@@ -112,8 +131,8 @@ class WorkData extends Component {
                                                                 this.state.work_data = data;
                                                                 this.setState({_dataLoaded: true});
 
-                                                                document.getElementById("eduInstitution_err").style.display = "none";
-                                                                document.getElementById("eduDescription_err").style.display = "none";
+                                                                document.getElementById("workPlace_err").style.display = "none";
+                                                                document.getElementById("workDescription_err").style.display = "none";
                                                             } else {
                                                                 localStorage.removeItem("token");
                                                                 window.location.replace('/logowanie');
@@ -144,28 +163,44 @@ class WorkData extends Component {
         this._isMounted = false;
     }
     removeItem(index) {
-        let edu = this.state.work;
+        let work = this.state.work;
 
-        edu.splice(index, 1);
-        this.state.work = edu;
+        work.splice(index, 1);
+        this.state.work = work;
     }
-    changeInstitution(event) {
+    changePlace(event) {
         var value = event.target.value;
         var regex = /[^a-zA-ZżźćńółęąśŻŹĆĄŚĘŁÓŃ. -]/;
 
-        this.state.form_institution = value;
+        this.state.form_place = value;
 
         if (value.match(regex) == null &&
-            value.length >= 5 &&
-            value.length <= 60) {
-            this.setState({status_institution: true});
-            this.state.status_institution = true;
-            document.getElementById("eduInstitution_err").style.display = "none";
+            value.length >= 2 &&
+            value.length <= 70) {
+            this.setState({status_place: true});
+            this.state.status_place = true;
+            document.getElementById("workPlace_err").style.display = "none";
         } else {
-            this.setState({status_institution: false});
-            this.state.status_institution = false;
-            document.getElementById("eduInstitution_err").style.display = "block";
+            this.setState({status_place: false});
+            this.state.status_place = false;
+            document.getElementById("workPlace_err").style.display = "block";
         }
+
+        this.checkStatuses();
+    }
+    changeLocation = (selected) => {
+        this.setState({form_location: selected});
+        this.state.form_location = selected;
+        this.setState({status_location: true});
+        this.state.status_location = true;
+
+        this.checkStatuses();
+    }
+    changeIndustry = (selected) => {
+        this.setState({form_industry: selected});
+        this.state.form_industry = selected;
+        this.setState({status_industry: true});
+        this.state.status_industry = true;
 
         this.checkStatuses();
     }
@@ -177,11 +212,11 @@ class WorkData extends Component {
 
         this.checkStatuses();
     }
-    changeSpec = (selected) => {
-        this.setState({form_spec: selected});
-        this.state.form_spec = selected;
-        this.setState({status_spec: true});
-        this.state.status_spec = true;
+    changeProfession = (selected) => {
+        this.setState({form_profession: selected});
+        this.state.form_profession = selected;
+        this.setState({status_profession: true});
+        this.state.status_profession = true;
 
         this.checkStatuses();
     }
@@ -205,28 +240,31 @@ class WorkData extends Component {
     }
     changeDescription(event) {
         var value = event.target.value;
-        var regex = /[^a-zA-ZżźćńółęąśŻŹĆĄŚĘŁÓŃ0-9. -]/;
+        var regex = /[^a-zA-ZżźćńółęąśŻŹĆĄŚĘŁÓŃ0-9., -]/;
 
         this.state.form_description = value;
 
         if ((value.match(regex) == null &&
             value.length >= 5 &&
-            value.length <= 600) || value.length === 0) {
+            value.length <= 1000) || value.length === 0) {
             this.setState({status_description: true});
             this.state.status_description = true;
-            document.getElementById("eduDescription_err").style.display = "none";
+            document.getElementById("workDescription_err").style.display = "none";
         } else {
             this.setState({status_description: false});
             this.state.status_description = false;
-            document.getElementById("eduDescription_err").style.display = "block";
+            document.getElementById("workDescription_err").style.display = "block";
         }
 
         this.checkStatuses();
     }
     checkStatuses() {
-        if (this.state.status_institution &&
+
+        if (this.state.status_place &&
+            this.state.status_location &&
+            this.state.status_industry &&
             this.state.status_type &&
-            this.state.status_spec &&
+            this.state.status_profession &&
             this.state.status_start_date &&
             this.state.status_end_date &&
             this.state.status_description) {
@@ -245,31 +283,33 @@ class WorkData extends Component {
         this.setState({profile_button_add: "block"});
         this.clearForm();
     }
-    addEdu() {
+    addWork() {
         if (!this.state.profile_button_save_disabled) {
 
             this.setState({edu_add_btn_load: true});
-            var newEdu = {
-                edu_place: this.state.form_institution,
-                edu_type: this.state.form_type.value,
-                edu_name: this.state.form_name,
-                edu_spec: this.state.form_spec.value,
-                edu_desc: this.state.form_description,
-                edu_time_start: Date.parse(this.state.form_start_date),
-                edu_time_end: Date.parse(this.state.form_end_date)
+
+            var newWork = {
+                work_place: this.state.form_place,
+                work_location: this.state.form_location.value,
+                work_industry: this.state.form_industry.value,
+                work_type: this.state.form_type.value,
+                work_profession: this.state.form_profession.value,
+                work_name: this.state.form_name,
+                work_start_date: Date.parse(this.state.form_start_date),
+                work_end_date: Date.parse(this.state.form_end_date),
+                work_description: this.state.form_description
             }
-            console.log(newEdu);
 
             var myHeaders = new Headers();
             myHeaders.append('Content-Type', 'application/json');
             myHeaders.append('Authorization', localStorage.getItem("token"));
 
             const request = new Request(
-                'http://localhost:8080/api/users/add/edu',
+                'http://localhost:8080/api/users/add/work',
                 {
                     method: 'POST',
                     headers: myHeaders,
-                    body: JSON.stringify(newEdu)
+                    body: JSON.stringify(newWork)
                 }
             );
 
@@ -278,11 +318,10 @@ class WorkData extends Component {
                     if (response.status === 200) {
                         response.json()
                             .then(data => {
-                                console.log(data);
                                 this.setState({edu_add_btn_load: false});
                                 this.hideForm();
-                                this.setState({edu: []});
-                                this.setState({edu: data});
+                                this.setState({work: []});
+                                this.setState({work: data});
                                 this.hideForm();
                             });
                     } else if (response.status === 400 && (response.message === "token_invalid" || response.message === "token_expired")) {
@@ -297,37 +336,43 @@ class WorkData extends Component {
         }
     }
     clearForm() {
-        this.setState({form_institution: ""});
-        this.setState({form_type: ""});
-        this.setState({form_spec: ""});
+        this.setState({form_place: ""});
+        this.setState({form_location: null});
+        this.state.form_location = null;
+        this.setState({form_industry: null});
+        this.state.form_industry = null;
+        this.setState({form_type: null});
+        this.state.form_type = null;
+        this.setState({form_profession: null});
+        this.state.form_profession = null;
+        this.setState({form_name: ""});
         this.setState({form_start_date: ""});
         this.setState({form_end_date: ""});
         this.setState({form_description: ""});
         this.setState({form_display: "none"});
 
-        this.setState({status_institution: false});
+        this.setState({status_place: false});
+        this.setState({status_location: false});
+        this.setState({status_industry: false});
         this.setState({status_type: false});
-        this.setState({status_spec: false});
+        this.setState({status_profession: false});
         this.setState({status_start_date: false});
         this.setState({status_end_date: false});
-        this.setState({status_description: true});
+        this.setState({status_description: false});
 
-        document.getElementById("eduInstitution").value = "";
-        document.getElementById("eduDescription").value = "";
-        this.setState({form_type: null});
-        this.state.form_type = null;
-        this.setState({form_spec: null});
-        this.state.form_spec = null;
+        document.getElementById("workPlace").value = "";
+        document.getElementById("workDescription").value = "";
     }
 
     render() {
+
         return (
             <>
                 <Container>
                     <Paper className="paper-custom" elevation={1}>
                         <Row>
                             <Card className="paper-custom-header">
-                                <Card.Header className="card-header-custom">Praca</Card.Header>
+                                <Card.Header className="card-header-custom">Doświadczenie</Card.Header>
                                 {!this.state._dataLoaded
                                     ? <LoadingElement/>
                                     : <Card.Body>
@@ -336,50 +381,69 @@ class WorkData extends Component {
                                                 <Form.Label className="profile-label-section">Dodaj nową pozycję</Form.Label>
                                             </Form.Row>
                                             <Form.Row>
-                                                <Form.Group as={Col} controlId="eduInstitution">
-                                                    <Form.Label className="profile-label">Instytucja<span className="text-error">*</span></Form.Label>
-                                                    <Form.Control className="profile-fields" autoComplete="off" onChange={this.changeInstitution.bind(this)}/>
-                                                    <Form.Text className="text-muted text-error" id="eduInstitution_err">
+                                                <Form.Group as={Col} controlId="workPlace">
+                                                    <Form.Label className="profile-label">Firma<span className="text-error">*</span></Form.Label>
+                                                    <Form.Control className="profile-fields" autoComplete="off" onChange={this.changePlace.bind(this)}/>
+                                                    <Form.Text className="text-muted text-error" id="workPlace_err">
                                                         Podano nieprawidłową wartość.
                                                     </Form.Text>
                                                 </Form.Group>
 
                                                 <Col xs={3}>
-                                                    <Form.Group controlId="eduType">
-                                                        <Form.Label className="profile-label">Typ<span className="text-error">*</span></Form.Label>
-                                                        <Select id="eduType" className="profile-fields" value={this.state.form_type} options={this.state.work_data.eduType} placeholder="Wybierz..." onChange={this.changeType}/>
+                                                    <Form.Group controlId="workLocation">
+                                                        <Form.Label className="profile-label">Lokalizacja<span className="text-error">*</span></Form.Label>
+                                                        <Select id="workLocation" className="profile-fields"
+                                                            components={{ MenuList }}
+                                                            value={this.state.form_location}
+                                                            options={this.state.work_data.locations}
+                                                            onChange={this.changeLocation}
+                                                        />
                                                     </Form.Group>
                                                 </Col>
 
                                                 <Col xs={4}>
-                                                    <Form.Group controlId="eduSpec">
-                                                        <Form.Label className="profile-label">Dziedzina<span className="text-error">*</span></Form.Label>
-                                                        <Select id="eduSpec" className="profile-fields" value={this.state.form_spec} options={this.state.work_data.eduSpec} placeholder="Wybierz..." onChange={this.changeSpec}/>
+                                                    <Form.Group controlId="workIndustry">
+                                                        <Form.Label className="profile-label">Branża<span className="text-error">*</span></Form.Label>
+                                                        <Select id="workIndustry" className="profile-fields" value={this.state.form_industry} options={this.state.work_data.workIndustry} placeholder="Wybierz..." onChange={this.changeIndustry}/>
                                                     </Form.Group>
                                                 </Col>
                                             </Form.Row>
 
                                             <Form.Row>
-                                                <Col xs={5}>
-                                                    <Form.Group>
-                                                        <Form.Label>Data rozpoczęcia<span className="text-error">*</span></Form.Label>
-                                                        <DatePicker id="eduStartDate" className="form-control profile-fields" autoComplete="off" selected={this.state.form_start_date} onChange={this.changeStartDate.bind(this)}/>
+                                                <Col xs={4}>
+                                                    <Form.Group controlId="workType">
+                                                        <Form.Label className="profile-label">Typ zatrudnienia<span className="text-error">*</span></Form.Label>
+                                                        <Select id="workType" className="profile-fields" value={this.state.form_type} options={this.state.work_data.workType} placeholder="Wybierz..." onChange={this.changeType}/>
                                                     </Form.Group>
                                                 </Col>
 
-                                                <Col xs={5}>
+                                                <Col xs={4}>
+                                                    <Form.Group controlId="workProfession">
+                                                        <Form.Label className="profile-label">Stanowisko<span className="text-error">*</span></Form.Label>
+                                                        <Select id="workProfession" className="profile-fields" value={this.state.form_profession} options={this.state.work_data.workProfessions} placeholder="Wybierz..." onChange={this.changeProfession}/>
+                                                    </Form.Group>
+                                                </Col>
+
+                                                <Col xs={2}>
+                                                    <Form.Group>
+                                                        <Form.Label>Data rozpoczęcia<span className="text-error">*</span></Form.Label>
+                                                        <DatePicker id="workStartDate" className="form-control profile-fields" autoComplete="off" selected={this.state.form_start_date} onChange={this.changeStartDate.bind(this)}/>
+                                                    </Form.Group>
+                                                </Col>
+
+                                                <Col xs={2}>
                                                     <Form.Group>
                                                         <Form.Label>Data ukończena<span className="text-error">*</span></Form.Label>
-                                                        <DatePicker id="eduEndDate" className="form-control profile-fields" autoComplete="off" selected={this.state.form_end_date} onChange={this.changeEndDate.bind(this)}/>
+                                                        <DatePicker id="workEndDate" className="form-control profile-fields" autoComplete="off" selected={this.state.form_end_date} onChange={this.changeEndDate.bind(this)}/>
                                                     </Form.Group>
                                                 </Col>
                                             </Form.Row>
 
 
-                                            <Form.Group controlId="eduDescription">
-                                                <Form.Label className="profile-label">Opis</Form.Label>
-                                                <Form.Control as="textarea" className="profile-fields" autoComplete="off" onChange={this.changeDescription.bind(this)}/>
-                                                <Form.Text className="text-muted text-error" id="eduDescription_err">
+                                            <Form.Group controlId="workDescription">
+                                                <Form.Label className="profile-label">Zakres obowiązków<span className="text-error">*</span></Form.Label>
+                                                <Form.Control as="textarea" className="profile-fields" autoComplete="off" onChange={this.changeDescription.bind(this)} rows={3}/>
+                                                <Form.Text className="text-muted text-error" id="workDescription_err">
                                                     Podano nieprawidłową wartość.
                                                 </Form.Text>
                                             </Form.Group>
@@ -394,7 +458,7 @@ class WorkData extends Component {
                                                     ? <Button variant="primary" type="button" className="primary-button" disabled={true}>
                                                         Ładowanie &nbsp;<Spinner animation="border" style={{width: "1.3rem", height: "1.3rem"}}/>
                                                     </Button>
-                                                    : <Button variant="primary" type="button" className="primary-button" id="button-edu-edit-save" disabled={this.state.profile_button_save_disabled} onClick={this.addEdu.bind(this)}>
+                                                    : <Button variant="primary" type="button" className="primary-button" id="button-edu-edit-save" disabled={this.state.profile_button_save_disabled} onClick={this.addWork.bind(this)}>
                                                         Zapisz
                                                     </Button>
                                                 }
@@ -410,7 +474,7 @@ class WorkData extends Component {
                                             </Button>
                                         </Row>
 
-                                        {this.state.work.map((edu, index) => <WorkSingle data={edu} index={index} delete={this.removeItem.bind(this)}/>)}
+                                        {this.state.work.map((work, index) => <WorkSingle data={work} index={index} delete={this.removeItem.bind(this)}/>)}
                                     </Card.Body>
                                 }
                             </Card>

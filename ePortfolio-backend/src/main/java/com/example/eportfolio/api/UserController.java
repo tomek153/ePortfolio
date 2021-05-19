@@ -453,40 +453,29 @@ public class UserController {
     }
 
     @RequestMapping (value = "/api/users/add/work", method = POST)
-    public void addUserWork (@Valid @NonNull @RequestBody UserWork userWork, HttpServletResponse response, HttpServletRequest request) throws IOException {
-        Map<String, Object> profileMap = new HashMap<>();
+    public void addUserWork (@RequestBody Map workMap, HttpServletResponse response, HttpServletRequest request) throws IOException {
         String token = request.getHeader("Authorization");
-        String responseString = "";
-        int decryptionStatus = Login.checkJWT(token);
+        int decStatus = Login.checkJWT(token);
+
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
+        PrintWriter out = response.getWriter();
 
-        if (decryptionStatus == 0) {
-            Map<String, Claim> claims = Login.getClaims();
-
-            profileMap.put("id", claims.get("id").asString());
-            UUID userUUID = UUID.fromString(claims.get("id").asString());
-
-            try {
-                int result = userService.addUserWork(userUUID, userWork);
-                if( result == 1 ) { System.out.println("USERWORK ADDED"); }
-                else { response.sendError(400, "Bad request. Method not allowed."); }
-            } catch (SQLException e) {
-                e.printStackTrace();
-                response.sendError(400, "Bad request. Method not allowed.");
-            }
-
-
-        } else if (decryptionStatus == 2) {
-            response.sendError(400, "Token expired");
-        } else if (decryptionStatus == 1) {
-            response.sendError(400, "Token decryption error");
+        if (decStatus == 0) {
+            int addStatus = userService.addUserWork(workMap, UUID.fromString(Login.getClaims().get("id").asString()));
+            if (addStatus == 0) {
+                List<UserWork> userWorkList = userService.getUserWorkByID(UUID.fromString(Login.getClaims().get("id").asString()));
+                out.print(this.gson.toJson(userWorkList));
+            } else
+                response.sendError(405, "unknown_error");
+        } else if (decStatus == 1) {
+            response.sendError(400, "token_invalid");
+        } else if (decStatus == 2) {
+            response.sendError(400, "token_expired");
         } else {
-            response.sendError(400, "Unknown error");
+            response.sendError(405, "unknown_error");
         }
 
-        PrintWriter out = response.getWriter();
-        out.print(responseString);
         out.flush();
     }
 
@@ -555,47 +544,33 @@ public class UserController {
         out.flush();
     }
 
-    @RequestMapping (value = "/api/users/delete/work/{uuid}", method = DELETE)
-    public void deleteUserWork (@PathVariable ("uuid") UUID userWorkUUID, HttpServletResponse response, HttpServletRequest request) throws IOException {
-        Map<String, Object> profileMap = new HashMap<>();
-        String token = request.getHeader("Authorization");
-        String responseString = "";
-        int decryptionStatus = Login.checkJWT(token);
+    @RequestMapping (value = "/api/users/delete/work/{id}", method = DELETE)
+    public void deleteUserWork (@PathVariable ("id") UUID id, HttpServletResponse response, HttpServletRequest request) throws IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        if (decryptionStatus == 0) {
-            Map<String, Claim> claims = Login.getClaims();
+        String token = request.getHeader("Authorization");
+        int decStatus = Login.checkJWT(token);
+        PrintWriter out = response.getWriter();
 
-            profileMap.put("id", claims.get("id").asString());
-            UUID userUUID = UUID.fromString(claims.get("id").asString());
+        if (decStatus == 0) {
+            int delStatus = userService.deleteUserWork(id, UUID.fromString(Login.getClaims().get("id").asString()));
+            if (delStatus == 0)
+                out.print("deleted");
+            else
+                response.sendError(405, "unknown_error");
 
-            try {
-                int result = userService.deleteUserWork(userUUID, userWorkUUID);
-                if( result == 0 ) { System.out.println("DELETE OK"); }
-                else if( result == 2 ) { response.sendError(400, "Bad request. Delete not allowed. This UserWork does not exist");}
-                else { response.sendError(400, "Bad request. Delete not allowed."); }
-            } catch (SQLException e) {
-                e.printStackTrace();
-                response.sendError(400, "Bad request. Delete not allowed.");
-            }
-
-
-        } else if (decryptionStatus == 2) {
-            response.sendError(400, "Token expired");
-        } else if (decryptionStatus == 1) {
-            response.sendError(400, "Token decryption error");
+        } else if (decStatus == 1 || decStatus == 2) {
+            response.sendError(400, "token_invalid");
         } else {
-            response.sendError(400, "Unknown error");
+            response.sendError(405, "unknown_error");
         }
 
-        PrintWriter out = response.getWriter();
-        out.print(responseString);
         out.flush();
     }
 
     @RequestMapping (value = "/api/users/delete/edu/{id}", method = DELETE)
-    public void deleteUserEdu (@PathVariable ("id") UUID id, HttpServletResponse response, HttpServletRequest request) throws IOException, SQLException {
+    public void deleteUserEdu (@PathVariable ("id") UUID id, HttpServletResponse response, HttpServletRequest request) throws IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
@@ -642,45 +617,6 @@ public class UserController {
             } catch (SQLException e) {
                 e.printStackTrace();
                 response.sendError(400, "Bad request. Delete not allowed.");
-            }
-
-
-        } else if (decryptionStatus == 2) {
-            response.sendError(400, "Token expired");
-        } else if (decryptionStatus == 1) {
-            response.sendError(400, "Token decryption error");
-        } else {
-            response.sendError(400, "Unknown error");
-        }
-
-        PrintWriter out = response.getWriter();
-        out.print(responseString);
-        out.flush();
-    }
-
-    @RequestMapping (value = "/api/users/edit/work", method = PUT)
-    public void updateUserWork (@Valid @RequestBody UserWork userWork, HttpServletResponse response, HttpServletRequest request) throws IOException {
-        Map<String, Object> profileMap = new HashMap<>();
-        String token = request.getHeader("Authorization");
-        String responseString = "";
-        int decryptionStatus = Login.checkJWT(token);
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-
-        if (decryptionStatus == 0) {
-            Map<String, Claim> claims = Login.getClaims();
-
-            profileMap.put("id", claims.get("id").asString());
-            UUID userUUID = UUID.fromString(claims.get("id").asString());
-
-            try {
-                int result = userService.updateUserWork(userUUID, userWork);
-                if( result == 0 ) { System.out.println("UPDATE OK"); }
-                else if( result == 2 ) { response.sendError(400, "Bad request. Update not allowed. This UserWork does not exist");}
-                else { response.sendError(400, "Bad request. Update not allowed."); }
-            } catch (SQLException e) {
-                e.printStackTrace();
-                response.sendError(400, "Bad request. Update not allowed.");
             }
 
 

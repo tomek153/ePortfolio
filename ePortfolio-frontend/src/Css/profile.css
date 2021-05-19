@@ -192,3 +192,6 @@ div.tooltip > .arrow::before {
 .react-datepicker-wrapper {
     width: 100%;
 }
+.select-option-div-fast:hover {
+    background-color: #DEEBFF;
+}

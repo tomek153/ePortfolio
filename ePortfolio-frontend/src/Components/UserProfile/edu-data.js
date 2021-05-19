@@ -325,7 +325,7 @@ class EducationData extends Component {
                     <Paper className="paper-custom" elevation={1}>
                         <Row>
                             <Card className="paper-custom-header">
-                                <Card.Header className="card-header-custom">Edukacja</Card.Header>
+                                <Card.Header className="card-header-custom">Wykształcenie</Card.Header>
                                 {!this.state._dataLoaded
                                     ? <LoadingElement/>
                                     : <Card.Body>

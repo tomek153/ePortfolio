@@ -5,6 +5,7 @@ import PersonalData from "./personal-data";
 import EducationData from "./edu-data";
 import FooterAuth from "../Other/footer-auth";
 import WorkData from "./work-data";
+import SkillData from "./skill-data";
 
 class UserProfile extends Component {
 
@@ -23,6 +24,9 @@ class UserProfile extends Component {
                 <br/>
                 <br/>
                 <WorkData/>
+                <br/>
+                <br/>
+                <SkillData/>
                 <FooterAuth/>
             </div>
         )

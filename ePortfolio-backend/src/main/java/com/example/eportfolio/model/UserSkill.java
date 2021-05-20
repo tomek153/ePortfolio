@@ -12,16 +12,16 @@ public class UserSkill {
 
     private final UUID id;
     private final UUID userID;
-    private final int skill_type;
+    private final String skill_type;
     private final int skill_time_months;
-    private final int skill_level;
+    private final String skill_level;
     private final String skill_name;
 
     public UserSkill(@JsonProperty("id") UUID id,
                      @JsonProperty("userID") UUID userID,
-                     @JsonProperty("type") int skill_type,
+                     @JsonProperty("type") String skill_type,
                      @JsonProperty("timeMonths") int skill_time_months,
-                     @JsonProperty("level") int skill_level,
+                     @JsonProperty("level") String skill_level,
                      @JsonProperty("name") String skill_name) {
         this.id = id;
         this.userID = userID;

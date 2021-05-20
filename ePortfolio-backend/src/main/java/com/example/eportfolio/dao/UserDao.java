@@ -51,7 +51,7 @@ public interface UserDao {
 
     int deleteUserEdu(UUID id, UUID userId);
 
-    int deleteUserSkill(UUID userID, UUID propertyID) throws SQLException;
+    int deleteUserSkill(UUID id, UUID userId);
     // DELETE USER METHODS -END-
 
     // CHANGE PASSWORD METHODS -START-
@@ -66,7 +66,7 @@ public interface UserDao {
 
     int addUserEdu(Map addMap, UUID id);
 
-    int addUserSkill(UUID id, UserSkill userSkill) throws SQLException;
+    int addUserSkill(Map addMap, UUID id);
     // ADD USER PROPERTIES -END-
 
     UserProfileAll getUserProfileAll(UUID id) throws SQLException;

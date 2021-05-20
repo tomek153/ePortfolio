@@ -118,7 +118,7 @@ CREATE TABLE IF NOT EXISTS users_skill (
     skill_type INTEGER NOT NULL,
     skill_name VARCHAR NOT NULL,
     skill_time_months INTEGER NOT NULL,
-    skill_level INTEGER NOT NULL,
+    skill_level VARCHAR NOT NULL,
     FOREIGN KEY (user_uuid) REFERENCES users (ID),
     FOREIGN KEY (skill_type) REFERENCES skill_type_data (ID)
 );

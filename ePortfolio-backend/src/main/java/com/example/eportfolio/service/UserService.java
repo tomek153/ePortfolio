@@ -71,7 +71,7 @@ public class UserService {
 
     public int deleteUserEdu(UUID id, UUID userId) { return userDao.deleteUserEdu(id, userId); }
 
-    public int deleteUserSkill(UUID userID, UUID propertyID) throws SQLException { return userDao.deleteUserSkill(userID, propertyID); }
+    public int deleteUserSkill(UUID id, UUID userId) { return userDao.deleteUserSkill(id, userId); }
     // DELETE USER METHODS -END-
 
     // CHANGE PASSWORD METHODS -START-
@@ -89,7 +89,7 @@ public class UserService {
 
     public int addUserEdu(Map addMap, UUID id) { return userDao.addUserEdu(addMap, id); }
 
-    public int addUserSkill(UUID id, UserSkill userSkill) throws SQLException { return userDao.addUserSkill(id, userSkill); }
+    public int addUserSkill(Map addMap, UUID id) { return userDao.addUserSkill(addMap, id); }
     // ADD USER PROPERTIES -END-
 
     public UserProfileAll getUserProfileAll(UUID id) throws SQLException { return userDao.getUserProfileAll(id); }

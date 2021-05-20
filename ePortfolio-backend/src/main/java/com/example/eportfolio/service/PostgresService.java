@@ -1,10 +1,7 @@
 package com.example.eportfolio.service;
 
 import com.example.eportfolio.api.DeleteMethods;
-import com.example.eportfolio.dao.EduDao;
-import com.example.eportfolio.dao.FixedDataDao;
-import com.example.eportfolio.dao.UserDao;
-import com.example.eportfolio.dao.WorkDao;
+import com.example.eportfolio.dao.*;
 import com.example.eportfolio.model.*;
 import com.example.eportfolio.smtp.EmailService;
 import com.example.eportfolio.smtp.MailRequestModel;
@@ -23,7 +20,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 @Repository("postgres")
-public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao {
+public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao, SkillDao {
 
     @Autowired
     private EmailService service;
@@ -321,7 +318,7 @@ public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao {
 
     @Override
     public List<UserSkill> getUserSkillByID(UUID ID) {
-        final String sql = "SELECT * FROM users_skill WHERE user_uuid = ?";
+        final String sql = "SELECT * FROM user_skill_profile WHERE user_uuid = ?";
 
         return jdbcTemplate.query(
                 sql,
@@ -330,9 +327,9 @@ public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao {
                     return new UserSkill(
                             UUID.fromString(resultSet.getString("id")),
                             UUID.fromString(resultSet.getString("user_uuid")),
-                            resultSet.getInt("skill_type"),
+                            resultSet.getString("skill_type"),
                             resultSet.getInt("skill_time_months"),
-                            resultSet.getInt("skill_level"),
+                            resultSet.getString("skill_level"),
                             resultSet.getString("skill_name")
                     );
                 }
@@ -458,18 +455,25 @@ public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao {
     }
 
     @Override
-    public int addUserSkill(UUID id, UserSkill userSkill) throws SQLException{
+    public int addUserSkill(Map addMap, UUID id) {
 
         final String sql = "INSERT INTO users_skill(id, user_uuid, skill_type, skill_name, skill_time_months, skill_level)" +
                 " VALUES (uuid_generate_v4(), " +
                 "'" + id + "', "+
-                "'" + userSkill.getSkill_type() + "', "+
-                "'" + userSkill.getSkill_name() + "', "+
-                "'" + userSkill.getSkill_time_months() + "', "+
-                "'" + userSkill.getSkill_level() + "'" +
+                "'" + addMap.get("skill_type") + "', "+
+                "'" + addMap.get("skill_name") + "', "+
+                "'" + addMap.get("skill_time") + "', "+
+                "'" + addMap.get("skill_level") + "'" +
                 ")";
-        jdbcTemplate.execute(sql);
-        return 1;
+        try {
+            jdbcTemplate.execute(sql);
+        } catch (DataAccessException dataAccessException) {
+            System.err.println("addUserSkill() error");
+            dataAccessException.printStackTrace();
+            return 1;
+        }
+
+        return 0;
     }
 
     @Override
@@ -630,43 +634,17 @@ public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao {
     }
 
     @Override
-    public int deleteUserSkill(UUID userUUID, UUID propertyUUID) throws SQLException{
+    public int deleteUserSkill(UUID id, UUID userId) {
 
-        final String sqlFirst = "SELECT * FROM users_skill WHERE user_uuid = '"+userUUID+"' AND id = '"+propertyUUID+"';";
-
-        List<UserSkill> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
-            return new UserSkill(
-                    UUID.fromString(resultSet.getString("id")),
-                    UUID.fromString(resultSet.getString("user_uuid")),
-                    resultSet.getInt("skill_type"),
-                    resultSet.getInt("skill_time_months"),
-                    resultSet.getInt("skill_level"),
-                    resultSet.getString("skill_name")
-            );
-        });
-        System.out.println(listFind);
-        Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
-
-        if (!listFind.isEmpty()) {
-            try {
-                conn.setAutoCommit(false);
-
-                DeleteMethods deleteMethods = new DeleteMethods();
-                conn.prepareStatement(deleteMethods.deleteUserPropertyFromTable("users_skill", propertyUUID)).executeUpdate();
-                conn.commit();
-                return 0;
-
-            } catch (SQLException e) {
-                conn.rollback();
-                e.printStackTrace();
-                System.err.println("delete userskill error - sql");
-                return 1;
-            }
+        try {
+            jdbcTemplate.update(
+                    "DELETE FROM users_skill WHERE user_uuid = ? AND id = ?",
+                    userId, id);
+        } catch(DataAccessException dataAccessException) {
+            return 1;
         }
-        else {
-            System.err.println("delete userskill error - no record");
-            return 2;
-        }
+
+        return 0;
     }
 
     @Override
@@ -678,9 +656,9 @@ public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao {
             return new UserSkill(
                     UUID.fromString(resultSet.getString("id")),
                     UUID.fromString(resultSet.getString("user_uuid")),
-                    resultSet.getInt("skill_type"),
+                    resultSet.getString("skill_type"),
                     resultSet.getInt("skill_time_months"),
-                    resultSet.getInt("skill_level"),
+                    resultSet.getString("skill_level"),
                     resultSet.getString("skill_name")
             );
         });
@@ -883,5 +861,16 @@ public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao {
         workData.setLocations(jdbcTemplate.queryForList(sqlLocations));
 
         return workData;
+    }
+
+    @Override
+    public SkillData getSkillData() {
+
+        SkillData skillData = new SkillData();
+        final String sqlSkillType = "SELECT * FROM skill_type_data";
+
+        skillData.setSkillType(jdbcTemplate.queryForList(sqlSkillType));
+
+        return skillData;
     }
 }

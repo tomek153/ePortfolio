@@ -195,22 +195,3 @@ div.tooltip > .arrow::before {
 .select-option-div-fast:hover {
     background-color: #DEEBFF;
 }
-.search-profile-image {
-    width: 205px;
-    position: relative;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 2px 8px -4px #000;
-    border: 5px solid #fff;
-}
-.search-profile-image-container {
-    /*background-color: red;*/
-    padding: 15px;
-    border-left: 1px solid red;
-}
-.search-profile-name {
-    /*background-color: #31b4cb;*/
-    padding: 0px 40px;
-    font-size: 2.5rem;
-}

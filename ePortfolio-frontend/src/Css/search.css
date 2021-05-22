@@ -42,4 +42,106 @@
     border: 1px solid #c7cacd;
     min-height: 68vh;
     box-shadow: 0 2px 6px -4px black;
+    overflow: hidden;
+
+}
+.search-profile-image {
+    width: 205px;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 2px 8px -4px #000;
+    border: 5px solid #fff;
+}
+.search-profile-image-container {
+    padding: 15px;
+}
+.search-profile-name {
+    padding: 0px 80px;
+    font-size: 2.5rem;
+}
+.search-profile-icon {
+    font-size: 1.5rem;
+    margin-right: 10px;
+}
+.search-profile-color-div {
+    position: absolute;
+    width: calc(100% + 30px);
+    height: 200px;
+    background: linear-gradient(to bottom right, #313131, #4c4c4c);
+    margin-left: -15px;
+}
+.search-profile-header-row {
+    color: #fff;
+}
+.search-profile-email:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+.search-profile-email > a {
+    color: #fff!important;
+}
+.search-profile-section-title {
+    background-color: #e4e4e4;
+    margin: 0 30px;
+    padding: 5px;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    text-align: center;
+    font-weight: 500;
+    font-style: italic;
+}
+.search-profile-section-text {
+    margin: 0 30px;
+    padding: 20px 0;
+}
+.search-profile-row-dates {
+    font-weight: 600;
+}
+.search-profile-row-main {
+    font-weight: 600;
+    text-transform: capitalize;
+    margin-bottom: 0;
+    font-size: 1.2rem;
+}
+.search-profile-row-spec {
+    font-size: 1.0rem;
+    text-transform: lowercase;
+}
+.search-profile-row-loc {
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+    text-transform: lowercase;
+    color: #777;
+}
+.search-profile-row-loc:first-line {
+    text-transform: capitalize!important;
+}
+.search-profile-row-spec:first-line {
+    text-transform: capitalize!important;
+}
+.search-profile-row-desc {
+    font-size: 1.0rem;
+}
+.search-profile-section-header {
+    font-size: 1.4rem;
+    font-weight: 500;
+    text-align: center;
+    width: 100%;
+}
+.search-profile-row-lang {
+    text-transform: capitalize;
+    font-weight: 500;
+    text-align: left;
+}
+.search-profile-row-circle {
+    margin: 0 3px;
+    color: #aaa;
+}
+.search-profile-row-circle.active {
+    color: #444;
+}
+.search-profile-section-text.center {
+    text-align: center;
 }

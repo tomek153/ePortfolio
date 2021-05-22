@@ -664,14 +664,15 @@ public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao, 
         userSearchingAll.setAddress_city(userBio.getAddress_city());
         userSearchingAll.setAddress_zip(userBio.getAddress_zip());
         userSearchingAll.setAddress_country(userBio.getAddress_country());
-        userSearchingAll.setDate_birth(userBio.getDate_birth());
+        if (userBio.getDate_birth() == null)
+            userSearchingAll.setDate_birth("");
+        else
+            userSearchingAll.setDate_birth(userBio.getDate_birth());
         userSearchingAll.setGender(userBio.getGender());
         userSearchingAll.setImage(userBio.getImage());
         userSearchingAll.setUserEduList(userEduList);
         userSearchingAll.setUserWorkList(userWorkList);
         userSearchingAll.setUserSkillList(userSkillList);
-
-        System.out.println(user);
 
         return userSearchingAll;
     }

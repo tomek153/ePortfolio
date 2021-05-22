@@ -35,9 +35,10 @@ class HomeHeader extends Component {
                         <Image src={LogoImage} className="logo-image"/>
                         <Navbar.Brand href="#home">ePortfolio</Navbar.Brand>
                         <Nav className="mr-auto">
-                            <Nav.Link href="#home">Home</Nav.Link>
-                            <Nav.Link href="#features">Features</Nav.Link>
-                            <Nav.Link href="#pricing">Pricing</Nav.Link>
+                            {this.props.activePage === "searching"
+                                ? <Nav.Link href="/wyszukiwarka" active disabled>Wyszukiwarka</Nav.Link>
+                                : <Nav.Link href="/wyszukiwarka">Wyszukiwarka</Nav.Link>
+                            }
                         </Nav>
                         <Form inline>
                             <FormControl type="text" placeholder="Search" className="mr-sm-2"/>
@@ -46,7 +47,10 @@ class HomeHeader extends Component {
                         <DropdownButton className="header-itmes" menuAlign="right" id="dropdown-menu-align-right"
                                         title={<Image src={this.props.userInfo.userInfo.image} roundedCircle style={{boxShadow: "0px 5px 5px -5px #000"}}/>}>
                             <Dropdown.Header>{this.props.userInfo.userInfo.firstName} {this.props.userInfo.userInfo.lastName}</Dropdown.Header>
-                            <Dropdown.Item eventKey="1" active disabled><i className="fas fa-user dropdown-icons"/>Profil</Dropdown.Item>
+                            {this.props.activePage === "profile"
+                                ? <Dropdown.Item eventKey="1" href="/moj-profil" active disabled><i className="fas fa-user dropdown-icons"/>Profil</Dropdown.Item>
+                                : <Dropdown.Item eventKey="1" href="/moj-profil"><i className="fas fa-user dropdown-icons"/>Profil</Dropdown.Item>
+                            }
                             <Dropdown.Item eventKey="2"><i
                                 className="fas fa-comment dropdown-icons"/>Wiadomości</Dropdown.Item>
                             <Dropdown.Item eventKey="3"><i

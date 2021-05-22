@@ -51,4 +51,13 @@ public class User {
         this.role = role;
         this.confirmed = confirmed;
     }
+    public User(UUID id,
+                String firstName,
+                String lastName,
+                String email) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+    }
 }

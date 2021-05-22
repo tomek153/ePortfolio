@@ -66,8 +66,8 @@ const getSmallImage = async (imageSrc) => {
 	const image = await createImage(imageSrc);
 
 	const canvas_small = document.createElement("canvas");
-	canvas_small.width = 50;
-	canvas_small.height = 50;
+	canvas_small.width = 120;
+	canvas_small.height = 120;
 
 	const ctx_small = canvas_small.getContext("2d");
 	ctx_small.drawImage(image, 0, 0, canvas_small.width, canvas_small.height);

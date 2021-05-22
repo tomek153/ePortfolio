@@ -18,6 +18,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Stream;
 
 @Repository("postgres")
 public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao, SkillDao {
@@ -268,7 +269,7 @@ public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao, 
 
     @Override
     public List<UserWork> getUserWorkByID(UUID ID) {
-        final String sql = "SELECT * FROM user_work_profile WHERE user_uuid = ? ORDER BY work_time_start DESC";
+        final String sql = "SELECT * FROM user_work_profile WHERE user_uuid = ? ORDER BY work_time_end DESC";
 
         return jdbcTemplate.query(
                 sql,
@@ -286,30 +287,6 @@ public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao, 
                             resultSet.getString("work_desc"),
                             resultSet.getString("work_location"),
                             resultSet.getString("work_profession")
-                    );
-                }
-        );
-
-    }
-
-    @Override
-    public List<UserEdu> getUserEduByID(UUID ID) {
-        final String sql = "SELECT * FROM users_edu WHERE user_uuid = ?";
-
-        return jdbcTemplate.query(
-                sql,
-                new Object[]{ID},
-                (resultSet, i) -> {
-                    return new UserEdu(
-                            UUID.fromString(resultSet.getString("id")),
-                            UUID.fromString(resultSet.getString("user_uuid")),
-                            resultSet.getString("edu_spec"),
-                            resultSet.getString("edu_type"),
-                            resultSet.getString("edu_name"),
-                            resultSet.getString("edu_time_start"),
-                            resultSet.getString("edu_time_end"),
-                            resultSet.getString("edu_place"),
-                            resultSet.getString("edu_desc")
                     );
                 }
         );
@@ -533,7 +510,7 @@ public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao, 
     public List<UserEdu> getUserEdu(UUID id) {
 
         return jdbcTemplate.query(
-                "SELECT * FROM user_edu_profile WHERE user_uuid = ? ORDER BY edu_time_start DESC",
+                "SELECT * FROM user_edu_profile WHERE user_uuid = ? ORDER BY edu_time_end DESC",
                 new Object[] {id},
                 (resultSet, i) -> { return new UserEdu(
                         UUID.fromString(resultSet.getString("id")),
@@ -603,6 +580,100 @@ public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao, 
         }
 
         return 0;
+    }
+
+    @Override
+    public List<UserSearching> getSearchingUsers(List<String> ids) {
+
+        String sql;
+
+        if (ids.size() == 0) {
+            sql = "SELECT * FROM user_searching_profile";
+        } else {
+            sql = "SELECT * FROM user_searching_profile WHERE id IN (";
+
+            Iterator<String> iterator = ids.iterator();
+            while (iterator.hasNext()) {
+                String id = iterator.next();
+
+                sql += "'"+id+"'";
+
+                if (iterator.hasNext())
+                    sql += ", ";
+                else
+                    sql += ")";
+            }
+        }
+
+        return jdbcTemplate.query(
+                sql,
+                (resultSet, i) -> { return new UserSearching(
+                        UUID.fromString(resultSet.getString("id")),
+                        resultSet.getString("first_name"),
+                        resultSet.getString("last_name"),
+                        resultSet.getString("image"),
+                        resultSet.getString("address_city"),
+                        resultSet.getString("work_place"),
+                        resultSet.getString("work_profession")
+                );}
+        );
+    }
+
+    @Override
+    public UserSearchingAll getUserSearchingAll(UUID id) {
+
+        UserSearchingAll userSearchingAll = new UserSearchingAll();
+
+        User user = jdbcTemplate.queryForObject(
+                "SELECT * FROM users WHERE id = ?",
+                new Object[]{id},
+                (rs, rowNum) -> new User(
+                        UUID.fromString(rs.getString("id")),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getString("email")
+                )
+        );
+
+        UserBio userBio = jdbcTemplate.queryForObject(
+                "SELECT * FROM users_bio WHERE user_uuid = ?",
+                new Object[]{id},
+                (rs, rowNum) -> new UserBio(
+                        rs.getString("phone"),
+                        rs.getString("address_main"),
+                        rs.getString("address_city"),
+                        rs.getString("address_zip"),
+                        rs.getString("address_country"),
+                        rs.getString("date_birth"),
+                        rs.getString("gender"),
+                        rs.getString("image")
+                ));
+
+        List<UserEdu> userEduList = getUserEdu(id);
+
+        List<UserWork> userWorkList = getUserWorkByID(id);
+
+        List<UserSkill> userSkillList = getUserSkillByID(id);
+
+        userSearchingAll.setId(user.getId());
+        userSearchingAll.setFirstName(user.getFirstName());
+        userSearchingAll.setLastName(user.getLastName());
+        userSearchingAll.setEmail(user.getEmail());
+        userSearchingAll.setPhone(userBio.getPhone());
+        userSearchingAll.setAddress_main(userBio.getAddress_main());
+        userSearchingAll.setAddress_city(userBio.getAddress_city());
+        userSearchingAll.setAddress_zip(userBio.getAddress_zip());
+        userSearchingAll.setAddress_country(userBio.getAddress_country());
+        userSearchingAll.setDate_birth(userBio.getDate_birth());
+        userSearchingAll.setGender(userBio.getGender());
+        userSearchingAll.setImage(userBio.getImage());
+        userSearchingAll.setUserEduList(userEduList);
+        userSearchingAll.setUserWorkList(userWorkList);
+        userSearchingAll.setUserSkillList(userSkillList);
+
+        System.out.println(user);
+
+        return userSearchingAll;
     }
 
     @Override

@@ -39,8 +39,6 @@ public class UserService {
 
     public List<UserWork> getUserWorkByID(UUID id) { return userDao.getUserWorkByID(id); }
 
-    public List<UserEdu> getUserEduByID(UUID id) { return userDao.getUserEduByID(id); }
-
     public List<UserSkill> getUserSkillByID(UUID id) { return userDao.getUserSkillByID(id); }
 
     public Optional<UserSetting> getUserSettingByID(UUID id) { return userDao.getUserSettingByID(id); }
@@ -98,4 +96,8 @@ public class UserService {
     public int updateImage(String imageUrl, String imageSmallUrl, UUID userId) throws SQLException { return userDao.updateImage(imageUrl, imageSmallUrl, userId); }
 
     public int updateUserProfile(Map profile, UUID id) throws SQLException { return userDao.updateUserProfile(profile, id); }
+
+    public List<UserSearching> getSearchingUsers(List<String> ids) { return userDao.getSearchingUsers(ids); }
+
+    public UserSearchingAll getUserSearchingAll(UUID id) { return userDao.getUserSearchingAll(id); }
 }

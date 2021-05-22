@@ -1,0 +1,45 @@
+.search-container {
+    /*box-shadow: 0 0px 2px -0px black;*/
+    border: 1px solid #c7cacd;
+}
+.search-user-card {
+    margin: 10px 0;
+    box-shadow: 0 2px 4px -2px black;
+}
+.search-user-card:hover {
+    background-color: #eee;
+}
+.search-user-card-image {
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 2px 6px -4px black;
+    border: 2px solid #fff;
+}
+.search-user-card-name {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-top: 5px;
+    margin-bottom: 0;
+    transition: ease-in-out .2s;
+}
+.search-user-card-name:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+.search-user-card-city {
+    font-size: 1.2rem;
+    margin-top: -5px;
+    color: #666;
+}
+.search-user-card-work {
+    font-size: 1.0rem;
+    padding-top: 15px;
+    padding-bottom: 10px;
+}
+.search-profile-container {
+    border: 1px solid #c7cacd;
+    min-height: 68vh;
+    box-shadow: 0 2px 6px -4px black;
+}

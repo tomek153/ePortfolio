@@ -10,8 +10,8 @@ import java.util.UUID;
 @Setter
 public class UserBio {
 
-    private final UUID id;
-    private final UUID userID;
+    private UUID id;
+    private UUID userID;
     private final String phone;
     private final String address_main;
     private final String address_city;
@@ -60,5 +60,23 @@ public class UserBio {
         this.address_country = address_country;
         this.date_birth = date_birth;
         this.gender = gender;
+    }
+
+    public UserBio(String phone,
+                   String address_main,
+                   String address_city,
+                   String address_zip,
+                   String address_country,
+                   String date_birth,
+                   String gender,
+                   String image) {
+        this.phone = phone;
+        this.address_main = address_main;
+        this.address_city = address_city;
+        this.address_zip = address_zip;
+        this.address_country = address_country;
+        this.date_birth = date_birth;
+        this.gender = gender;
+        this.image = image;
     }
 }

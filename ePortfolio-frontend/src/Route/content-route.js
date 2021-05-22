@@ -9,6 +9,8 @@ import ResetPassword from '../Components/Login/reset-password';
 import RegulationsContent from '../Components/Other/regulations';
 import ConfirmationLinkSuccess from '../Components/Home/register-confirmation-link';
 import AuthProfile from '../Components/UserProfile/user-profile';
+import Searching from "../Components/Searching/searching";
+import UserProfile from "../Components/Searching/user-profile";
 
 const ContentRoute = () => (
     <BrowserRouter>
@@ -18,7 +20,9 @@ const ContentRoute = () => (
             <Route exact path="/rejestracja" component={RegisterContent} />
             <Route exact path="/regulamin" component={RegulationsContent} />
             <Route exact path="/moj-profil" component={AuthProfile} />
+            <Route exact path="/wyszukiwarka" component={Searching} />
             <Route exact path="/aktywacja-konta/:idKey/:registerKey" component={ConfirmationLinkSuccess} />
+            <Route exact path="/wyszukiwarka/profil/:id" component={UserProfile} />
             <Route exact path="/reset-hasla/:idKey/:registerKey" component={ResetPassword} />
             <Route path='*' component={NotFoundContent}/>
         </Switch>

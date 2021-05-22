@@ -68,29 +68,6 @@ public class GetMethods {
         return map;
     }
 
-    public Map getUserEduData(Map<String, Object> map, UserService userService, UUID id) {
-
-        List<UserEdu> userEdu = userService.getUserEduByID(id);
-        if (!userEdu.isEmpty()) {
-            Map<String, Object>[] userEduArray = new HashMap[userEdu.size()];
-            for (int i = 0; i < userEdu.size(); i++) {
-                Map<String, Object> userEduData = new HashMap<>();
-
-                userEduData.put("edu_spec", userEdu.get(i).getEdu_spec());
-                userEduData.put("edu_type", userEdu.get(i).getEdu_type());
-                userEduData.put("edu_name", userEdu.get(i).getEdu_name());
-                userEduData.put("edu_time_start", userEdu.get(i).getEdu_time_start());
-                userEduData.put("edu_time_end", userEdu.get(i).getEdu_time_end());
-                userEduData.put("edu_place", userEdu.get(i).getEdu_place());
-                userEduData.put("edu_desc", userEdu.get(i).getEdu_desc());
-
-                userEduArray[i] = userEduData;
-            }
-            map.put("userEdu", userEduArray);
-        }
-        return map;
-    }
-
     public Map getUserSkillData(Map<String, Object> map, UserService userService, UUID id) {
 
         List<UserSkill> userSkill = userService.getUserSkillByID(id);

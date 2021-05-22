@@ -27,8 +27,6 @@ public interface UserDao {
 
     List<UserWork> getUserWorkByID(UUID id);
 
-    List<UserEdu> getUserEduByID(UUID id);
-
     List<UserSkill> getUserSkillByID(UUID id);
 
     Optional<UserSetting> getUserSettingByID(UUID id);
@@ -75,4 +73,8 @@ public interface UserDao {
     int updateUserProfile(Map profile, UUID id) throws SQLException;
 
     int updateImage(String imageUrl, String imageSmallUrl, UUID userId) throws SQLException;
+
+    List<UserSearching> getSearchingUsers(List<String> ids);
+
+    UserSearchingAll getUserSearchingAll(UUID id);
 }

@@ -214,7 +214,6 @@ public class UserController {
             GetMethods getMethods = new GetMethods();
             getMethods.getUserBioData(profile, userService , userUUID);
             getMethods.getUserWorkData(profile, userService , userUUID);
-            getMethods.getUserEduData(profile, userService , userUUID);
             getMethods.getUserSkillData(profile, userService , userUUID);
             getMethods.getUserSettingData(profile, userService , userUUID);
 
@@ -246,7 +245,6 @@ public class UserController {
             GetMethods getMethods = new GetMethods();
             getMethods.getUserMainData(profile, userService , uuid);
             getMethods.getUserWorkData(profile, userService , uuid);
-            getMethods.getUserEduData(profile, userService , uuid);
             getMethods.getUserSkillData(profile, userService , uuid);
             getMethods.getUserSettingData(profile, userService , uuid);
 
@@ -309,6 +307,58 @@ public class UserController {
         if (decStatus == 0) {
             List<UserWork> userWorkList = userService.getUserWorkByID(UUID.fromString(Login.getClaims().get("id").asString()));
             out.print(this.gson.toJson(userWorkList));
+
+        } else if (decStatus == 1) {
+            response.sendError(400, "token_invalid");
+
+        } else if (decStatus == 2) {
+            out.print(this.gson.toJson(new JsonParser().parse("{\"error\": \"token_expired\"}")));
+
+        } else {
+            response.sendError(405, "unknown_error");
+        }
+
+        out.flush();
+    }
+
+    @RequestMapping (value = "/api/searching/users", method = POST)
+    public void getSearchingUsers (@RequestBody List<String> ids, HttpServletResponse response, HttpServletRequest request) throws IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        String token = request.getHeader("Authorization");
+        int decStatus = Login.checkJWT(token);
+        PrintWriter out = response.getWriter();
+
+        if (decStatus == 0) {
+            List<UserSearching> userSearchingList = userService.getSearchingUsers(ids);
+            out.print(this.gson.toJson(userSearchingList));
+
+        } else if (decStatus == 1) {
+            response.sendError(400, "token_invalid");
+
+        } else if (decStatus == 2) {
+            out.print(this.gson.toJson(new JsonParser().parse("{\"error\": \"token_expired\"}")));
+
+        } else {
+            response.sendError(405, "unknown_error");
+        }
+
+        out.flush();
+    }
+
+    @RequestMapping (value = "/api/searching/user/{id}", method = GET)
+    public void getUserSearchingAll (@PathVariable("id") UUID id, HttpServletResponse response, HttpServletRequest request) throws IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        String token = request.getHeader("Authorization");
+        int decStatus = Login.checkJWT(token);
+        PrintWriter out = response.getWriter();
+
+        if (decStatus == 0) {
+            UserSearchingAll userSearchingAll = userService.getUserSearchingAll(id);
+            out.print(this.gson.toJson(userSearchingAll));
 
         } else if (decStatus == 1) {
             response.sendError(400, "token_invalid");

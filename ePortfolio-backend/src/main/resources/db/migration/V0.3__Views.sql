@@ -14,3 +14,14 @@ CREATE VIEW user_work_profile AS
         INNER JOIN work_type_data wtd on wtd.id = uw.work_type
         INNER JOIN work_professions wp on wp.id = uw.work_profession
         INNER JOIN locations l on l.id = uw.work_location;
+
+CREATE VIEW user_skill_profile AS
+    SELECT us.id, user_uuid, skill_name, std.name as skill_type, skill_time_months, skill_level FROM users_skill us
+        INNER JOIN skill_type_data std on std.id = us.skill_type;
+
+CREATE VIEW user_searching_profile AS
+    SELECT u.id, first_name, last_name, u.image, ub.address_city as address_city, uw.work_place as work_place, wp.name as work_profession from users u
+        LEFT JOIN users_bio ub on u.id = ub.user_uuid
+        LEFT JOIN users_work uw on u.id = uw.user_uuid
+        LEFT JOIN work_professions wp on uw.work_profession = wp.id
+    ORDER BY uw.work_time_end DESC LIMIT 1;

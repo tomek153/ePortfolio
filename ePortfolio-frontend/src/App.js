@@ -5,6 +5,7 @@ import './Css/auth-header.css';
 import './Css/auth.css';
 import './Css/profile.css';
 import './Css/start.css';
+import './Css/search.css';
 
 import ContentRoute from './Route/content-route';
 import HeaderRoute from './Route/header-route';
@@ -20,7 +21,9 @@ function App() {
 
     useEffect(() => {
         if (window.location.href.toString().includes("/logowanie") ||
-            window.location.href.toString().includes("/moj-profil")) {
+            window.location.href.toString().includes("/moj-profil") ||
+            window.location.href.toString().includes("/wyszukiwarka")
+        ) {
 
             checkIsAuth();
             setAuthNeeded(true);

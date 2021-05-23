@@ -449,19 +449,19 @@ class PersonalData extends Component {
                                         }
                                     } else {
                                         localStorage.removeItem("token");
-                                        window.location.replace('/logowanie');
+                                        window.location.href = '/logowanie';
                                     }
                                 })
                         } else {
                             alert("Nieznany błąd.");
                             localStorage.removeItem("token");
-                            window.location.replace('/logowanie');
+                            window.location.href = '/logowanie';
                         }
                     }
                 });
 
         } else {
-            window.location.replace('/logowanie');
+            window.location.href = '/logowanie';
         }
     }
     componentWillUnmount() {
@@ -525,14 +525,14 @@ class PersonalData extends Component {
 
                     } else if (response.status === 400) {
                         localStorage.removeItem("token");
-                        window.location.replace('/logowanie');
+                        window.location.href = '/logowanie';
                     } else {
                         this.profileEditClose();
                         this.setState({modal_update_err: false});
                     }
                 });
         } else {
-            window.location.replace('/logowanie');
+            window.location.href = '/logowanie';
         }
     }
     updatePhoto = async (urlPhoto, urlSmallPhoto, finish) => {
@@ -735,7 +735,8 @@ class PersonalData extends Component {
                 </Container>
                 <Avatar show={this.state.modalAvatar} onClose={this.closeModal} update={this.updatePhoto}/>
                 <ModalSuccess show={this.state.modal_update_success} onClose={this.closeModal} title="Zapisano zmiany">
-                    Pomyślnie zaktualizowano profil.
+                    <span>Pomyślnie zaktualizowano profil.</span>
+                    <span></span>
                 </ModalSuccess>
                 <ModalHeaderError show={this.state.modal_update_err} onClose={this.closeModal} title="Z nieznanych powodów nie udało się zaktualizować profilu."/>
             </>

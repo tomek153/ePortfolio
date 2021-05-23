@@ -1633,7 +1633,7 @@ INSERT INTO edu_type_data (id, name) VALUES (4, 'INNE');
 -- #skill_type_data
 INSERT INTO skill_type_data (id, name) VALUES (1, 'ZNAJOMOŚĆ TECHNOLOGII');
 INSERT INTO skill_type_data (id, name) VALUES (2, 'JĘZYK OBCY');
-INSERT INTO skill_type_data (id, name) VALUES (3, 'UPRAWNIENIA');
+INSERT INTO skill_type_data (id, name) VALUES (3, 'UPRAWNIENIA/CERTYFIKATY');
 INSERT INTO skill_type_data (id, name) VALUES (4, 'INNE');
 
 -- #work_industry_data

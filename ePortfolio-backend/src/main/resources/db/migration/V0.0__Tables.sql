@@ -85,16 +85,15 @@ CREATE TABLE IF NOT EXISTS users_work (
     work_name VARCHAR NOT NULL,
     work_time_start DATE NOT NULL,
     work_time_end DATE NOT NULL,
-    work_place VARCHAR NOT NULL,
+    work_place INTEGER NOT NULL,
     work_desc VARCHAR NOT NULL,
     work_industry INTEGER NOT NULL,
-    work_location INTEGER NOT NULL,
     work_profession INTEGER NOT NULL,
     FOREIGN KEY (user_uuid) REFERENCES users (ID),
     FOREIGN KEY (work_industry) REFERENCES work_industry_data (ID),
     FOREIGN KEY (work_type) REFERENCES work_type_data (ID),
     FOREIGN KEY (work_profession) REFERENCES work_professions (ID),
-    FOREIGN KEY (work_location) REFERENCES locations (ID)
+    FOREIGN KEY (work_place) REFERENCES locations (ID)
 );
 
 CREATE TABLE IF NOT EXISTS users_edu (

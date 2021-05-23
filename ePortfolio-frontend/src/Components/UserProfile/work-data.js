@@ -10,10 +10,12 @@ import WorkSingle from "./work-single";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
-import DatePicker from "react-datepicker";
+import DatePicker, {registerLocale} from "react-datepicker";
 import Select from 'react-select';
 import ModalHeaderError from "../Modals/error-header";
 import MenuList from "../Other/custom-select-fast";
+import pl from 'date-fns/locale/pl';
+registerLocale('pl', pl);
 
 class WorkData extends Component {
     _isMounted = false;
@@ -23,8 +25,7 @@ class WorkData extends Component {
         this.state = {
             work: [],
             work_data: null,
-            form_place: "",
-            form_location: null,
+            form_place: null,
             form_industry: null,
             form_type: null,
             form_profession: null,
@@ -131,32 +132,32 @@ class WorkData extends Component {
                                                                 this.state.work_data = data;
                                                                 this.setState({_dataLoaded: true});
 
-                                                                document.getElementById("workPlace_err").style.display = "none";
+                                                                document.getElementById("workName_err").style.display = "none";
                                                                 document.getElementById("workDescription_err").style.display = "none";
                                                             } else {
                                                                 localStorage.removeItem("token");
-                                                                window.location.replace('/logowanie');
+                                                                window.location.href = '/logowanie';
                                                             }
                                                         })
                                                 } else {
                                                     localStorage.removeItem("token");
-                                                    window.location.replace('/logowanie');
+                                                    window.location.href = '/logowanie';
                                                 }
                                             });
                                     } else {
                                         localStorage.removeItem("token");
-                                        window.location.replace('/logowanie');
+                                        window.location.href = '/logowanie';
                                     }
                                 })
                         } else {
                             localStorage.removeItem("token");
-                            window.location.replace('/logowanie');
+                            window.location.href = '/logowanie';
                         }
                     }
                 });
 
         } else {
-            window.location.replace('/logowanie');
+            window.location.href = '/logowanie';
         }
     }
     componentWillUnmount() {
@@ -168,31 +169,31 @@ class WorkData extends Component {
         work.splice(index, 1);
         this.state.work = work;
     }
-    changePlace(event) {
+    changeName(event) {
         var value = event.target.value;
-        var regex = /[^a-zA-ZżźćńółęąśŻŹĆĄŚĘŁÓŃ. -]/;
+        var regex = /[^a-zA-ZżźćńółęąśŻŹĆĄŚĘŁÓŃ., -]/;
 
-        this.state.form_place = value;
+        this.state.form_name = value;
 
         if (value.match(regex) == null &&
             value.length >= 2 &&
             value.length <= 70) {
-            this.setState({status_place: true});
-            this.state.status_place = true;
-            document.getElementById("workPlace_err").style.display = "none";
+            this.setState({status_name: true});
+            this.state.status_name = true;
+            document.getElementById("workName_err").style.display = "none";
         } else {
-            this.setState({status_place: false});
-            this.state.status_place = false;
-            document.getElementById("workPlace_err").style.display = "block";
+            this.setState({status_name: false});
+            this.state.status_name = false;
+            document.getElementById("workName_err").style.display = "block";
         }
 
         this.checkStatuses();
     }
-    changeLocation = (selected) => {
-        this.setState({form_location: selected});
-        this.state.form_location = selected;
-        this.setState({status_location: true});
-        this.state.status_location = true;
+    changePlace = (selected) => {
+        this.setState({form_place: selected});
+        this.state.form_place = selected;
+        this.setState({status_place: true});
+        this.state.status_place = true;
 
         this.checkStatuses();
     }
@@ -261,7 +262,7 @@ class WorkData extends Component {
     checkStatuses() {
 
         if (this.state.status_place &&
-            this.state.status_location &&
+            this.state.status_name &&
             this.state.status_industry &&
             this.state.status_type &&
             this.state.status_profession &&
@@ -289,8 +290,7 @@ class WorkData extends Component {
             this.setState({edu_add_btn_load: true});
 
             var newWork = {
-                work_place: this.state.form_place,
-                work_location: this.state.form_location.value,
+                work_place: this.state.form_place.value,
                 work_industry: this.state.form_industry.value,
                 work_type: this.state.form_type.value,
                 work_profession: this.state.form_profession.value,
@@ -326,7 +326,7 @@ class WorkData extends Component {
                             });
                     } else if (response.status === 400 && (response.message === "token_invalid" || response.message === "token_expired")) {
                         localStorage.removeItem("token");
-                        window.location.replace('/logowanie');
+                        window.location.href = '/logowanie';
                     } else {
                         this.setState({edu_add_btn_load: false});
                         this.setState({modal_del_err: true});
@@ -336,23 +336,22 @@ class WorkData extends Component {
         }
     }
     clearForm() {
-        this.setState({form_place: ""});
-        this.setState({form_location: null});
-        this.state.form_location = null;
+        this.setState({form_name: ""});
+        this.setState({form_place: null});
+        this.state.form_place = null;
         this.setState({form_industry: null});
         this.state.form_industry = null;
         this.setState({form_type: null});
         this.state.form_type = null;
         this.setState({form_profession: null});
         this.state.form_profession = null;
-        this.setState({form_name: ""});
         this.setState({form_start_date: ""});
         this.setState({form_end_date: ""});
         this.setState({form_description: ""});
         this.setState({form_display: "none"});
 
         this.setState({status_place: false});
-        this.setState({status_location: false});
+        this.setState({status_name: false});
         this.setState({status_industry: false});
         this.setState({status_type: false});
         this.setState({status_profession: false});
@@ -360,7 +359,7 @@ class WorkData extends Component {
         this.setState({status_end_date: false});
         this.setState({status_description: false});
 
-        document.getElementById("workPlace").value = "";
+        document.getElementById("workName").value = "";
         document.getElementById("workDescription").value = "";
     }
 
@@ -381,22 +380,22 @@ class WorkData extends Component {
                                                 <Form.Label className="profile-label-section">Dodaj nową pozycję</Form.Label>
                                             </Form.Row>
                                             <Form.Row>
-                                                <Form.Group as={Col} controlId="workPlace">
+                                                <Form.Group as={Col} controlId="workName">
                                                     <Form.Label className="profile-label">Firma<span className="text-error">*</span></Form.Label>
-                                                    <Form.Control className="profile-fields" autoComplete="off" onChange={this.changePlace.bind(this)}/>
-                                                    <Form.Text className="text-muted text-error" id="workPlace_err">
+                                                    <Form.Control className="profile-fields" autoComplete="off" onChange={this.changeName.bind(this)}/>
+                                                    <Form.Text className="text-muted text-error" id="workName_err">
                                                         Podano nieprawidłową wartość.
                                                     </Form.Text>
                                                 </Form.Group>
 
                                                 <Col xs={3}>
-                                                    <Form.Group controlId="workLocation">
+                                                    <Form.Group controlId="workPlace">
                                                         <Form.Label className="profile-label">Lokalizacja<span className="text-error">*</span></Form.Label>
                                                         <Select id="workLocation" className="profile-fields"
                                                             components={{ MenuList }}
-                                                            value={this.state.form_location}
+                                                            value={this.state.form_place}
                                                             options={this.state.work_data.locations}
-                                                            onChange={this.changeLocation}
+                                                            onChange={this.changePlace}
                                                         />
                                                     </Form.Group>
                                                 </Col>
@@ -427,14 +426,14 @@ class WorkData extends Component {
                                                 <Col xs={2}>
                                                     <Form.Group>
                                                         <Form.Label>Data rozpoczęcia<span className="text-error">*</span></Form.Label>
-                                                        <DatePicker id="workStartDate" className="form-control profile-fields" autoComplete="off" selected={this.state.form_start_date} onChange={this.changeStartDate.bind(this)}/>
+                                                        <DatePicker id="workStartDate" className="form-control profile-fields" autoComplete="off" selected={this.state.form_start_date} onChange={this.changeStartDate.bind(this)} locale="pl"/>
                                                     </Form.Group>
                                                 </Col>
 
                                                 <Col xs={2}>
                                                     <Form.Group>
                                                         <Form.Label>Data ukończena<span className="text-error">*</span></Form.Label>
-                                                        <DatePicker id="workEndDate" className="form-control profile-fields" autoComplete="off" selected={this.state.form_end_date} onChange={this.changeEndDate.bind(this)}/>
+                                                        <DatePicker id="workEndDate" className="form-control profile-fields" autoComplete="off" selected={this.state.form_end_date} onChange={this.changeEndDate.bind(this)} locale="pl"/>
                                                     </Form.Group>
                                                 </Col>
                                             </Form.Row>
@@ -474,7 +473,7 @@ class WorkData extends Component {
                                             </Button>
                                         </Row>
 
-                                        {this.state.work.map((work, index) => <WorkSingle data={work} index={index} delete={this.removeItem.bind(this)}/>)}
+                                        {this.state.work.map((work, index) => <WorkSingle data={work} key={index} delete={this.removeItem.bind(this)}/>)}
                                     </Card.Body>
                                 }
                             </Card>

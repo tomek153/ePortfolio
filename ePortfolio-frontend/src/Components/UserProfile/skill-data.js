@@ -100,28 +100,28 @@ class SkillData extends Component {
                                                                 document.getElementById("skillTime_err").style.display = "none";
                                                             } else {
                                                                 localStorage.removeItem("token");
-                                                                window.location.replace('/logowanie');
+                                                                window.location.href = '/logowanie';
                                                             }
                                                         })
                                                 } else {
                                                     localStorage.removeItem("token");
-                                                    window.location.replace('/logowanie');
+                                                    window.location.href = '/logowanie';
                                                 }
                                             });
                                     } else {
                                         localStorage.removeItem("token");
-                                        window.location.replace('/logowanie');
+                                        window.location.href = '/logowanie';
                                     }
                                 })
                         } else {
                             localStorage.removeItem("token");
-                            window.location.replace('/logowanie');
+                            window.location.href = '/logowanie';
                         }
                     }
                 });
 
         } else {
-            window.location.replace('/logowanie');
+            window.location.href = '/logowanie';
         }
     }
     componentWillUnmount() {
@@ -248,7 +248,7 @@ class SkillData extends Component {
                             });
                     } else if (response.status === 400 && (response.message === "token_invalid" || response.message === "token_expired")) {
                         localStorage.removeItem("token");
-                        window.location.replace('/logowanie');
+                        window.location.href = '/logowanie';
                     } else {
                         this.setState({edu_add_btn_load: false});
                         this.setState({modal_del_err: true});
@@ -282,7 +282,7 @@ class SkillData extends Component {
                     <Paper className="paper-custom" elevation={1}>
                         <Row>
                             <Card className="paper-custom-header">
-                                <Card.Header className="card-header-custom">Doświadczenie</Card.Header>
+                                <Card.Header className="card-header-custom">Umiejętności</Card.Header>
                                 {!this.state._dataLoaded
                                     ? <LoadingElement/>
                                     : <Card.Body>
@@ -369,7 +369,7 @@ class SkillData extends Component {
                                             </Button>
                                         </Row>
 
-                                        {this.state.skill.map((skill, index) => <SkillSingle data={skill} index={index} delete={this.removeItem.bind(this)}/>)}
+                                        {this.state.skill.map((skill, index) => <SkillSingle data={skill} key={index} delete={this.removeItem.bind(this)}/>)}
                                     </Card.Body>
                                 }
                             </Card>

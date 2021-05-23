@@ -4,10 +4,10 @@ import {Card, Col, Container, FormGroup, FormLabel, FormText, Image, Row} from "
 class UserCard extends Component {
 
     componentDidMount() {
-        console.log(this.props.data);
+        // console.log(this.props.data);
     }
     openUserProfile() {
-        window.location.replace("/wyszukiwarka/profil/"+this.props.data.id);
+        window.location.href = "/wyszukiwarka/profil/"+this.props.data.id;
     }
 
     render() {
@@ -30,7 +30,7 @@ class UserCard extends Component {
                                 </FormText>
                                 <FormText className="search-user-card-work">
                                     {this.props.data.work_profession
-                                        ? <>{this.props.data.work_profession} w {this.props.data.work_place}</>
+                                        ? <>{this.props.data.work_profession} w {this.props.data.work_name}</>
                                         : <>Firma</>
                                     }
                                 </FormText>

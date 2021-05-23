@@ -62,14 +62,14 @@ function App() {
                         userInfoTest = data.user;
                         setTokenValid(true);
                         if (window.location.href.toString().includes("/logowanie"))
-                            window.location.replace("/moj-profil");
+                            window.location.href = "/moj-profil";
                         else
                             setLoading(false);
 
                     } else {
                         localStorage.removeItem("token");
                         if (!window.location.href.toString().includes("/logowanie"))
-                            window.location.replace("/logowanie");
+                            window.location.href = "/logowanie";
                         else
                             setLoading(false);
 
@@ -79,7 +79,7 @@ function App() {
 
         } else {
             if (!window.location.href.toString().includes("/logowanie"))
-                window.location.replace("/logowanie");
+                window.location.href = "/logowanie";
             else
                 setLoading(false);
         }

@@ -2,7 +2,7 @@ import React from 'react';
 import Modal from 'react-bootstrap/Modal';
 import PropTypes from 'prop-types';
 
-class ModalError extends React.Component {
+class ModalSuccess extends React.Component {
 
     close = () => {
         var onClose = this.props.onClose;
@@ -22,7 +22,7 @@ class ModalError extends React.Component {
             <Modal size="sm" show={this.props.show} aria-labelledby="modal-success-title" onHide={this.close}>
                 <Modal.Header closeButton>
                     <Modal.Title id="modal-success-title" style={{textAlign: "center"}}>
-                        <i className="fas fa-check-circle success-modal-icon"></i>{this.props.title}
+                        <i className="fas fa-check-circle success-modal-icon"/>{this.props.title}
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -33,11 +33,10 @@ class ModalError extends React.Component {
     }
 }
 
-ModalError.propTypes = {
+ModalSuccess.propTypes = {
     onClose: PropTypes.func.isRequired,
     show: PropTypes.bool.isRequired,
-    title: PropTypes.string.isRequired,
-    children: PropTypes.array.isRequired
+    title: PropTypes.string.isRequired
 };
 
-export default ModalError;
+export default ModalSuccess;

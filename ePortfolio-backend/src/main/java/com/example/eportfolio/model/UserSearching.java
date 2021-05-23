@@ -17,6 +17,6 @@ public class UserSearching {
     private String last_name;
     private String image;
     private String address_city;
-    private String work_place;
+    private String work_name;
     private String work_profession;
 }

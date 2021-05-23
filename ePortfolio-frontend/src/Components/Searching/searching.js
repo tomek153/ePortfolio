@@ -50,13 +50,13 @@ class Searching extends Component {
                                 });
                         } else {
                             localStorage.removeItem("token");
-                            window.location.replace('/logowanie');
+                            window.location.href = '/logowanie';
                         }
                     }
                 });
 
         } else {
-            window.location.replace('/logowanie');
+            window.location.href = '/logowanie';
         }
     }
     componentWillUnmount() {

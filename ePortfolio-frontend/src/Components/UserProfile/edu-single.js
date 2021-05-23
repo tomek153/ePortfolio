@@ -46,7 +46,7 @@ class EducationSingle extends Component {
                     this.setState({show: false});
                 } else if (response.status === 400 && response.message === "token_invalid") {
                     localStorage.removeItem("token");
-                    window.location.replace('/logowanie');
+                    window.location.href = '/logowanie';
                 } else {
                     this.setState({modal_del_err: true});
                 }
@@ -80,7 +80,7 @@ class EducationSingle extends Component {
                                         Instytucja:
                                     </Form.Label>
                                     <Col sm="9">
-                                        <p style={data_text}>{this.props.data.edu_place}</p>
+                                        <p style={data_text}>{this.props.data.edu_name}</p>
                                     </Col>
                                 </Form.Group>
                                 <Form.Group style={row_group} as={Row}>

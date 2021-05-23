@@ -45,7 +45,7 @@ class SkillSingle extends Component {
                     this.setState({show: false});
                 } else if (response.status === 400 && response.message === "token_invalid") {
                     localStorage.removeItem("token");
-                    window.location.replace('/logowanie');
+                    window.location.href = '/logowanie';
                 } else {
                     this.setState({modal_del_err: true});
                 }

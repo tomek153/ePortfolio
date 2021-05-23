@@ -175,7 +175,7 @@ class RegisterContent extends Component {
                     }
                     else if (data.message === "authentication_success.") {
                         localStorage.setItem('token', data.token);
-                        window.location.replace("/moj-profil");
+                        window.location.href = "/moj-profil";
                     }
                     else {
                         alert("Unknown error.");

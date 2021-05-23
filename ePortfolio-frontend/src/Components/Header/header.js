@@ -15,7 +15,7 @@ class HomeHeader extends Component {
 
     logoutRedirect(event) {
         localStorage.removeItem('token');
-        window.location.replace("/");
+        window.location.href = "/";
     }
 
     renderTooltip = (props) => (

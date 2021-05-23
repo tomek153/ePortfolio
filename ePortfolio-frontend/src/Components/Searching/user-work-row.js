@@ -12,10 +12,10 @@ class UserWorkRow extends Component {
                     </Col>
                     <Col>
                         <FormLabel className="search-profile-row-main">
-                            {this.props.data.work_place}
+                            {this.props.data.work_name}
                         </FormLabel>
                         <p className="search-profile-row-loc">
-                            <i className="fas fa-network-wired"/> {this.props.data.work_industry} &nbsp;&nbsp;<i className="fas fa-map-marker-alt"/> {this.props.data.work_location}
+                            <i className="fas fa-network-wired"/> {this.props.data.work_industry} &nbsp;&nbsp;<i className="fas fa-map-marker-alt"/> {this.props.data.work_place}
                         </p>
                         <p className="search-profile-row-spec">
                             {this.props.data.work_type === "PRAKTYKI" || this.props.data.work_type === "STAŻ" || this.props.data.work_type === "WOLONTARIAT"

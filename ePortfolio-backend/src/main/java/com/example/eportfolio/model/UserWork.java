@@ -19,7 +19,6 @@ public class UserWork {
     private final String work_time_end;
     private final String work_place;
     private final String work_desc;
-    private final String work_location;
     private final String work_profession;
 
     public UserWork(@JsonProperty("id") UUID id,
@@ -31,7 +30,6 @@ public class UserWork {
                     @JsonProperty("time_end") String work_time_end,
                     @JsonProperty("place") String work_place,
                     @JsonProperty("desc") String work_desc,
-                    @JsonProperty("location") String work_location,
                     @JsonProperty("work_profession") String work_profession) {
         this.id = id;
         this.userID = userID;
@@ -42,7 +40,6 @@ public class UserWork {
         this.work_time_end = work_time_end;
         this.work_place = work_place;
         this.work_desc = work_desc;
-        this.work_location = work_location;
         this.work_profession = work_profession;
     }
 }

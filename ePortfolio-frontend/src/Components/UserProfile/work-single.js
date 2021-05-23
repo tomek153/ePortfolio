@@ -45,7 +45,7 @@ class WorkSingle extends Component {
                     this.setState({show: false});
                 } else if (response.status === 400 && response.message === "token_invalid") {
                     localStorage.removeItem("token");
-                    window.location.replace('/logowanie');
+                    window.location.href = '/logowanie';
                 } else {
                     this.setState({modal_del_err: true});
                 }
@@ -79,7 +79,7 @@ class WorkSingle extends Component {
                                             Firma:
                                         </Form.Label>
                                         <Col sm="9">
-                                            <p style={data_text}>{this.props.data.work_place}</p>
+                                            <p style={data_text}>{this.props.data.work_name}</p>
                                         </Col>
                                     </Form.Group>
                                     <Form.Group style={row_group} as={Row}>
@@ -87,7 +87,7 @@ class WorkSingle extends Component {
                                             Lokalizacja:
                                         </Form.Label>
                                         <Col sm="9">
-                                            <p style={data_text}>{this.props.data.work_location}</p>
+                                            <p style={data_text}>{this.props.data.work_place}</p>
                                         </Col>
                                     </Form.Group>
                                     <Form.Group style={row_group} as={Row}>

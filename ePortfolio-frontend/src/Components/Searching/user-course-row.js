@@ -1,12 +1,12 @@
 import React, {Component} from "react";
-import {Col, FormLabel, FormText, Row} from "react-bootstrap";
+import {Col, FormLabel, Row} from "react-bootstrap";
 
-class UserEduRow extends Component {
+class UserCourseRow extends Component {
 
     render() {
         return (
             <>
-                {this.props.data.edu_type === "UCZELNIA WYŻSZA" || this.props.data.edu_type === "SZKOŁA"
+                {this.props.data.edu_type === "KURS/SZKOLENIE"
                     ? <Row style={{marginBottom: "10px"}}>
                         <Col xs={3} className="search-profile-row-dates">
                             {this.props.data.edu_time_start.replaceAll("-", ".")} - {this.props.data.edu_time_end.replaceAll("-", ".")}
@@ -33,4 +33,4 @@ class UserEduRow extends Component {
     }
 }
 
-export default UserEduRow;
+export default UserCourseRow;

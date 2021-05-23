@@ -10,9 +10,11 @@ import EducationSingle from "./edu-single";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
-import DatePicker from "react-datepicker";
+import DatePicker, {registerLocale} from "react-datepicker";
 import Select from 'react-select';
 import ModalHeaderError from "../Modals/error-header";
+import pl from 'date-fns/locale/pl';
+registerLocale('pl', pl);
 
 class EducationData extends Component {
     _isMounted = false;
@@ -114,28 +116,28 @@ class EducationData extends Component {
                                                                 document.getElementById("eduDescription_err").style.display = "none";
                                                             } else {
                                                                 localStorage.removeItem("token");
-                                                                window.location.replace('/logowanie');
+                                                                window.location.href = '/logowanie';
                                                             }
                                                         })
                                                 } else {
                                                     localStorage.removeItem("token");
-                                                    window.location.replace('/logowanie');
+                                                    window.location.href = '/logowanie';
                                                 }
                                             });
                                     } else {
                                         localStorage.removeItem("token");
-                                        window.location.replace('/logowanie');
+                                        window.location.href = '/logowanie';
                                     }
                                 })
                         } else {
                             localStorage.removeItem("token");
-                            window.location.replace('/logowanie');
+                            window.location.href = '/logowanie';
                         }
                     }
                 });
 
         } else {
-            window.location.replace('/logowanie');
+            window.location.href = '/logowanie';
         }
     }
     componentWillUnmount() {
@@ -149,7 +151,7 @@ class EducationData extends Component {
     }
     changeInstitution(event) {
         var value = event.target.value;
-        var regex = /[^a-zA-ZżźćńółęąśŻŹĆĄŚĘŁÓŃ. -]/;
+        var regex = /[^a-zA-ZżźćńółęąśŻŹĆĄŚĘŁÓŃ., -]/;
 
         this.state.form_institution = value;
 
@@ -203,7 +205,7 @@ class EducationData extends Component {
     }
     changeDescription(event) {
         var value = event.target.value;
-        var regex = /[^a-zA-ZżźćńółęąśŻŹĆĄŚĘŁÓŃ0-9. -]/;
+        var regex = /[^a-zA-ZżźćńółęąśŻŹĆĄŚĘŁÓŃ0-9., -]/;
 
         this.state.form_description = value;
 
@@ -248,9 +250,9 @@ class EducationData extends Component {
 
             this.setState({edu_add_btn_load: true});
             var newEdu = {
-                edu_place: this.state.form_institution,
+                edu_name: this.state.form_institution,
                 edu_type: this.state.form_type.value,
-                edu_name: this.state.form_name,
+                edu_place: this.state.form_name,
                 edu_spec: this.state.form_spec.value,
                 edu_desc: this.state.form_description,
                 edu_time_start: Date.parse(this.state.form_start_date),
@@ -285,7 +287,7 @@ class EducationData extends Component {
                             });
                     } else if (response.status === 400 && (response.message === "token_invalid" || response.message === "token_expired")) {
                         localStorage.removeItem("token");
-                        window.location.replace('/logowanie');
+                        window.location.href = '/logowanie';
                     } else {
                         this.setState({edu_add_btn_load: false});
                         this.setState({modal_del_err: true});
@@ -361,14 +363,14 @@ class EducationData extends Component {
                                                 <Col xs={5}>
                                                     <Form.Group>
                                                         <Form.Label>Data rozpoczęcia<span className="text-error">*</span></Form.Label>
-                                                        <DatePicker id="eduStartDate" className="form-control profile-fields" autoComplete="off" selected={this.state.form_start_date} onChange={this.changeStartDate.bind(this)}/>
+                                                        <DatePicker id="eduStartDate" className="form-control profile-fields" autoComplete="off" selected={this.state.form_start_date} onChange={this.changeStartDate.bind(this)} locale="pl"/>
                                                     </Form.Group>
                                                 </Col>
 
                                                 <Col xs={5}>
                                                     <Form.Group>
                                                         <Form.Label>Data ukończena<span className="text-error">*</span></Form.Label>
-                                                        <DatePicker id="eduEndDate" className="form-control profile-fields" autoComplete="off" selected={this.state.form_end_date} onChange={this.changeEndDate.bind(this)}/>
+                                                        <DatePicker id="eduEndDate" className="form-control profile-fields" autoComplete="off" selected={this.state.form_end_date} onChange={this.changeEndDate.bind(this)} locale="pl"/>
                                                     </Form.Group>
                                                 </Col>
                                             </Form.Row>
@@ -408,7 +410,7 @@ class EducationData extends Component {
                                             </Button>
                                         </Row>
 
-                                        {this.state.edu.map((edu, index) => <EducationSingle data={edu} index={index} delete={this.removeItem.bind(this)}/>)}
+                                        {this.state.edu.map((edu, index) => <EducationSingle data={edu} key={index} delete={this.removeItem.bind(this)}/>)}
                                     </Card.Body>
                                 }
                             </Card>

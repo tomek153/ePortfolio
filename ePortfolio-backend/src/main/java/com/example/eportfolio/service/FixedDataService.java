@@ -25,5 +25,5 @@ public class FixedDataService {
     }
     // GET DATA METHODS -END-
 
-
+    public SearchingFilters getSearchingFilters() { return fixedDataDao.getSearchingFilters(); }
 }

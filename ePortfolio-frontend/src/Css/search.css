@@ -1,6 +1,6 @@
 .search-container {
-    /*box-shadow: 0 0px 2px -0px black;*/
     border: 1px solid #c7cacd;
+    min-height: 68vh;
 }
 .search-user-card {
     margin: 10px 0;
@@ -98,6 +98,7 @@
 }
 .search-profile-row-dates {
     font-weight: 600;
+    text-align: left;
 }
 .search-profile-row-main {
     font-weight: 600;

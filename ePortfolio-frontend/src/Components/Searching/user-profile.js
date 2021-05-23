@@ -6,6 +6,7 @@ import LoadingElement from "../Other/loading-element";
 import UserEduRow from "./user-edu-row";
 import UserWorkRow from "./user-work-row";
 import UserSkillRow from "./user-skill-row";
+import UserCourseRow from "./user-course-row";
 
 class UserProfile extends Component {
     _isMounted = false;
@@ -43,24 +44,23 @@ class UserProfile extends Component {
                             response.json()
                                 .then(data => {
                                     if (!data.error) {
-                                        console.log(data);
                                         this.setState({user: data});
                                         this.state.user = data;
                                         this.setState({_dataLoaded: true});
                                     } else {
                                         localStorage.removeItem("token");
-                                        window.location.replace('/logowanie');
+                                        window.location.href = '/logowanie';
                                     }
                                 });
                         } else {
                             localStorage.removeItem("token");
-                            window.location.replace('/logowanie');
+                            window.location.href = '/logowanie';
                         }
                     }
                 });
 
         } else {
-            window.location.replace('/logowanie');
+            window.location.href = '/logowanie';
         }
     }
     componentWillUnmount() {
@@ -77,7 +77,7 @@ class UserProfile extends Component {
                 </Breadcrumb>
                 <Container className="search-profile-container">
                     {!this.state._dataLoaded
-                        ? <div style={{backgroundColor: "#e9ecef", width: "calc(100% + 30px)", marginLeft: "-15px"}}><LoadingElement/></div>
+                        ? <div style={{minHeight: "68vh", backgroundColor: "#e9ecef", width: "calc(100% + 30px)", marginLeft: "-15px"}}><LoadingElement/></div>
                         : <div style={{position: "relative"}}>
                             <div className="search-profile-color-div"/>
                             <br/>
@@ -165,9 +165,14 @@ class UserProfile extends Component {
                                 </Col>
                             </Row>
                             <Row>
-                                <Col className="search-profile-section-text">
-                                    {(this.state.user.userEduList.map((edu, index) => <UserEduRow data={edu} key={index}/>)).length !== 0
-                                        ? this.state.user.userEduList.map((edu, index) => <UserEduRow data={edu} key={index}/>)
+                                <Col className="search-profile-section-text center">
+                                    {this.state.user.userEduList.length !== 0
+                                        ? <>
+                                            {this.state.user.userEduList.map((edu, index) => edu.edu_type === "SZKOŁA" || edu.edu_type === "UCZELNIA WYŻSZA").includes(true)
+                                                ? this.state.user.userEduList.map((edu, index) => <UserEduRow data={edu} key={index}/>)
+                                                : <span>Brak danych.</span>
+                                            }
+                                        </>
                                         : <span>Brak danych.</span>
                                     }
                                 </Col>
@@ -178,8 +183,11 @@ class UserProfile extends Component {
                                 </Col>
                             </Row>
                             <Row>
-                                <Col className="search-profile-section-text">
-                                    {this.state.user.userWorkList.map((work, index) => <UserWorkRow data={work} key={index}/>)}
+                                <Col className="search-profile-section-text center">
+                                    {(this.state.user.userWorkList.map((work, index) => <UserWorkRow data={work} key={index}/>)).length !== 0
+                                        ? this.state.user.userWorkList.map((work, index) => <UserWorkRow data={work} key={index}/>)
+                                        : <span>Brak danych.</span>
+                                    }
                                 </Col>
                             </Row>
                             <Row>
@@ -191,8 +199,13 @@ class UserProfile extends Component {
                                     </Row>
                                     <Row>
                                         <Col className="search-profile-section-text center">
-                                            {this.state.user.userSkillList.map((skill, index) => <UserSkillRow data={skill} type_match="JĘZYK OBCY" key={index}/>).length !== 0
-                                                ? this.state.user.userSkillList.map((skill, index) => <UserSkillRow data={skill} type_match="JĘZYK OBCY" key={index}/>)
+                                            {this.state.user.userSkillList.length !== 0
+                                                ? <>
+                                                    {this.state.user.userSkillList.map((skill, index) => skill.skill_type === "JĘZYK OBCY").includes(true)
+                                                        ? this.state.user.userSkillList.map((skill, index) => <UserSkillRow data={skill} type_match="JĘZYK OBCY" key={index}/>)
+                                                        : <span>Brak danych.</span>
+                                                    }
+                                                </>
                                                 : <span>Brak danych.</span>
                                             }
                                         </Col>
@@ -206,8 +219,13 @@ class UserProfile extends Component {
                                     </Row>
                                     <Row>
                                         <Col className="search-profile-section-text center">
-                                            {(this.state.user.userSkillList.map((skill, index) => <UserSkillRow data={skill} type_match="ZNAJOMOŚĆ TECHNOLOGII" key={index}/>)).length !== 0
-                                                ? this.state.user.userSkillList.map((skill, index) => <UserSkillRow data={skill} type_match="ZNAJOMOŚĆ TECHNOLOGII" key={index}/>)
+                                            {this.state.user.userSkillList.length !== 0
+                                                ? <>
+                                                    {this.state.user.userSkillList.map((skill, index) => skill.skill_type === "ZNAJOMOŚĆ TECHNOLOGII").includes(true)
+                                                        ? this.state.user.userSkillList.map((skill, index) => <UserSkillRow data={skill} type_match="ZNAJOMOŚĆ TECHNOLOGII" key={index}/>)
+                                                        : <span>Brak danych.</span>
+                                                    }
+                                                </>
                                                 : <span>Brak danych.</span>
                                             }
                                         </Col>
@@ -223,8 +241,14 @@ class UserProfile extends Component {
                                     </Row>
                                     <Row>
                                         <Col className="search-profile-section-text center">
-                                            {(this.state.user.userSkillList.map((skill, index) => <UserSkillRow data={skill} type_match="UPRAWNIENIA/CERTYFIKATY" key={index}/>)).length !== 0
-                                                ? this.state.user.userSkillList.map((skill, index) => <UserSkillRow data={skill} type_match="UPRAWNIENIA/CERTYFIKATY" key={index}/>)
+                                            {this.state.user.userSkillList.length !== 0
+                                                ? <>
+                                                    {this.state.user.userSkillList.map((skill, index) => skill.skill_type === "UPRAWNIENIA/CERTYFIKATY").includes(true)
+                                                        ? this.state.user.userSkillList.map((skill, index) =>
+                                                            <UserSkillRow data={skill} type_match="UPRAWNIENIA/CERTYFIKATY" key={index}/>)
+                                                        : <span>Brak danych.</span>
+                                                    }
+                                                </>
                                                 : <span>Brak danych.</span>
                                             }
                                         </Col>
@@ -238,12 +262,35 @@ class UserProfile extends Component {
                                     </Row>
                                     <Row>
                                         <Col className="search-profile-section-text center">
-                                            {(this.state.user.userSkillList.map((skill, index) => <UserSkillRow data={skill} type_match="INNE" key={index}/>)).length !== 0
-                                                ? this.state.user.userSkillList.map((skill, index) => <UserSkillRow data={skill} type_match="INNE" key={index}/>)
+                                            {this.state.user.userSkillList.length !== 0
+                                                ? <>
+                                                    {this.state.user.userSkillList.map((skill, index) => skill.skill_type === "INNE").includes(true)
+                                                        ? this.state.user.userSkillList.map((skill, index) => <UserSkillRow data={skill} type_match="INNE" key={index}/>)
+                                                        : <span>Brak danych.</span>
+                                                    }
+                                                </>
                                                 : <span>Brak danych.</span>
                                             }
                                         </Col>
                                     </Row>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col className="search-profile-section-title">
+                                    Koursy/Szkolenia
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col className="search-profile-section-text center">
+                                    {this.state.user.userSkillList.length !== 0
+                                        ? <>
+                                            {this.state.user.userEduList.map((edu, index) => edu.edu_type === "KURS/SZKOLENIE").includes(true)
+                                                ? this.state.user.userEduList.map((edu, index) => <UserCourseRow data={edu} key={index}/>)
+                                                : <span>Brak danych.</span>
+                                            }
+                                        </>
+                                        : <span>Brak danych.</span>
+                                    }
                                 </Col>
                             </Row>
                             <br/><br/>

@@ -58,7 +58,6 @@ public class GetMethods {
                 userWorkData.put("work_time_end", userWork.get(i).getWork_time_end());
                 userWorkData.put("work_place", userWork.get(i).getWork_place());
                 userWorkData.put("work_desc", userWork.get(i).getWork_desc());
-                userWorkData.put("work_location", userWork.get(i).getWork_location());
 
                 userWorkArray[i] = userWorkData;
             }

@@ -10,4 +10,6 @@ public interface FixedDataDao {
     List<FixedData> getFixedData(String dataType);
     // GET DATA METHODS -END-
 
+    SearchingFilters getSearchingFilters();
+
 }

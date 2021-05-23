@@ -285,7 +285,6 @@ public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao, 
                             resultSet.getString("work_time_end"),
                             resultSet.getString("work_place"),
                             resultSet.getString("work_desc"),
-                            resultSet.getString("work_location"),
                             resultSet.getString("work_profession")
                     );
                 }
@@ -379,9 +378,31 @@ public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao, 
     }
 
     @Override
+    public SearchingFilters getSearchingFilters() {
+
+        SearchingFilters searchingFilters = new SearchingFilters();
+
+        final String sqlCity = "SELECT DISTINCT address_city FROM users_bio WHERE address_city != ''";
+        final String sqlWorkName = "SELECT DISTINCT work_name FROM users_work";
+        final String sqlWorkIndustry = "SELECT DISTINCT wid.name as work_industry FROM users_work INNER JOIN work_industry_data wid on wid.id = users_work.work_industry";
+        final String sqlEduName = "SELECT DISTINCT edu_name FROM users_edu";
+        final String sqlEduSpec = "SELECT DISTINCT esd.name as edu_spec FROM users_edu INNER JOIN edu_spec_data esd on esd.id = users_edu.edu_spec";
+        final String sqlSkillName = "SELECT DISTINCT skill_name FROM users_skill";
+
+        searchingFilters.setAddressCityList(jdbcTemplate.queryForList(sqlCity, String.class));
+        searchingFilters.setWorkNameList(jdbcTemplate.queryForList(sqlWorkName, String.class));
+        searchingFilters.setWorkIndustryList(jdbcTemplate.queryForList(sqlWorkIndustry, String.class));
+        searchingFilters.setEduNameList(jdbcTemplate.queryForList(sqlEduName, String.class));
+        searchingFilters.setEduSpecList(jdbcTemplate.queryForList(sqlEduSpec, String.class));
+        searchingFilters.setSkillNameList(jdbcTemplate.queryForList(sqlSkillName, String.class));
+
+        return searchingFilters;
+    }
+
+    @Override
     public int addUserWork(Map workMap, UUID id) {
 
-        final String sql = "INSERT INTO users_work(id, user_uuid, work_type, work_name, work_time_start, work_time_end, work_place, work_desc, work_industry, work_location, work_profession)" +
+        final String sql = "INSERT INTO users_work(id, user_uuid, work_type, work_name, work_time_start, work_time_end, work_place, work_desc, work_industry, work_profession)" +
                 " VALUES (uuid_generate_v4(), " +
                 "'" + id + "', "+
                 "'" + workMap.get("work_type") + "', "+
@@ -391,7 +412,6 @@ public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao, 
                 "'" + workMap.get("work_place") + "', "+
                 "'" + workMap.get("work_description") + "', "+
                 "'" + workMap.get("work_industry") + "', " +
-                "'" + workMap.get("work_location") + "', " +
                 "'" + workMap.get("work_profession") + "'" +
                 ")";
 
@@ -613,7 +633,7 @@ public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao, 
                         resultSet.getString("last_name"),
                         resultSet.getString("image"),
                         resultSet.getString("address_city"),
-                        resultSet.getString("work_place"),
+                        resultSet.getString("work_name"),
                         resultSet.getString("work_profession")
                 );}
         );

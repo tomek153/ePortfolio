@@ -31,7 +31,7 @@ class UserCard extends Component {
                                 <FormText className="search-user-card-work">
                                     {this.props.data.work_profession
                                         ? <>{this.props.data.work_profession} w {this.props.data.work_name}</>
-                                        : <>Firma</>
+                                        : <>Praca</>
                                     }
                                 </FormText>
                             </FormGroup>

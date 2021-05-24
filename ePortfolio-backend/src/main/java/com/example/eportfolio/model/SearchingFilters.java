@@ -12,10 +12,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SearchingFilters {
-    List<String> addressCityList;
-    List<String> workNameList;
-    List<String> workIndustryList;
-    List<String> eduNameList;
-    List<String> eduSpecList;
-    List<String> skillNameList;
+    List<SelectRow> addressCityList;
+    List<SelectRow> workNameList;
+    List<SelectRow> workIndustryList;
+    List<SelectRow> eduNameList;
+    List<SelectRow> eduSpecList;
+    List<SelectRow> skillNameList;
 }

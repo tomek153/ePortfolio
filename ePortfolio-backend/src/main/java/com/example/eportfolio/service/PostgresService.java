@@ -382,19 +382,49 @@ public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao, 
 
         SearchingFilters searchingFilters = new SearchingFilters();
 
-        final String sqlCity = "SELECT DISTINCT address_city FROM users_bio WHERE address_city != ''";
-        final String sqlWorkName = "SELECT DISTINCT work_name FROM users_work";
-        final String sqlWorkIndustry = "SELECT DISTINCT wid.name as work_industry FROM users_work INNER JOIN work_industry_data wid on wid.id = users_work.work_industry";
-        final String sqlEduName = "SELECT DISTINCT edu_name FROM users_edu";
-        final String sqlEduSpec = "SELECT DISTINCT esd.name as edu_spec FROM users_edu INNER JOIN edu_spec_data esd on esd.id = users_edu.edu_spec";
-        final String sqlSkillName = "SELECT DISTINCT skill_name FROM users_skill";
+        final String sqlCity = "SELECT DISTINCT ON (address_city) row_number() over (order by (Select 0)) as value, address_city as label FROM users_bio WHERE address_city != '';";
+        final String sqlWorkName = "SELECT DISTINCT ON (work_name) row_number() over (order by (Select 0)) as value, work_name as label FROM users_work;";
+        final String sqlWorkIndustry = "SELECT DISTINCT ON (wid.name) row_number() over (order by (Select 0)) as value, wid.name as label FROM users_work INNER JOIN work_industry_data wid on wid.id = users_work.work_industry;";
+        final String sqlEduName = "SELECT DISTINCT ON (edu_name) row_number() over (order by (Select 0)) as value, edu_name as label FROM users_edu;";
+        final String sqlEduSpec = "SELECT DISTINCT ON (esd.name) row_number() over (order by (Select 0)) as value, esd.name as label FROM users_edu INNER JOIN edu_spec_data esd on esd.id = users_edu.edu_spec;";
+        final String sqlSkillName = "SELECT DISTINCT ON (skill_name) row_number() over (order by (Select 0)) as value, skill_name as label FROM users_skill;";
 
-        searchingFilters.setAddressCityList(jdbcTemplate.queryForList(sqlCity, String.class));
-        searchingFilters.setWorkNameList(jdbcTemplate.queryForList(sqlWorkName, String.class));
-        searchingFilters.setWorkIndustryList(jdbcTemplate.queryForList(sqlWorkIndustry, String.class));
-        searchingFilters.setEduNameList(jdbcTemplate.queryForList(sqlEduName, String.class));
-        searchingFilters.setEduSpecList(jdbcTemplate.queryForList(sqlEduSpec, String.class));
-        searchingFilters.setSkillNameList(jdbcTemplate.queryForList(sqlSkillName, String.class));
+        searchingFilters.setAddressCityList(jdbcTemplate.query(sqlCity, (resultSet, i) -> {
+            return new SelectRow(
+                    resultSet.getInt("value"),
+                    resultSet.getString("label")
+            );
+        }));
+        searchingFilters.setWorkNameList(jdbcTemplate.query(sqlWorkName, (resultSet, i) -> {
+            return new SelectRow(
+                    resultSet.getInt("value"),
+                    resultSet.getString("label")
+            );
+        }));
+        searchingFilters.setWorkIndustryList(jdbcTemplate.query(sqlWorkIndustry, (resultSet, i) -> {
+            return new SelectRow(
+                    resultSet.getInt("value"),
+                    resultSet.getString("label")
+            );
+        }));
+        searchingFilters.setEduNameList(jdbcTemplate.query(sqlEduName, (resultSet, i) -> {
+            return new SelectRow(
+                    resultSet.getInt("value"),
+                    resultSet.getString("label")
+            );
+        }));
+        searchingFilters.setEduSpecList(jdbcTemplate.query(sqlEduSpec, (resultSet, i) -> {
+            return new SelectRow(
+                    resultSet.getInt("value"),
+                    resultSet.getString("label")
+            );
+        }));
+        searchingFilters.setSkillNameList(jdbcTemplate.query(sqlSkillName, (resultSet, i) -> {
+            return new SelectRow(
+                    resultSet.getInt("value"),
+                    resultSet.getString("label")
+            );
+        }));
 
         return searchingFilters;
     }

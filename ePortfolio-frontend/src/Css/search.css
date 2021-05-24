@@ -1,6 +1,7 @@
 .search-container {
-    border: 1px solid #c7cacd;
+    border: 1px solid rgba(0, 0, 0, 0.125);
     min-height: 68vh;
+    padding-top: 0;
 }
 .search-user-card {
     margin: 10px 0;
@@ -145,4 +146,35 @@
 }
 .search-profile-section-text.center {
     text-align: center;
+}
+.search-filters-container {
+    width: 100%;
+}
+.search-filters-container-card {
+    border-right: none;
+    border-left: none;
+    border-top: none;
+    overflow: unset!important;
+}
+.search-filters-select-container {
+    padding: 0 5px;
+}
+.search-filters-select-container > label {
+    text-align: center;
+    width: 100%;
+    font-weight: 500;
+}
+.filter-carret {
+    font-size: 1.6rem;
+    position: relative;
+    top: 8px;
+    float: right;
+}
+.searching-filter-title {
+    color: #444;
+    font-weight: 500;
+    font-size: 1.0rem;
+}
+.searching-filter-title:hover {
+    color: #444;
 }

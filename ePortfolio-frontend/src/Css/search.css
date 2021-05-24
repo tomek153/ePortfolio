@@ -178,3 +178,9 @@
 .searching-filter-title:hover {
     color: #444;
 }
+.search-filters-clear-button {
+    color: #31b4cb;
+}
+.search-filters-clear-button:hover {
+    color: #1092a9;
+}

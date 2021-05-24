@@ -155,8 +155,8 @@ class UserProfile extends Component {
                                 </Col>
                             </Row>
                             <Row>
-                                <Col className="search-profile-section-text">
-                                    Testowy opis. Testowy opis. Testowy opis. Testowy opis. Testowy opis. Testowy opis. Testowy opis. Testowy opis. Testowy opis. Testowy opis. Testowy opis.
+                                <Col className="search-profile-section-text center">
+                                    Brak danych.
                                 </Col>
                             </Row>
                             <Row>

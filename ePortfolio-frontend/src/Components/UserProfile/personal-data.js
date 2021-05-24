@@ -253,7 +253,7 @@ class PersonalData extends Component {
     }
     changeAddress(event) {
         var value;
-        var regex = /[^a-zA-Z0-9- ./żźćńółęąśŻŹĆĄŚĘŁÓŃ]/;
+        var regex = /[^a-zA-Z0-9- ,./żźćńółęąśŻŹĆĄŚĘŁÓŃ]/;
 
         if (typeof event == "string")
             value = event;

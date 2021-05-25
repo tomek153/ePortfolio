@@ -184,3 +184,8 @@
 .search-filters-clear-button:hover {
     color: #1092a9;
 }
+ul.pagination {
+    justify-content: center;
+    position: relative;
+    bottom: 10px;
+}

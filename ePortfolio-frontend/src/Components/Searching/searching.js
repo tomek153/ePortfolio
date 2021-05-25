@@ -7,6 +7,8 @@ import UserCard from "./user-card";
 import Select from "react-select";
 import {Input} from "@material-ui/core";
 import Form from "react-bootstrap/Form";
+import PaginationCustom from "./pagination";
+import SearchResults from "./search-results";
 
 class Searching extends Component {
     _isMounted = false;
@@ -930,11 +932,10 @@ class Searching extends Component {
                             <br/>
                             {this.state.loadingResults
                                 ? <LoadingElement/>
-                                : <>{this.state.users.map((user, index) => <UserCard data={user} key={index}/>)}</>
+                                : <SearchResults data={this.state.users}/>
                             }
                         </>
                     }
-                    <br/>
                 </Container>
                 <FooterAuth/>
             </>

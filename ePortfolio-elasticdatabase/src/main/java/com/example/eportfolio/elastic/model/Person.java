@@ -1,35 +1,21 @@
 package com.example.eportfolio.elastic.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.Document;
-
 import java.util.List;
-import java.util.UUID;
 
-@Document(indexName = "eportfolio", shards = 2)
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class Person {
 
-    @Id
-    private String id;
-    private String uuid;
-    private String firstName;
-    private String lastName;
-    private String city;
-    private List<String> workNames;
-    private List<String> workIndustries;
-    private List<String> workDescriptions;
-    private List<String> eduNames;
-    private List<String> eduSpec;
-    private List<String> eduPlace;
-    private List<String> eduDescription;
-    private List<String> skillName;
+    private final String uuid;
+    private final String firstName;
+    private final String lastName;
+    private final String city;
+    private final List<String> workNames;
+    private final List<String> workIndustries;
+    private final List<String> workDescriptions;
+    private final List<String> eduNames;
+    private final List<String> eduSpec;
+    private final List<String> eduPlace;
+    private final List<String> eduDescription;
+    private final List<String> skillName;
 
     public Person(String uuid,
                   String firstName,
@@ -55,10 +41,6 @@ public class Person {
         this.eduPlace = eduPlace;
         this.eduDescription = eduDescription;
         this.skillName = skillName;
-    }
-
-    public String getId() {
-        return id;
     }
 
     public String getUuid() {

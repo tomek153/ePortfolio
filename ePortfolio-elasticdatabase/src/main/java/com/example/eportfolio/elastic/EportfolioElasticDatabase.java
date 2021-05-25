@@ -1,6 +1,6 @@
 package com.example.eportfolio.elastic;
 
-import com.example.eportfolio.elastic.database.MyTask;
+import com.example.eportfolio.elastic.database.UpdateIndex;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,7 +18,7 @@ public class EportfolioElasticDatabase {
 
 		Timer t = new Timer();
 
-		MyTask job = new MyTask();
+		UpdateIndex job = new UpdateIndex();
 		t.scheduleAtFixedRate(job, 0, 300000);
 
 	}

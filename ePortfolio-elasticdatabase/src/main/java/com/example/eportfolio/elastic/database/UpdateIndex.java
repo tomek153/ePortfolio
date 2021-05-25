@@ -17,11 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TimerTask;
 
-public class MyTask extends TimerTask {
+public class UpdateIndex extends TimerTask {
 
     private List<Person> personList = new ArrayList<>();
 
-    public MyTask() {
+    public UpdateIndex() {
         //empty
     }
 
@@ -235,12 +235,14 @@ public class MyTask extends TimerTask {
         System.out.println(" Data Retrieved Successfully ..");
 
         try {
-            String commandDelete = "curl -X DELETE http://127.0.0.1:9200/_all";
-            String commandCreate = "curl -X PUT http://127.0.0.1:9200/eportfolio";
+            String[] commandDelete = {"curl", "-X", "DELETE", "http://localhost:9200/eportfolio/"};
             Process processDelete = Runtime.getRuntime().exec(commandDelete);
             Thread.sleep(150);
+            String[] commandCreate = {"curl", "-X", "PUT", "http://localhost:9200/eportfolio/"};
             Process processCreate = Runtime.getRuntime().exec(commandCreate);
             Thread.sleep(150);
+            processDelete.destroyForcibly();
+            processCreate.destroyForcibly();
 
             sendPostRequest(personList);
             System.out.println(" POST Success");

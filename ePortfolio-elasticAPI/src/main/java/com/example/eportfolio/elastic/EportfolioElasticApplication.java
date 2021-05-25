@@ -2,6 +2,7 @@ package com.example.eportfolio.elastic;
 
 import com.example.eportfolio.elastic.model.AdvancedQueryHandler;
 import com.example.eportfolio.elastic.model.Person;
+import com.example.eportfolio.elastic.model.StopwordsRemover;
 import com.example.eportfolio.elastic.repository.PersonRepository;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -28,7 +29,8 @@ public class EportfolioElasticApplication {
 
     @PostMapping("/find/query")
     public Iterable<Person> findByQuery(@NonNull @RequestBody String queryString) throws IOException {
-        StringBuilder queryNoStopwords = removeStopwords(queryString);
+        StopwordsRemover stopwordsRemover = new StopwordsRemover();
+        StringBuilder queryNoStopwords = stopwordsRemover.removeStopwords(queryString,resourceLoader);
 
         QueryBuilder queryBuilder = QueryBuilders.queryStringQuery(queryNoStopwords.toString());
         return personRepository.search(queryBuilder);
@@ -36,14 +38,14 @@ public class EportfolioElasticApplication {
 
     @PostMapping("/find/query-advanced")
     public Iterable<Person> findByQueryAdvanced(@NonNull @RequestBody AdvancedQueryHandler advancedQueryHandler) throws IOException {
-
+        StopwordsRemover stopwordsRemover = new StopwordsRemover();
         String queryText = advancedQueryHandler.getQueryText();
         String queryCity = "/.*/";
         String queryEduSpec = "/.*/";
         String queryWorkIndustries = "/.*/";
         if (!advancedQueryHandler.getQueryCity().trim().equals("")) {
             queryCity = advancedQueryHandler.getQueryCity();
-            queryCity = removeStopwords(queryCity).toString();
+            queryCity = stopwordsRemover.removeStopwords(queryCity,resourceLoader).toString();
         }
         if (!advancedQueryHandler.getQueryEduSpec().trim().equals("")) {
             queryEduSpec = advancedQueryHandler.getQueryEduSpec();
@@ -52,7 +54,7 @@ public class EportfolioElasticApplication {
             queryWorkIndustries = advancedQueryHandler.getQueryWorkIndustries();
         }
 
-        queryText = removeStopwords(queryText).toString();
+        queryText = stopwordsRemover.removeStopwords(queryText,resourceLoader).toString();
 
         QueryBuilder queryBuilder = QueryBuilders.boolQuery()
                 .must(QueryBuilders.queryStringQuery(queryText))
@@ -64,37 +66,6 @@ public class EportfolioElasticApplication {
 
     }
 
-    private StringBuilder removeStopwords(String queryText) throws IOException {
-
-        String[] wordsArray = queryText.split(" ");
-        List<String> listOfWords = new ArrayList<String>(Arrays.asList(wordsArray));
-
-        List<String> stopwordsList = new ArrayList<String>();
-        Resource resource = resourceLoader.getResource("classpath:stopwords.txt");
-        InputStream inputStream = resource.getInputStream();
-
-        try (Scanner s = new Scanner(inputStream)) {
-            while (s.hasNext()) {
-                stopwordsList.add(s.next());
-            }
-        }
-
-        StringBuilder query = new StringBuilder();
-        for (String word : listOfWords) {
-            if (!stopwordsList.contains(word)) {
-                query.append(" ");
-                query.append(word);
-            }
-        }
-        return query;
-    }
-
-    /* DEBUG ONLY - do usuniecia
-        @GetMapping("/find/all")
-        public Iterable<Person> findAllPersons() {
-            return personRepository.findAll();
-        }
-    */
     @GetMapping("/find/city/{city}")
     public List<Person> findByCity(@PathVariable String city) {
         return personRepository.findByCity(city.replace("-"," "));

@@ -26,7 +26,7 @@ public class EportfolioElasticApplication {
     @Autowired
     ResourceLoader resourceLoader;
 
-    @GetMapping("/find/query")
+    @PostMapping("/find/query")
     public Iterable<Person> findByQuery(@NonNull @RequestBody String queryString) throws IOException {
         StringBuilder queryNoStopwords = removeStopwords(queryString);
 
@@ -34,7 +34,7 @@ public class EportfolioElasticApplication {
         return personRepository.search(queryBuilder);
     }
 
-    @GetMapping("/find/query-advanced")
+    @PostMapping("/find/query-advanced")
     public Iterable<Person> findByQueryAdvanced(@NonNull @RequestBody AdvancedQueryHandler advancedQueryHandler) throws IOException {
 
         String queryText = advancedQueryHandler.getQueryText();

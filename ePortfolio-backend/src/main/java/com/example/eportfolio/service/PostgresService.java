@@ -17,11 +17,12 @@ import org.springframework.stereotype.Repository;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Stream;
 
 @Repository("postgres")
-public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao, SkillDao {
+public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao, SkillDao, ChatDao {
 
     @Autowired
     private EmailService service;
@@ -994,5 +995,163 @@ public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao, 
         skillData.setSkillType(jdbcTemplate.queryForList(sqlSkillType));
 
         return skillData;
+    }
+
+//    Chat
+    @Override
+    public int createChat(UUID chatId, List<ChatMember> members) throws SQLException {
+
+    Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
+    conn.setAutoCommit(false);
+    try {
+        final String addChatSQL = "INSERT INTO Chats(id, chat_name) " +
+                "VALUES (" +
+                "'" + chatId + "', " +
+                "'Konwersacja'" +
+                ")";
+
+
+        conn.prepareStatement(addChatSQL).executeUpdate();
+        conn.commit();
+        for (ChatMember member : members) {
+            if (member != null) {
+                addChatMember(chatId, member.getMemberId());
+            }
+        }
+
+        return 1;
+    } catch (SQLException e) {
+        conn.rollback();
+        e.printStackTrace();
+        System.err.println("Add chat to database error.");
+        return 0;
+    }
+}
+
+    @Override
+    public int sendMessage(Message message) throws SQLException {
+
+        Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
+        conn.setAutoCommit(false);
+        try {
+            final String addChatSQL = "INSERT INTO messages(chat_id, sender_id, message) " +
+                    "VALUES (" +
+                    "'" + message.getChatId() + "', " +
+                    "'" + message.getSenderId() + "', " +
+                    "'" + message.getMessage()+ "'" +
+                    ")";
+
+            System.err.println(addChatSQL);
+            conn.prepareStatement(addChatSQL).executeUpdate();
+            conn.commit();
+            return 1;
+        } catch (SQLException e) {
+            conn.rollback();
+            e.printStackTrace();
+            System.err.println("Add message to database error.");
+            return 0;
+        }
+    }
+
+    @Override
+    public int addChatMember(UUID chatId, UUID memberID) throws SQLException {
+        final String sqlFirst = "SELECT * FROM chat_members WHERE chat_id = '" + chatId + "' AND member_id = '" + memberID + "'";
+
+        List<UUID> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
+            return UUID.fromString(resultSet.getString("id"));
+        });
+        if (listFind.isEmpty()) {
+            Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
+            conn.setAutoCommit(false);
+            try {
+                final String addChatSQL = "INSERT INTO chat_members(chat_id, member_id) " +
+                        "VALUES (" +
+                        "'" + chatId + "', " +
+                        "'" + memberID + "'" +
+                        ")";
+
+
+                conn.prepareStatement(addChatSQL).executeUpdate();
+                conn.commit();
+                return 1;
+            } catch (SQLException e) {
+                conn.rollback();
+                e.printStackTrace();
+                System.err.println("Add chat member to database error.");
+                return 0;
+            }
+        } else
+            return 0;
+    }
+
+    @Override
+    public List<Message> getChatMessages(Chat chat) throws SQLException {
+        final String sql = "SELECT * FROM messages WHERE chat_id = '" + chat.getId() + "'";
+
+        return jdbcTemplate.query(sql, (resultSet, i) -> {
+            return new Message(
+                    resultSet.getInt("id"),
+                    UUID.fromString(resultSet.getString("chat_id")),
+                    UUID.fromString(resultSet.getString("sender_id")),
+                    resultSet.getString("message"),
+                    Timestamp.valueOf(resultSet.getString("send_date"))
+            );
+        });
+    }
+
+    @Override
+    public List<Message> getChatHeaders(UUID memberId) throws SQLException {
+        final String sql = "Select DISTINCT on (chat_id)" +
+                "id,chat_id, message, sender_id, send_date " +
+                "from messages where " +
+                "                                                                  chat_id in " +
+                "                                                                  (select chat_id from chat_members where member_id ='" +
+                memberId+
+                "') " +
+                "order by chat_id, send_date desc";
+
+        return jdbcTemplate.query(sql, (resultSet, i) -> {
+            return new Message(
+                    resultSet.getInt("id"),
+                    UUID.fromString(resultSet.getString("chat_id")),
+                    UUID.fromString(resultSet.getString("sender_id")),
+                    resultSet.getString("message"),
+                    Timestamp.valueOf(resultSet.getString("send_date"))
+            );
+        });
+    }
+
+    @Override
+    public List<ChatMember> getChatMembers(Chat chat) throws SQLException {
+
+        final String sql = "select member_id from chat_members where chat_id ='" +
+                chat.getId() +
+                "'";
+
+        return jdbcTemplate.query(sql, (resultSet, i) -> {
+            return new ChatMember(
+                    null ,
+                    null,
+                    UUID.fromString(resultSet.getString("member_id"))
+            );
+        });
+
+    }
+
+    @Override
+    public List<Map<String, Object>> getChats(UUID id) {
+        final String sql = "SELECT c.id, cm.member_id, u.first_name, u.last_name, u.image FROM chats c\n" +
+                "    INNER JOIN chat_members cm on c.id = cm.chat_id\n" +
+                "    INNER JOIN users u on u.id = cm.member_id\n" +
+                "WHERE c.id IN(\n" +
+                "        SELECT c.id FROM chats c\n" +
+                "            INNER JOIN chat_members cm on c.id = cm.chat_id\n" +
+                "        WHERE cm.member_id = ?\n" +
+                "    )\n" +
+                "AND cm.member_id != ?";
+
+        List<Map<String, Object>> chatsList = jdbcTemplate.queryForList(sql, id, id);
+
+        return chatsList;
     }
 }

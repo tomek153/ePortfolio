@@ -6,6 +6,7 @@ import './Css/auth.css';
 import './Css/profile.css';
 import './Css/start.css';
 import './Css/search.css';
+import './Css/chat.css';
 
 import ContentRoute from './Route/content-route';
 import HeaderRoute from './Route/header-route';
@@ -22,7 +23,8 @@ function App() {
     useEffect(() => {
         if (window.location.href.toString().includes("/logowanie") ||
             window.location.href.toString().includes("/moj-profil") ||
-            window.location.href.toString().includes("/wyszukiwarka")
+            window.location.href.toString().includes("/wyszukiwarka") ||
+            window.location.href.toString().includes("/wiadomosci")
         ) {
 
             checkIsAuth();
@@ -93,7 +95,7 @@ function App() {
             return (
                 <>
                     <HeaderRoute userInfo={userInfo} tokenValid={tokenValid}/>
-                    <ContentRoute/>
+                    <ContentRoute userInfoContent={userInfo}/>
                 </>
             );
         }

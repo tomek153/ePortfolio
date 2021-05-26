@@ -14,6 +14,7 @@ const HeaderRoute = (props) => (
             <Route exact path="/" component={HomeHeader} />
             <Route exact path="/moj-profil" render={() => <AuthHeader activePage="profile" userInfo={props}/>}/>
             <Route exact path="/wyszukiwarka" render={() => <AuthHeader activePage="searching" userInfo={props}/>}/>
+            <Route exact path="/wiadomosci" render={() => <AuthHeader activePage="chat" userInfo={props}/>}/>
             <Route path="/wyszukiwarka/profil/:id" render={() => <AuthHeader userInfo={props}/>}/>
             <Route path="/logowanie" component={HomeHeader}/>
             <Route path="/rejestracja" component={HomeHeader}/>

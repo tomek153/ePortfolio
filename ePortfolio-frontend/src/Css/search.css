@@ -189,3 +189,7 @@ ul.pagination {
     position: relative;
     bottom: 10px;
 }
+.search-profile-link:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}

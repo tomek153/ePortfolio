@@ -3,11 +3,8 @@ import Breadcrumb from "react-bootstrap/Breadcrumb";
 import {Accordion, Card, Container, Row, Button, Col, FormLabel, FormControl} from "react-bootstrap";
 import FooterAuth from "../Other/footer-auth";
 import LoadingElement from "../Other/loading-element";
-import UserCard from "./user-card";
 import Select from "react-select";
-import {Input} from "@material-ui/core";
 import Form from "react-bootstrap/Form";
-import PaginationCustom from "./pagination";
 import SearchResults from "./search-results";
 
 class Searching extends Component {

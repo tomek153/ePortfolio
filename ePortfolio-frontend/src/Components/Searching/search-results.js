@@ -9,7 +9,7 @@ const SearchResults = ({data}) => {
 
     const indexOfLastUser = currentPage * usersPerPage;
     const indexOfFirstUser = indexOfLastUser - usersPerPage;
-    const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
+    const currentUsers = data.slice(indexOfFirstUser, indexOfLastUser);
 
     const paginate = pageNumber => setCurrentPage(pageNumber);
 
@@ -21,7 +21,7 @@ const SearchResults = ({data}) => {
             <br/>
             <PaginationCustom
                 usersPerPage={usersPerPage}
-                totalUsers={users.length}
+                totalUsers={data.length}
                 paginate={paginate}
             />
             <br/>

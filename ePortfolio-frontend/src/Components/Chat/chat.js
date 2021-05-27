@@ -3,6 +3,7 @@ import Breadcrumb from "react-bootstrap/Breadcrumb";
 import {Button, Col, Container, FormControl, FormLabel, Image, ListGroup, Row} from "react-bootstrap";
 import FooterAuth from "../Other/footer-auth";
 import LoadingElement from "../Other/loading-element";
+import {Redirect} from "react-router-dom";
 
 class Chat extends Component {
     _isMounted = true;
@@ -30,6 +31,20 @@ class Chat extends Component {
             this.state.userInfo = this.props.userInfoContent.userInfoContent;
             this.state.userChats = await this.getChats();
 
+            if (this.props.location.newChat) {
+                var chat_exists = false
+                for (const chat of this.state.userChats) {
+                    if (chat.member_id === this.props.location.newChat.id) {
+                        chat_exists = true;
+                        break;
+                    }
+                }
+
+                if (!chat_exists) {
+                    await this.createChat(this.props.userInfoContent.userInfoContent.id, this.props.location.newChat.id);
+                }
+            }
+
             this.setState({_dataLoaded: true});
         }
     }
@@ -50,7 +65,7 @@ class Chat extends Component {
         chats_list.forEach(single => {
             single.classList.remove("active");
         });
-        document.querySelector("div.chat-users-list-single[data-key="+user.id+"]").classList.add("active");
+        document.querySelector("div.chat-users-list-single[data-key='"+user.id+"']").classList.add("active");
 
         this.state.messageToSend = "";
         document.getElementById("chat-messeges-input").value = "";
@@ -103,6 +118,84 @@ class Chat extends Component {
             window.location.href = '/logowanie';
         }
     }
+    async sendMessageRequest(message) {
+        var myHeaders = new Headers();
+        myHeaders.append('Content-Type', 'application/json; charset=utf-8');
+
+        const request = new Request(
+            'http://localhost:8080/chat/send',
+            {
+                method: 'POST',
+                headers: myHeaders,
+                body: JSON.stringify(message)
+            }
+        );
+
+        const response = await fetch(request);
+        if (response.status === 200) {
+            var newMessages = this.state.messages;
+            newMessages.push(message);
+
+            this.setState({messages: newMessages});
+            this.state.messageToSend = "";
+            document.getElementById("chat-messeges-input").value = "";
+        } else {
+            localStorage.removeItem("token");
+            window.location.href = '/logowanie';
+        }
+    }
+    async createChat(my_id, user_id) {
+        var myHeaders = new Headers();
+        myHeaders.append('Content-Type', 'application/json; charset=utf-8');
+
+        const request = new Request(
+            'http://localhost:8080/chat/create',
+            {
+                method: 'POST',
+                headers: myHeaders,
+                body: JSON.stringify([{
+                        id: "",
+                        chatId: "",
+                        memberId: my_id
+                    }, {
+
+                        id: "",
+                        chatId: "",
+                        memberId: user_id
+                    }])
+            }
+        );
+
+        const response = await fetch(request);
+        if (response.status === 200) {
+            window.location.reload();
+        } else {
+            localStorage.removeItem("token");
+            window.location.href = '/logowanie';
+        }
+    }
+    async removeChat(id) {
+        document.querySelector("div.chat-users-list-single[data-key='"+id+"'] > i").style.disabled = true;
+
+        var myHeaders = new Headers();
+        myHeaders.append('Content-Type', 'application/json; charset=utf-8');
+
+        const request = new Request(
+            'http://localhost:8080/chat/delete/'+id,
+            {
+                method: 'DELETE',
+                headers: myHeaders
+            }
+        );
+
+        const response = await fetch(request);
+        if (response.status === 200) {
+            document.location.reload();
+        } else {
+            localStorage.removeItem("token");
+            window.location.href = '/logowanie';
+        }
+    }
 
     displayDate(date_message) {
         var date = new Date(date_message.send_date);
@@ -128,7 +221,9 @@ class Chat extends Component {
 
         return <> {date_string} </>
     }
-    sendMessage() {
+    async sendMessage() {
+        this.setState({status_messageToSend: false});
+
         var newMessage = {
             id: this.state.messages.length+1,
             chatId: this.state.activeUser.id,
@@ -137,13 +232,7 @@ class Chat extends Component {
             send_date: new Date()
         }
 
-        var newMessages = this.state.messages;
-        newMessages.push(newMessage);
-
-        this.setState({messages: newMessages});
-        this.state.messageToSend = "";
-        document.getElementById("chat-messeges-input").value = "";
-        this.setState({status_messageToSend: false});
+        await this.sendMessageRequest(newMessage);
     }
     messageControll(event) {
         var value = event.target.value;
@@ -178,7 +267,7 @@ class Chat extends Component {
                                             <ListGroup.Item onClick={() => this.openMessages(user)} className="chat-users-list-single" key={i} data-key={user.id}>
                                                 <Image src={user.image} className="chat-users-avatars" roundedCircle/>&nbsp;&nbsp;
                                                 {user.first_name} {user.last_name}
-                                                <i className="fas fa-trash chat-users-remove-chat-icon"/>
+                                                <i className="fas fa-trash chat-users-remove-chat-icon" onClick={() => this.removeChat(user.id)}/>
                                             </ListGroup.Item>
                                         )}
                                     </ListGroup>

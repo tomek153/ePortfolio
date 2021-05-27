@@ -37,4 +37,6 @@ public interface ChatDao {
     // GET DATA METHODS -END-
 
     List<Map<String, Object>> getChats(UUID id);
+
+    void deleteChat(UUID id);
 }

@@ -1154,4 +1154,15 @@ public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao, 
 
         return chatsList;
     }
+
+    @Override
+    public void deleteChat(UUID id) {
+        final String sql1 = "DELETE FROM messages WHERE chat_id = ?";
+        final String sql2 = "DELETE FROM chat_members WHERE chat_id = ?";
+        final String sql3 = "DELETE FROM chats WHERE id = ?";
+
+        jdbcTemplate.update(sql1, id);
+        jdbcTemplate.update(sql2, id);
+        jdbcTemplate.update(sql3, id);
+    }
 }

@@ -831,7 +831,7 @@ class Searching extends Component {
                                                 </Row>
                                                 <br/>
                                                 <Row style={{justifyContent: "center"}}>
-                                                    <Button className="search-filters-clear-button" variant="link" onClick={this.clearFilter.bind(this)}>Wyszyść filtry</Button>
+                                                    <Button className="search-filters-clear-button" variant="link" onClick={this.clearFilter.bind(this)}>Wyczyść filtry</Button>
                                                 </Row>
                                             </Card.Body>
                                         </Accordion.Collapse>

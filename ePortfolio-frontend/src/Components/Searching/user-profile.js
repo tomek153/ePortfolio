@@ -298,7 +298,7 @@ class UserProfile extends Component {
                                     </Row>
                                     <Row>
                                         <Col className="search-profile-section-title">
-                                            Koursy/Szkolenia
+                                            Kursy/Szkolenia
                                         </Col>
                                     </Row>
                                     <Row>

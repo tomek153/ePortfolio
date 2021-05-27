@@ -110,6 +110,7 @@
 .search-profile-row-spec {
     font-size: 1.0rem;
     text-transform: lowercase;
+    margin-bottom: 5px;
 }
 .search-profile-row-loc {
     font-size: 0.9rem;

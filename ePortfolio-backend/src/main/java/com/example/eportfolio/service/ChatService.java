@@ -49,5 +49,7 @@ public class ChatService {
     // ADD CHAT METHODS -END-
 
     public List<Map<String, Object>> getChats(UUID id) { return chatDao.getChats(id); }
+
+    public void deleteChat(UUID id) { chatDao.deleteChat(id); }
 }
 

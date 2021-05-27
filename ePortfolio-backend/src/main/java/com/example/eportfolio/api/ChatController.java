@@ -16,8 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 @RestController
@@ -137,6 +136,11 @@ public class ChatController {
     @RequestMapping (value = "/chat/getChatsById/{id}", method = GET)
     public List<Map<String, Object>> getChats(@PathVariable("id") UUID id, HttpServletRequest request) {
         return service.getChats(id);
+    }
+
+    @RequestMapping (value = "/chat/delete/{id}", method = DELETE)
+    public void deleteChat(@PathVariable("id") UUID id, HttpServletRequest request) {
+        service.deleteChat(id);
     }
 
 }

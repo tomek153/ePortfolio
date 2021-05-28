@@ -78,9 +78,11 @@ public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao, 
                 MailResponseModel response = service.sendRegisterEmail(request, model);
             } catch (MailAuthenticationException mae) {
                 mae.printStackTrace();
+                conn.rollback();
                 return 3;
             } catch (MailException me) {
                 me.printStackTrace();
+                conn.rollback();
                 return 2;
             }
             return 1;

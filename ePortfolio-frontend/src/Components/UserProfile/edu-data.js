@@ -298,8 +298,10 @@ class EducationData extends Component {
     }
     clearForm() {
         this.setState({form_institution: ""});
-        this.setState({form_type: ""});
-        this.setState({form_spec: ""});
+        this.setState({form_type: null});
+        this.state.form_type = null;
+        this.setState({form_spec: null});
+        this.state.form_spec = null;
         this.setState({form_start_date: ""});
         this.setState({form_end_date: ""});
         this.setState({form_description: ""});
@@ -314,10 +316,6 @@ class EducationData extends Component {
 
         document.getElementById("eduInstitution").value = "";
         document.getElementById("eduDescription").value = "";
-        this.setState({form_type: null});
-        this.state.form_type = null;
-        this.setState({form_spec: null});
-        this.state.form_spec = null;
     }
 
     render() {

@@ -1,0 +1,11 @@
+version: "3"
+services:
+  frontend:
+    build: .
+    ports:
+      - "3000:3000"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20000k"
+        max-file: "1"

@@ -72,10 +72,6 @@ class ConfirmationLinkSuccess extends Component {
         this.closeModal();
         window.location.href = "/";
     }
-    clearFailedMessage() {
-        document.getElementById("failedMessageExpired").style.display = "none";
-        document.getElementById("failedMessageDeactivated").style.display = "none";
-    }
     checkConfirmationLink() {
         this.setState({modalLoading: true});
 

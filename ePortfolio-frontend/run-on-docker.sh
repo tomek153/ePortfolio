@@ -1,1 +1,0 @@
-docker-compose --project-name eportfolio up -d

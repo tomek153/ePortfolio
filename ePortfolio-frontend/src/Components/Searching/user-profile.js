@@ -22,54 +22,57 @@ class UserProfile extends Component {
     }
 
     componentDidMount() {
-        this._isMounted = true;
-        var token = localStorage.getItem("token");
+        if (Object.entries(this.props.userInfoContent).length !== 0) {
+            this._isMounted = true;
+            var token = localStorage.getItem("token");
 
-        if (token != null && token !== "") {
+            if (token != null && token !== "") {
 
-            var myHeaders = new Headers();
-            myHeaders.append('Content-Type', 'application/json');
-            myHeaders.append('Authorization', localStorage.getItem("token"));
+                var myHeaders = new Headers();
+                myHeaders.append('Content-Type', 'application/json');
+                myHeaders.append('Authorization', localStorage.getItem("token"));
 
-            const request = new Request(
-                'http://localhost:8080/api/searching/user/'+this.props.match.params.id,
-                {
-                    method: 'GET',
-                    headers: myHeaders
-                }
-            );
-
-            fetch(request)
-                .then(response => {
-                    if (this._isMounted) {
-                        if (response.status === 200) {
-                            response.json()
-                                .then(data => {
-                                    if (!data.error) {
-                                        this.setState({user: data});
-                                        this.state.user = data;
-                                        this.setState({_dataLoaded: true});
-                                    } else {
-                                        localStorage.removeItem("token");
-                                        window.location.href = '/logowanie';
-                                    }
-                                });
-                        } else {
-                            localStorage.removeItem("token");
-                            window.location.href = '/logowanie';
-                        }
+                const request = new Request(
+                    'http://localhost:8080/api/searching/user/' + this.props.match.params.id,
+                    {
+                        method: 'GET',
+                        headers: myHeaders
                     }
-                });
+                );
 
-        } else {
-            window.location.href = '/logowanie';
+                fetch(request)
+                    .then(response => {
+                        if (this._isMounted) {
+                            if (response.status === 200) {
+                                response.json()
+                                    .then(data => {
+                                        if (!data.error) {
+                                            this.setState({user: data});
+                                            this.state.user = data;
+                                            this.setState({_dataLoaded: true});
+                                        } else {
+                                            localStorage.removeItem("token");
+                                            window.location.href = '/logowanie';
+                                        }
+                                    });
+                            } else {
+                                localStorage.removeItem("token");
+                                window.location.href = '/logowanie';
+                            }
+                        }
+                    });
+
+            } else {
+                window.location.href = '/logowanie';
+            }
         }
     }
     componentWillUnmount() {
         this._isMounted = false;
     }
     sendMessage() {
-        this.setState({_redirect: true});
+        if (this.props.userInfoContent.userInfoContent.id !== this.props.match.params.id)
+            this.setState({_redirect: true});
     }
 
     render() {
@@ -114,12 +117,17 @@ class UserProfile extends Component {
                                                     }
                                                 </Col>
                                                 <Col xs={3}>
-                                                    <div style={{float: "left"}}>
-                                                        <i className="fas fa-comment search-profile-icon"/>
-                                                    </div>
-                                                    <div style={{float: "left"}} className="search-profile-link" onClick={this.sendMessage.bind(this)}>
-                                                        Wyślij wiadomość
-                                                    </div>
+                                                    {this.props.userInfoContent.userInfoContent.id !== this.props.match.params.id
+                                                        ? <>
+                                                            <div style={{float: "left"}}>
+                                                                <i className="fas fa-comment search-profile-icon"/>
+                                                            </div>
+                                                            <div style={{float: "left"}} className="search-profile-link" onClick={this.sendMessage.bind(this)}>
+                                                                Wyślij wiadomość
+                                                            </div>
+                                                        </>
+                                                        : null
+                                                    }
                                                 </Col>
                                             </Row>
                                             <Row style={{paddingLeft: "30px"}}>

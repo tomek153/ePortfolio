@@ -1,9 +1,13 @@
 package com.example.eportfolio.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.UUID;
 
+@Getter
+@Setter
 public class UserSetting {
 
     private final UUID id;
@@ -31,38 +35,5 @@ public class UserSetting {
         this.setting_img = setting_img;
         this.setting_consent = setting_consent;
         this.setting_allow_contact = setting_allow_contact;
-
-    }
-
-    public UUID getUserSettingId() {
-        return id;
-    }
-
-    public UUID getUserId() {
-        return userID;
-    }
-
-    public boolean isSetting_public() {
-        return setting_public;
-    }
-
-    public String getSetting_header1() {
-        return setting_header1;
-    }
-
-    public String getSetting_header2() {
-        return setting_header2;
-    }
-
-    public String getSetting_img() {
-        return setting_img;
-    }
-
-    public boolean isSetting_consent() {
-        return setting_consent;
-    }
-
-    public boolean isSetting_allow_contact() {
-        return setting_allow_contact;
     }
 }

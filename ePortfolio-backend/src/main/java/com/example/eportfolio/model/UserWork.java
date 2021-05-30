@@ -1,32 +1,36 @@
 package com.example.eportfolio.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.UUID;
 
+@Getter
+@Setter
 public class UserWork {
 
     private final UUID id;
     private final UUID userID;
-    private final int work_industry;
-    private final int work_type;
+    private final String work_industry;
+    private final String work_type;
     private final String work_name;
     private final String work_time_start;
     private final String work_time_end;
     private final String work_place;
     private final String work_desc;
-    private final String work_location;
+    private final String work_profession;
 
     public UserWork(@JsonProperty("id") UUID id,
-                    @JsonProperty("userID") UUID userID,
-                    @JsonProperty("industry") int work_industry,
-                    @JsonProperty("type") int work_type,
+                    @JsonProperty("user_id") UUID userID,
+                    @JsonProperty("industry") String work_industry,
+                    @JsonProperty("type") String work_type,
                     @JsonProperty("name") String work_name,
-                    @JsonProperty("timeStart") String work_time_start,
-                    @JsonProperty("timeEnd") String work_time_end,
+                    @JsonProperty("time_start") String work_time_start,
+                    @JsonProperty("time_end") String work_time_end,
                     @JsonProperty("place") String work_place,
                     @JsonProperty("desc") String work_desc,
-                    @JsonProperty("location") String work_location) {
+                    @JsonProperty("work_profession") String work_profession) {
         this.id = id;
         this.userID = userID;
         this.work_industry = work_industry;
@@ -36,46 +40,6 @@ public class UserWork {
         this.work_time_end = work_time_end;
         this.work_place = work_place;
         this.work_desc = work_desc;
-        this.work_location = work_location;
-    }
-
-    public UUID getUserWorkId() {
-        return id;
-    }
-
-    public UUID getUserWorkUserID() {
-        return userID;
-    }
-
-    public int getWork_industry() {
-        return work_industry;
-    }
-
-    public int getWork_type() {
-        return work_type;
-    }
-
-    public String getWork_name() {
-        return work_name;
-    }
-
-    public String getWork_time_start() {
-        return work_time_start;
-    }
-
-    public String getWork_time_end() {
-        return work_time_end;
-    }
-
-    public String getWork_place() {
-        return work_place;
-    }
-
-    public String getWork_desc() {
-        return work_desc;
-    }
-
-    public String getWork_location() {
-        return work_location;
+        this.work_profession = work_profession;
     }
 }

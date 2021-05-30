@@ -1,8 +1,7 @@
 package com.example.eportfolio.service;
 
 import com.example.eportfolio.api.DeleteMethods;
-import com.example.eportfolio.dao.FixedDataDao;
-import com.example.eportfolio.dao.UserDao;
+import com.example.eportfolio.dao.*;
 import com.example.eportfolio.model.*;
 import com.example.eportfolio.smtp.EmailService;
 import com.example.eportfolio.smtp.MailRequestModel;
@@ -15,12 +14,16 @@ import org.springframework.mail.MailAuthenticationException;
 import org.springframework.mail.MailException;
 import org.springframework.stereotype.Repository;
 
+import javax.xml.crypto.Data;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.*;
+import java.util.stream.Stream;
 
 @Repository("postgres")
-public class PostgresService implements UserDao, FixedDataDao {
+public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao, SkillDao, ChatDao {
 
     @Autowired
     private EmailService service;
@@ -33,102 +36,64 @@ public class PostgresService implements UserDao, FixedDataDao {
     }
 
     @Override
-    public int addUser(UUID id, User user) throws SQLException {
-        final String sqlFirst = "SELECT * FROM users WHERE email = '"+user.getEmail()+"'";
+    public int addUser(User user) throws SQLException {
+
         String emailKey;
-        String idKey;
 
-        List<User> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
-            return new User(
-                    UUID.fromString(resultSet.getString("id")),
-                    resultSet.getString("first_name"),
-                    resultSet.getString("last_name"),
-                    resultSet.getString("email"),
-                    resultSet.getString("password"),
-                    resultSet.getString("role"),
-                    resultSet.getBoolean("confirmed")
-            );
-        });
+        final String sqlAddUser = "SELECT add_user('"
+                +user.getFirstName()+"', '"
+                +user.getLastName()+"', '"
+                +user.getEmail()+"', '"
+                +user.getPassword()+"', '"
+                +user.getRole()+"')"
+        ;
+
         Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
+        conn.setAutoCommit(false);
+        try {
+            ResultSet addUserResultSet = conn.prepareStatement(sqlAddUser).executeQuery();
+            addUserResultSet.next();
+            user.setId((UUID)addUserResultSet.getObject("add_user"));
 
-        if (listFind.isEmpty()) {
+            final String sqlAddUserBio = "SELECT add_user_bio('"+user.getId()+"', '', '', '', '', '', null, '')";
+            final String sqlAddUserSettings = "SELECT add_user_settings('"+user.getId()+"', true, '', '', true, true)";
+            final String sqlAddUserConfirmationEmail = "SELECT add_user_confirmation_email('"+user.getId()+"', false)";
+
+            conn.prepareStatement(sqlAddUserBio).execute();
+            conn.prepareStatement(sqlAddUserSettings).execute();
+
+            ResultSet addConfirmationEmailResultSet = conn.prepareStatement(sqlAddUserConfirmationEmail).executeQuery();
+            addConfirmationEmailResultSet.next();
+            emailKey = addConfirmationEmailResultSet.getObject("add_user_confirmation_email").toString();
+
+            conn.commit();
+
+            Map<String, Object> model = new HashMap<>();
+            model.put("Name", user.getFirstName());
+            model.put("location", "Poznań, Polska");
+            model.put( "idKey", user.getId());
+            model.put( "linkKey", emailKey);
+
             try {
-                conn.setAutoCommit(false);
-                UUID userUUID = UUID.randomUUID();
-
-                final String addUserSQL = "INSERT INTO users (id, first_name, last_name, email, password, role, confirmed) " +
-                        "VALUES (" +
-                        "'"+userUUID+"', " +
-                        "'"+user.getFirstName()+"', " +
-                        "'"+user.getLastName()+"', " +
-                        "'"+user.getEmail()+"', " +
-                        "md5('"+user.getPassword()+"'),"+
-                        "'"+user.getRole()+"',"+
-                        ""+user.isConfirmed()+
-                        ")";
-
-                final String addUserBioSQL = "INSERT INTO users_bio (id, user_uuid, phone, address_main, address_city, address_zip, address_country, date_birth, gender) VALUES (" +
-                        "uuid_generate_v4(), " +
-                        "'"+userUUID+"', " +
-                        "'','','','','','1900-01-01', '')";
-
-                final String addUserSettingSQL = "INSERT INTO users_setting (id, user_uuid, setting_public, setting_header1, setting_header2, setting_img, setting_consent, setting_allow_contact) " +
-                        "VALUES (uuid_generate_v4(), " +
-                        "'"+userUUID+"', " +
-                        "'true', " +
-                        "'', " +
-                        "'', " +
-                        "'-1',"+
-                        "'true',"+
-                        "'true'" +
-                        ")";
-
-                final String addConfirmationEmailSQL = "INSERT INTO confirmation_emails (id, user_uuid, status) VALUES (" +
-                        "uuid_generate_v4(), " +
-                        "'"+userUUID+"', " +
-                        "false )";
-
-                conn.prepareStatement(addUserSQL).executeUpdate();
-                conn.prepareStatement(addUserBioSQL).executeUpdate();
-                conn.prepareStatement(addUserSettingSQL).executeUpdate();
-                conn.prepareStatement(addConfirmationEmailSQL).executeUpdate();
-                conn.commit();
-
-                String getEmailKey = "SELECT id FROM confirmation_emails WHERE user_uuid IN (SELECT id FROM users WHERE email = '"+user.getEmail()+"') AND status = false";
-                emailKey = jdbcTemplate.queryForObject(getEmailKey, new Object[]{}, (resultSet, i) -> {
-                    return new String (resultSet.getString("id"));
-                });
-                String getIdKey = "SELECT id FROM users WHERE email IN ('"+user.getEmail()+"')";
-                idKey = jdbcTemplate.queryForObject(getIdKey, new Object[]{}, (resultSet, i) -> {
-                    return new String (resultSet.getString("id"));
-                });
-
-                Map<String, Object> model = new HashMap<>();
-                model.put("Name", user.getFirstName());
-                model.put("location", "Poznań, Polska");
-                model.put( "idKey", idKey);
-                model.put( "linkKey", emailKey);
-
-                try {
-                    MailRequestModel request = new MailRequestModel(user.getFirstName(), user.getEmail(), "ePortfolio", "ePortfolio | Potwierdzenie rejestracji");
-                    MailResponseModel response = service.sendRegisterEmail(request, model);
-                } catch (MailAuthenticationException mae) {
-                    mae.printStackTrace();
-                    return 3;
-                } catch (MailException me) {
-                    me.printStackTrace();
-                    return 2;
-                }
-                return 1;
-
-            } catch (SQLException e) {
+                MailRequestModel request = new MailRequestModel(user.getFirstName(), user.getEmail(), "ePortfolio", "ePortfolio | Potwierdzenie rejestracji");
+                MailResponseModel response = service.sendRegisterEmail(request, model);
+            } catch (MailAuthenticationException mae) {
+                mae.printStackTrace();
                 conn.rollback();
-                e.printStackTrace();
-                System.err.println("Add user to database error.");
-                return 0;
+                return 3;
+            } catch (MailException me) {
+                me.printStackTrace();
+                conn.rollback();
+                return 2;
             }
-        } else
+            return 1;
+
+        } catch (SQLException e) {
+            conn.rollback();
+            e.printStackTrace();
+            System.err.println("Add user to database error.");
             return 0;
+        }
 
     }
 
@@ -144,6 +109,7 @@ public class PostgresService implements UserDao, FixedDataDao {
                     resultSet.getString("last_name"),
                     resultSet.getString("email"),
                     resultSet.getString("password"),
+                    resultSet.getString("image"),
                     resultSet.getString("role"),
                     resultSet.getBoolean("confirmed")
             );
@@ -173,6 +139,7 @@ public class PostgresService implements UserDao, FixedDataDao {
                     resultSet.getString("last_name"),
                     resultSet.getString("email"),
                     resultSet.getString("password"),
+                    resultSet.getString("image"),
                     resultSet.getString("role"),
                     resultSet.getBoolean("confirmed")
             );
@@ -219,6 +186,7 @@ public class PostgresService implements UserDao, FixedDataDao {
             }
         }
     }
+
     @Override
     public List<User> getUsers() {
         final String sql = "SELECT * FROM users";
@@ -230,6 +198,7 @@ public class PostgresService implements UserDao, FixedDataDao {
                     resultSet.getString("last_name"),
                     resultSet.getString("email"),
                     resultSet.getString("password"),
+                    resultSet.getString("image"),
                     resultSet.getString("role"),
                     resultSet.getBoolean("confirmed")
             );
@@ -247,6 +216,7 @@ public class PostgresService implements UserDao, FixedDataDao {
                     resultSet.getString("last_name"),
                     resultSet.getString("email"),
                     resultSet.getString("password"),
+                    resultSet.getString("image"),
                     resultSet.getString("role"),
                     resultSet.getBoolean("confirmed")
             );
@@ -256,10 +226,10 @@ public class PostgresService implements UserDao, FixedDataDao {
     }
 
     @Override
-    public Optional<User> getUserByID(UUID id) {
+    public User getUserByID(UUID id) {
         final String sql = "SELECT * FROM users WHERE id = ?";
 
-        User user = jdbcTemplate.queryForObject(
+        return jdbcTemplate.queryForObject(
                 sql,
                 new Object[]{id},
                 (resultSet, i) -> {
@@ -268,13 +238,12 @@ public class PostgresService implements UserDao, FixedDataDao {
                             resultSet.getString("first_name"),
                             resultSet.getString("last_name"),
                             resultSet.getString("email"),
-                            resultSet.getString("password"),
+                            resultSet.getString("image"),
                             resultSet.getString("role"),
                             resultSet.getBoolean("confirmed")
                     );
                 }
         );
-        return Optional.ofNullable(user);
     }
 
     @Override
@@ -294,7 +263,8 @@ public class PostgresService implements UserDao, FixedDataDao {
                             resultSet.getString("address_zip"),
                             resultSet.getString("address_country"),
                             resultSet.getString("date_birth"),
-                            resultSet.getString("gender")
+                            resultSet.getString("gender"),
+                            resultSet.getString("image")
                     );
                 }
         );
@@ -303,7 +273,7 @@ public class PostgresService implements UserDao, FixedDataDao {
 
     @Override
     public List<UserWork> getUserWorkByID(UUID ID) {
-        final String sql = "SELECT * FROM users_work WHERE user_uuid = ?";
+        final String sql = "SELECT * FROM user_work_profile WHERE user_uuid = ? ORDER BY work_time_end DESC";
 
         return jdbcTemplate.query(
                 sql,
@@ -312,38 +282,14 @@ public class PostgresService implements UserDao, FixedDataDao {
                     return new UserWork(
                             UUID.fromString(resultSet.getString("id")),
                             UUID.fromString(resultSet.getString("user_uuid")),
-                            resultSet.getInt("work_industry"),
-                            resultSet.getInt("work_type"),
+                            resultSet.getString("work_industry"),
+                            resultSet.getString("work_type"),
                             resultSet.getString("work_name"),
                             resultSet.getString("work_time_start"),
                             resultSet.getString("work_time_end"),
                             resultSet.getString("work_place"),
                             resultSet.getString("work_desc"),
-                            resultSet.getString("work_location")
-                    );
-                }
-        );
-
-    }
-
-    @Override
-    public List<UserEdu> getUserEduByID(UUID ID) {
-        final String sql = "SELECT * FROM users_edu WHERE user_uuid = ?";
-
-        return jdbcTemplate.query(
-                sql,
-                new Object[]{ID},
-                (resultSet, i) -> {
-                    return new UserEdu(
-                            UUID.fromString(resultSet.getString("id")),
-                            UUID.fromString(resultSet.getString("user_uuid")),
-                            resultSet.getInt("edu_spec"),
-                            resultSet.getInt("edu_type"),
-                            resultSet.getString("edu_name"),
-                            resultSet.getString("edu_time_start"),
-                            resultSet.getString("edu_time_end"),
-                            resultSet.getString("edu_place"),
-                            resultSet.getString("edu_desc")
+                            resultSet.getString("work_profession")
                     );
                 }
         );
@@ -352,7 +298,7 @@ public class PostgresService implements UserDao, FixedDataDao {
 
     @Override
     public List<UserSkill> getUserSkillByID(UUID ID) {
-        final String sql = "SELECT * FROM users_skill WHERE user_uuid = ?";
+        final String sql = "SELECT * FROM user_skill_profile WHERE user_uuid = ?";
 
         return jdbcTemplate.query(
                 sql,
@@ -361,9 +307,9 @@ public class PostgresService implements UserDao, FixedDataDao {
                     return new UserSkill(
                             UUID.fromString(resultSet.getString("id")),
                             UUID.fromString(resultSet.getString("user_uuid")),
-                            resultSet.getInt("skill_type"),
+                            resultSet.getString("skill_type"),
                             resultSet.getInt("skill_time_months"),
-                            resultSet.getInt("skill_level"),
+                            resultSet.getString("skill_level"),
                             resultSet.getString("skill_name")
                     );
                 }
@@ -436,299 +382,417 @@ public class PostgresService implements UserDao, FixedDataDao {
     }
 
     @Override
-    public int addUserWork(UUID id, UserWork userWork) throws SQLException{
+    public SearchingFilters getSearchingFilters() {
 
-        final String sql = "INSERT INTO users_work(id, user_uuid, work_type, work_name, work_time_start, work_time_end, work_place, work_desc, work_industry, work_location)" +
-                " VALUES (uuid_generate_v4(), " +
-                "'" + id + "', "+
-                "'" + userWork.getWork_type() + "', "+
-                "'" + userWork.getWork_name() + "', "+
-                "'" + userWork.getWork_time_start() + "', "+
-                "'" + userWork.getWork_time_end() + "', "+
-                "'" + userWork.getWork_place() + "', "+
-                "'" + userWork.getWork_desc() + "', "+
-                "'" + userWork.getWork_industry() + "', "+
-                "'" + userWork.getWork_location() + "'" +
-                ")";
-        jdbcTemplate.execute(sql);
-        return 1;
+        SearchingFilters searchingFilters = new SearchingFilters();
+
+        final String sqlCity = "SELECT DISTINCT ON (address_city) row_number() over (order by (Select 0)) as value, address_city as label FROM users_bio WHERE address_city != '';";
+        final String sqlWorkName = "SELECT DISTINCT ON (work_name) row_number() over (order by (Select 0)) as value, work_name as label FROM users_work;";
+        final String sqlWorkIndustry = "SELECT DISTINCT ON (wid.name) row_number() over (order by (Select 0)) as value, wid.name as label FROM users_work INNER JOIN work_industry_data wid on wid.id = users_work.work_industry;";
+        final String sqlEduName = "SELECT DISTINCT ON (edu_name) row_number() over (order by (Select 0)) as value, edu_name as label FROM users_edu;";
+        final String sqlEduSpec = "SELECT DISTINCT ON (esd.name) row_number() over (order by (Select 0)) as value, esd.name as label FROM users_edu INNER JOIN edu_spec_data esd on esd.id = users_edu.edu_spec;";
+        final String sqlSkillName = "SELECT DISTINCT ON (skill_name) row_number() over (order by (Select 0)) as value, skill_name as label FROM users_skill;";
+
+        searchingFilters.setAddressCityList(jdbcTemplate.query(sqlCity, (resultSet, i) -> {
+            return new SelectRow(
+                    resultSet.getInt("value"),
+                    resultSet.getString("label")
+            );
+        }));
+        searchingFilters.setWorkNameList(jdbcTemplate.query(sqlWorkName, (resultSet, i) -> {
+            return new SelectRow(
+                    resultSet.getInt("value"),
+                    resultSet.getString("label")
+            );
+        }));
+        searchingFilters.setWorkIndustryList(jdbcTemplate.query(sqlWorkIndustry, (resultSet, i) -> {
+            return new SelectRow(
+                    resultSet.getInt("value"),
+                    resultSet.getString("label")
+            );
+        }));
+        searchingFilters.setEduNameList(jdbcTemplate.query(sqlEduName, (resultSet, i) -> {
+            return new SelectRow(
+                    resultSet.getInt("value"),
+                    resultSet.getString("label")
+            );
+        }));
+        searchingFilters.setEduSpecList(jdbcTemplate.query(sqlEduSpec, (resultSet, i) -> {
+            return new SelectRow(
+                    resultSet.getInt("value"),
+                    resultSet.getString("label")
+            );
+        }));
+        searchingFilters.setSkillNameList(jdbcTemplate.query(sqlSkillName, (resultSet, i) -> {
+            return new SelectRow(
+                    resultSet.getInt("value"),
+                    resultSet.getString("label")
+            );
+        }));
+
+        return searchingFilters;
     }
 
     @Override
-    public int addUserEdu(UUID id, UserEdu userEdu) throws SQLException{
+    public int addUserWork(Map workMap, UUID id) {
+
+        String workTimeEnd = null;
+        if (workMap.get("work_end_date") != null)
+            workTimeEnd = "'"+new Date((long)workMap.get("work_end_date"))+"'";
+
+        final String sql = "INSERT INTO users_work(id, user_uuid, work_type, work_name, work_time_start, work_time_end, work_place, work_desc, work_industry, work_profession)" +
+                " VALUES (uuid_generate_v4(), " +
+                "'" + id + "', "+
+                "'" + workMap.get("work_type") + "', "+
+                "'" + workMap.get("work_name") + "', "+
+                "'" + new Date((long)workMap.get("work_start_date")) + "', "+
+                "" + workTimeEnd + ", "+
+                "'" + workMap.get("work_place") + "', "+
+                "'" + workMap.get("work_description") + "', "+
+                "'" + workMap.get("work_industry") + "', " +
+                "'" + workMap.get("work_profession") + "'" +
+                ")";
+
+        try {
+            jdbcTemplate.execute(sql);
+        } catch (DataAccessException dataAccessException) {
+            System.err.println("addUserWork() error");
+            dataAccessException.printStackTrace();
+            return 1;
+        }
+
+        return 0;
+    }
+
+    @Override
+    public int addUserEdu(Map addMap, UUID id) {
+
+        String eduTimeEnd = null;
+        if (addMap.get("edu_time_end") != null)
+            eduTimeEnd = "'"+new Date((long)addMap.get("edu_time_end"))+"'";
 
         final String sql = "INSERT INTO users_edu(id, user_uuid, edu_type, edu_name, edu_time_start, edu_time_end, edu_place, edu_desc, edu_spec)" +
                 " VALUES (uuid_generate_v4(), " +
                 "'" + id + "', "+
-                "'" + userEdu.getEdu_type() + "', "+
-                "'" + userEdu.getEdu_name() + "', "+
-                "'" + userEdu.getEdu_time_start() + "', "+
-                "'" + userEdu.getEdu_time_end() + "', "+
-                "'" + userEdu.getEdu_place() + "', "+
-                "'" + userEdu.getEdu_desc() + "', "+
-                "'" + userEdu.getEdu_spec() + "'" +
+                "'" + addMap.get("edu_type") + "', "+
+                "'" + addMap.get("edu_name") + "', "+
+                "'" + new Date((long)addMap.get("edu_time_start")) + "', "+
+                "" + eduTimeEnd + ", "+
+                "'" + addMap.get("edu_place") + "', "+
+                "'" + addMap.get("edu_desc") + "', "+
+                "'" + addMap.get("edu_spec") + "'" +
                 ")";
-        jdbcTemplate.execute(sql);
-        return 1;
+        try {
+            jdbcTemplate.execute(sql);
+        } catch (DataAccessException dataAccessException) {
+            System.err.println("addUserEdu() error");
+            dataAccessException.printStackTrace();
+            return 1;
+        }
+
+        return 0;
     }
 
     @Override
-    public int addUserSkill(UUID id, UserSkill userSkill) throws SQLException{
+    public int addUserSkill(Map addMap, UUID id) {
 
         final String sql = "INSERT INTO users_skill(id, user_uuid, skill_type, skill_name, skill_time_months, skill_level)" +
                 " VALUES (uuid_generate_v4(), " +
                 "'" + id + "', "+
-                "'" + userSkill.getSkill_type() + "', "+
-                "'" + userSkill.getSkill_name() + "', "+
-                "'" + userSkill.getSkill_time_months() + "', "+
-                "'" + userSkill.getSkill_level() + "'" +
+                "'" + addMap.get("skill_type") + "', "+
+                "'" + addMap.get("skill_name") + "', "+
+                "'" + addMap.get("skill_time") + "', "+
+                "'" + addMap.get("skill_level") + "'" +
                 ")";
-        jdbcTemplate.execute(sql);
-        return 1;
+        try {
+            jdbcTemplate.execute(sql);
+        } catch (DataAccessException dataAccessException) {
+            System.err.println("addUserSkill() error");
+            dataAccessException.printStackTrace();
+            return 1;
+        }
+
+        return 0;
     }
 
     @Override
-    public int deleteUserWork(UUID userUUID, UUID propertyUUID) throws SQLException{
+    public UserProfileAll getUserProfileAll(UUID id) throws SQLException {
 
-        final String sqlFirst = "SELECT * FROM users_work WHERE user_uuid = '"+userUUID+"' AND id = '"+propertyUUID+"';";
+        return jdbcTemplate.queryForObject(
+                "SELECT * FROM user_info_all WHERE id = ?",
+                new Object[] {id},
+                (resultSet, i) -> { return new UserProfileAll(
+                        UUID.fromString(resultSet.getString("id")),
+                        resultSet.getString("first_name"),
+                        resultSet.getString("last_name"),
+                        resultSet.getString("email"),
+                        resultSet.getString("image"),
+                        resultSet.getString("phone"),
+                        resultSet.getString("address_main"),
+                        resultSet.getString("address_city"),
+                        resultSet.getString("address_zip"),
+                        resultSet.getString("address_country"),
+                        resultSet.getTimestamp("date_birth"),
+                        resultSet.getString("gender")
+                ); }
+        );
 
-        List<UserWork> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
-            return new UserWork(
-                    UUID.fromString(resultSet.getString("id")),
-                    UUID.fromString(resultSet.getString("user_uuid")),
-                    resultSet.getInt("work_industry"),
-                    resultSet.getInt("work_type"),
-                    resultSet.getString("work_name"),
-                    resultSet.getString("work_time_start"),
-                    resultSet.getString("work_time_end"),
-                    resultSet.getString("work_place"),
-                    resultSet.getString("work_desc"),
-                    resultSet.getString("work_location")
-            );
-        });
-        Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
+//        userProfileAll.setUserWorkList(jdbcTemplate.query(
+//                "SELECT * FROM users_work WHERE user_uuid = ?",
+//                new Object[] {id},
+//                (resultSet, i) -> { return new UserWork(
+//                        UUID.fromString(resultSet.getString("id")),
+//                        UUID.fromString(resultSet.getString("user_uuid")),
+//                        resultSet.getInt("work_industry"),
+//                        resultSet.getInt("work_type"),
+//                        resultSet.getString("work_name"),
+//                        resultSet.getString("work_time_start"),
+//                        resultSet.getString("work_time_end"),
+//                        resultSet.getString("work_place"),
+//                        resultSet.getString("work_desc"),
+//                        resultSet.getString("work_location")
+//                ); }
+//        ));
 
-        if (!listFind.isEmpty()) {
-            try {
-                conn.setAutoCommit(false);
-
-                DeleteMethods deleteMethods = new DeleteMethods();
-                conn.prepareStatement(deleteMethods.deleteUserPropertyFromTable("users_work", propertyUUID)).executeUpdate();
-                conn.commit();
-                return 0;
-
-            } catch (SQLException e) {
-                conn.rollback();
-                e.printStackTrace();
-                System.err.println("delete userwork error - sql");
-                return 1;
-            }
-        }
-        else {
-            System.err.println("delete userwork error - no record");
-            return 2;
-        }
+//        userProfileAll.setUserSkillList(jdbcTemplate.query(
+//                "SELECT * FROM users_skill WHERE user_uuid = ?",
+//                new Object[] {id},
+//                (resultSet, i) -> { return new UserSkill(
+//                        UUID.fromString(resultSet.getString("id")),
+//                        UUID.fromString(resultSet.getString("user_uuid")),
+//                        resultSet.getInt("skill_type"),
+//                        resultSet.getInt("skill_time_months"),
+//                        resultSet.getInt("skill_level"),
+//                        resultSet.getString("skill_name")
+//                ); }
+//        ));
     }
 
     @Override
-    public int deleteUserEdu(UUID userUUID, UUID propertyUUID) throws SQLException{
+    public List<UserEdu> getUserEdu(UUID id) {
 
-        final String sqlFirst = "SELECT * FROM users_edu WHERE user_uuid = '"+userUUID+"' AND id = '"+propertyUUID+"';";
-
-        List<UserEdu> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
-            return new UserEdu(
-                    UUID.fromString(resultSet.getString("id")),
-                    UUID.fromString(resultSet.getString("user_uuid")),
-                    resultSet.getInt("edu_spec"),
-                    resultSet.getInt("edu_type"),
-                    resultSet.getString("edu_name"),
-                    resultSet.getString("edu_time_start"),
-                    resultSet.getString("edu_time_end"),
-                    resultSet.getString("edu_place"),
-                    resultSet.getString("edu_desc")
-            );
-        });
-        Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
-
-        if (!listFind.isEmpty()) {
-            try {
-                conn.setAutoCommit(false);
-
-                DeleteMethods deleteMethods = new DeleteMethods();
-                conn.prepareStatement(deleteMethods.deleteUserPropertyFromTable("users_edu", propertyUUID)).executeUpdate();
-                conn.commit();
-                return 0;
-
-            } catch (SQLException e) {
-                conn.rollback();
-                e.printStackTrace();
-                System.err.println("delete useredu error - sql");
-                return 1;
-            }
-        }
-        else {
-            System.err.println("delete useredu error - no record");
-            return 2;
-        }
+        return jdbcTemplate.query(
+                "SELECT * FROM user_edu_profile WHERE user_uuid = ? ORDER BY edu_time_end DESC",
+                new Object[] {id},
+                (resultSet, i) -> { return new UserEdu(
+                        UUID.fromString(resultSet.getString("id")),
+                        UUID.fromString(resultSet.getString("user_uuid")),
+                        resultSet.getString("edu_spec"),
+                        resultSet.getString("edu_type"),
+                        resultSet.getString("edu_name"),
+                        resultSet.getString("edu_time_start"),
+                        resultSet.getString("edu_time_end"),
+                        resultSet.getString("edu_place"),
+                        resultSet.getString("edu_desc")
+                ); }
+        );
     }
 
     @Override
-    public int deleteUserSkill(UUID userUUID, UUID propertyUUID) throws SQLException{
+    public int updateUserProfile(Map profile, UUID id) throws SQLException {
 
-        final String sqlFirst = "SELECT * FROM users_skill WHERE user_uuid = '"+userUUID+"' AND id = '"+propertyUUID+"';";
+        try {
+            jdbcTemplate.update(
+                    "UPDATE users SET first_name = ?, last_name = ?, email = ? WHERE id = ?",
+                    profile.get("first_name"),
+                    profile.get("last_name"),
+                    profile.get("email"),
+                    id);
 
-        List<UserSkill> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
-            return new UserSkill(
-                    UUID.fromString(resultSet.getString("id")),
-                    UUID.fromString(resultSet.getString("user_uuid")),
-                    resultSet.getInt("skill_type"),
-                    resultSet.getInt("skill_time_months"),
-                    resultSet.getInt("skill_level"),
-                    resultSet.getString("skill_name")
-            );
-        });
-        System.out.println(listFind);
-        Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
-
-        if (!listFind.isEmpty()) {
-            try {
-                conn.setAutoCommit(false);
-
-                DeleteMethods deleteMethods = new DeleteMethods();
-                conn.prepareStatement(deleteMethods.deleteUserPropertyFromTable("users_skill", propertyUUID)).executeUpdate();
-                conn.commit();
-                return 0;
-
-            } catch (SQLException e) {
-                conn.rollback();
-                e.printStackTrace();
-                System.err.println("delete userskill error - sql");
-                return 1;
+            Date date;
+            if (profile.get("date_birth") == null) {
+                date = null;
+            } else {
+                date = new Date((long)profile.get("date_birth"));
             }
+
+            jdbcTemplate.update(
+                    "update users_bio SET phone = ?, address_main = ?, address_city = ?, address_zip = ?, address_country = ?, date_birth = ?, gender = ? WHERE user_uuid = ?",
+                    profile.get("phone"),
+                    profile.get("address_main"),
+                    profile.get("address_city"),
+                    profile.get("address_zip"),
+                    profile.get("address_country"),
+                    date,
+                    profile.get("gender"),
+                    id);
+
+        } catch(DataAccessException dataAccessException) {
+            dataAccessException.printStackTrace();
+            return 1;
         }
-        else {
-            System.err.println("delete userskill error - no record");
-            return 2;
-        }
+
+        return 0;
     }
 
     @Override
-    public int updateUserWork(UUID userUUID, UserWork userWork) throws SQLException {
+    public int updateImage(String imageUrl, String imageSmallUrl, UUID userId) {
 
-        final String sqlFirst = "SELECT * FROM users_work WHERE user_uuid = '"+userUUID+"' AND id = '"+userWork.getUserWorkId()+"';";
-
-        List<UserWork> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
-            return new UserWork(
-                    UUID.fromString(resultSet.getString("id")),
-                    UUID.fromString(resultSet.getString("user_uuid")),
-                    resultSet.getInt("work_industry"),
-                    resultSet.getInt("work_type"),
-                    resultSet.getString("work_name"),
-                    resultSet.getString("work_time_start"),
-                    resultSet.getString("work_time_end"),
-                    resultSet.getString("work_place"),
-                    resultSet.getString("work_desc"),
-                    resultSet.getString("work_location")
+        try {
+            jdbcTemplate.update(
+                    "UPDATE users SET image = ? WHERE id = ?",
+                    new Object[]{imageSmallUrl, userId}
             );
-        });
-        System.out.println(listFind);
-        Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
-
-        if (!listFind.isEmpty()) {
-            try {
-                conn.setAutoCommit(false);
-
-                final String sqlUpdate = "UPDATE users_work SET" +
-                        " work_industry = '" + userWork.getWork_industry() +
-                        "', work_type = '" + userWork.getWork_type() +
-                        "', work_name = '" + userWork.getWork_name() +
-                        "', work_time_start = '" + userWork.getWork_time_start() +
-                        "', work_time_end = '" + userWork.getWork_time_end() +
-                        "', work_place = '" + userWork.getWork_place() +
-                        "', work_desc = '" + userWork.getWork_desc() +
-                        "', work_location = '" + userWork.getWork_location() +
-                        "' WHERE id = '" + userWork.getUserWorkId() + "';";
-
-                conn.prepareStatement(sqlUpdate).executeUpdate();
-                conn.commit();
-                return 0;
-
-            } catch (SQLException e) {
-                conn.rollback();
-                e.printStackTrace();
-                System.err.println("update userwork error - sql");
-                return 1;
-            }
+            jdbcTemplate.update(
+                    "UPDATE users_bio SET image = ? WHERE user_uuid = ?",
+                    new Object[]{imageUrl, userId}
+            );
+        } catch(DataAccessException dataAccessException) {
+            return 1;
         }
-        else {
-            System.err.println("update userwork error - no record");
-            return 2;
-        }
+
+        return 0;
     }
 
     @Override
-    public int updateUserEdu(UUID userUUID, UserEdu userEdu) throws SQLException{
+    public List<UserSearching> getSearchingUsers(List<String> ids) {
 
-        final String sqlFirst = "SELECT * FROM users_edu WHERE user_uuid = '"+userUUID+"' AND id = '"+userEdu.getUserEduId()+"';";
+        String sql;
 
-        List<UserEdu> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
-            return new UserEdu(
-                    UUID.fromString(resultSet.getString("id")),
-                    UUID.fromString(resultSet.getString("user_uuid")),
-                    resultSet.getInt("edu_spec"),
-                    resultSet.getInt("edu_type"),
-                    resultSet.getString("edu_name"),
-                    resultSet.getString("edu_time_start"),
-                    resultSet.getString("edu_time_end"),
-                    resultSet.getString("edu_place"),
-                    resultSet.getString("edu_desc")
-            );
-        });
-        Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
+        if (ids.size() == 0) {
+            sql = "SELECT * FROM user_searching_profile";
+        } else {
+            sql = "SELECT * FROM user_searching_profile WHERE id IN (";
 
-        if (!listFind.isEmpty()) {
-            try {
-                conn.setAutoCommit(false);
+            Iterator<String> iterator = ids.iterator();
+            while (iterator.hasNext()) {
+                String id = iterator.next();
 
-                final String sqlUpdate = "UPDATE users_edu SET" +
-                        " edu_spec = '" + userEdu.getEdu_spec() +
-                        "', edu_type = '" + userEdu.getEdu_type() +
-                        "', edu_name = '" + userEdu.getEdu_name() +
-                        "', edu_time_start = '" + userEdu.getEdu_time_start() +
-                        "', edu_time_end = '" + userEdu.getEdu_time_end() +
-                        "', edu_place = '" + userEdu.getEdu_place() +
-                        "', edu_desc = '" + userEdu.getEdu_desc() +
-                        "' WHERE id = '" + userEdu.getUserEduId() + "';";
+                sql += "'"+id+"'";
 
-                conn.prepareStatement(sqlUpdate).executeUpdate();
-                conn.commit();
-                return 0;
-
-            } catch (SQLException e) {
-                conn.rollback();
-                e.printStackTrace();
-                System.err.println("update useredu error - sql");
-                return 1;
+                if (iterator.hasNext())
+                    sql += ", ";
+                else
+                    sql += ")";
             }
         }
-        else {
-            System.err.println("update useredu error - no record");
-            return 2;
+
+        return jdbcTemplate.query(
+                sql,
+                (resultSet, i) -> { return new UserSearching(
+                        UUID.fromString(resultSet.getString("id")),
+                        resultSet.getString("first_name"),
+                        resultSet.getString("last_name"),
+                        resultSet.getString("image"),
+                        resultSet.getString("address_city"),
+                        resultSet.getString("work_name"),
+                        resultSet.getString("work_profession")
+                );}
+        );
+    }
+
+    @Override
+    public UserSearchingAll getUserSearchingAll(UUID id) {
+
+        UserSearchingAll userSearchingAll = new UserSearchingAll();
+
+        User user = jdbcTemplate.queryForObject(
+                "SELECT * FROM users WHERE id = ?",
+                new Object[]{id},
+                (rs, rowNum) -> new User(
+                        UUID.fromString(rs.getString("id")),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getString("email")
+                )
+        );
+
+        UserBio userBio = jdbcTemplate.queryForObject(
+                "SELECT * FROM users_bio WHERE user_uuid = ?",
+                new Object[]{id},
+                (rs, rowNum) -> new UserBio(
+                        rs.getString("phone"),
+                        rs.getString("address_main"),
+                        rs.getString("address_city"),
+                        rs.getString("address_zip"),
+                        rs.getString("address_country"),
+                        rs.getString("date_birth"),
+                        rs.getString("gender"),
+                        rs.getString("image")
+                ));
+
+        List<UserEdu> userEduList = getUserEdu(id);
+
+        List<UserWork> userWorkList = getUserWorkByID(id);
+
+        List<UserSkill> userSkillList = getUserSkillByID(id);
+
+        userSearchingAll.setId(user.getId());
+        userSearchingAll.setFirstName(user.getFirstName());
+        userSearchingAll.setLastName(user.getLastName());
+        userSearchingAll.setEmail(user.getEmail());
+        userSearchingAll.setPhone(userBio.getPhone());
+        userSearchingAll.setAddress_main(userBio.getAddress_main());
+        userSearchingAll.setAddress_city(userBio.getAddress_city());
+        userSearchingAll.setAddress_zip(userBio.getAddress_zip());
+        userSearchingAll.setAddress_country(userBio.getAddress_country());
+        if (userBio.getDate_birth() == null)
+            userSearchingAll.setDate_birth("");
+        else
+            userSearchingAll.setDate_birth(userBio.getDate_birth());
+        userSearchingAll.setGender(userBio.getGender());
+        userSearchingAll.setImage(userBio.getImage());
+        userSearchingAll.setUserEduList(userEduList);
+        userSearchingAll.setUserWorkList(userWorkList);
+        userSearchingAll.setUserSkillList(userSkillList);
+
+        return userSearchingAll;
+    }
+
+    @Override
+    public int deleteUserWork(UUID id, UUID userId) {
+
+        try {
+            jdbcTemplate.update(
+                    "DELETE FROM users_work WHERE user_uuid = ? AND id = ?",
+                    userId, id);
+        } catch(DataAccessException dataAccessException) {
+            return 1;
         }
+
+        return 0;
+    }
+
+    @Override
+    public int deleteUserEdu(UUID id, UUID userId) {
+
+        try {
+            jdbcTemplate.update(
+                    "DELETE FROM users_edu WHERE user_uuid = ? AND id = ?",
+                    userId, id);
+        } catch(DataAccessException dataAccessException) {
+            return 1;
+        }
+
+        return 0;
+    }
+
+    @Override
+    public int deleteUserSkill(UUID id, UUID userId) {
+
+        try {
+            jdbcTemplate.update(
+                    "DELETE FROM users_skill WHERE user_uuid = ? AND id = ?",
+                    userId, id);
+        } catch(DataAccessException dataAccessException) {
+            return 1;
+        }
+
+        return 0;
     }
 
     @Override
     public int updateUserSkill(UUID userUUID, UserSkill userSkill) throws SQLException{
 
-        final String sqlFirst = "SELECT * FROM users_skill WHERE user_uuid = '"+userUUID+"' AND id = '"+userSkill.getUserSkillId()+"';";
+        final String sqlFirst = "SELECT * FROM users_skill WHERE user_uuid = '"+userUUID+"' AND id = '"+userSkill.getId()+"';";
 
         List<UserSkill> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
             return new UserSkill(
                     UUID.fromString(resultSet.getString("id")),
                     UUID.fromString(resultSet.getString("user_uuid")),
-                    resultSet.getInt("skill_type"),
+                    resultSet.getString("skill_type"),
                     resultSet.getInt("skill_time_months"),
-                    resultSet.getInt("skill_level"),
+                    resultSet.getString("skill_level"),
                     resultSet.getString("skill_name")
             );
         });
@@ -744,7 +808,7 @@ public class PostgresService implements UserDao, FixedDataDao {
                         "', skill_time_months = '" + userSkill.getSkill_time_months() +
                         "', skill_level = '" + userSkill.getSkill_level() +
                         "', skill_name = '" + userSkill.getSkill_name() +
-                        "' WHERE id = '" + userSkill.getUserSkillId() + "';";
+                        "' WHERE id = '" + userSkill.getId() + "';";
 
                 conn.prepareStatement(sqlUpdate).executeUpdate();
                 conn.commit();
@@ -774,6 +838,7 @@ public class PostgresService implements UserDao, FixedDataDao {
                     resultSet.getString("last_name"),
                     resultSet.getString("email"),
                     resultSet.getString("password"),
+                    resultSet.getString("image"),
                     resultSet.getString("role"),
                     resultSet.getBoolean("confirmed")
             );
@@ -902,4 +967,205 @@ public class PostgresService implements UserDao, FixedDataDao {
 
     }
 
+    @Override
+    public EduData getEduData() {
+
+        EduData eduData = new EduData();
+        final String sqlEduType = "SELECT * FROM edu_type_data";
+        final String sqlEduSpec = "SELECT * FROM edu_spec_data";
+
+        eduData.setEduType(jdbcTemplate.queryForList(sqlEduType));
+        eduData.setEduSpec(jdbcTemplate.queryForList(sqlEduSpec));
+
+        return eduData;
+    }
+
+    @Override
+    public WorkData getWorkData() {
+
+        WorkData workData = new WorkData();
+        final String sqlWorkIndustry = "SELECT * FROM work_industry_data";
+        final String sqlWorkType = "SELECT * FROM work_type_data;";
+        final String sqlWorkProfessions = "SELECT * FROM work_professions;";
+        final String sqlLocations = "SELECT * FROM locations;";
+
+        workData.setWorkIndustry(jdbcTemplate.queryForList(sqlWorkIndustry));
+        workData.setWorkType(jdbcTemplate.queryForList(sqlWorkType));
+        workData.setWorkProfessions(jdbcTemplate.queryForList(sqlWorkProfessions));
+        workData.setLocations(jdbcTemplate.queryForList(sqlLocations));
+
+        return workData;
+    }
+
+    @Override
+    public SkillData getSkillData() {
+
+        SkillData skillData = new SkillData();
+        final String sqlSkillType = "SELECT * FROM skill_type_data";
+
+        skillData.setSkillType(jdbcTemplate.queryForList(sqlSkillType));
+
+        return skillData;
+    }
+
+//    Chat
+    @Override
+    public int createChat(UUID chatId, List<ChatMember> members) throws SQLException {
+
+        try {
+            final String addChatSQL = "INSERT INTO Chats(id, chat_name) " +
+                    "VALUES (" +
+                    "uuid_generate_v4(), " +
+                    "'Konwersacja'" +
+                    ")";
+
+            final String newChatIdSQL = "SELECT id FROM chats ORDER BY CTID DESC LIMIT 1";
+
+            jdbcTemplate.execute(addChatSQL);
+            UUID newChatid = jdbcTemplate.queryForObject(newChatIdSQL, UUID.class);
+
+            System.out.println(newChatid);
+            for (ChatMember member : members) {
+                if (member != null) {
+                    addChatMember(newChatid, member.getMemberId());
+                }
+            }
+
+            return 1;
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+            System.err.println("Add chat to database error.");
+            return 0;
+        }
+    }
+
+    @Override
+    public int sendMessage(Message message) throws SQLException {
+
+        try {
+            final String sendMessageSQL = "INSERT INTO messages(chat_id, sender_id, message) " +
+                    "VALUES (" +
+                    "'" + message.getChatId() + "', " +
+                    "'" + message.getSenderId() + "', " +
+                    "'" + message.getMessage()+ "'" +
+                    ")";
+
+            jdbcTemplate.execute(sendMessageSQL);
+
+            return 1;
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+            System.err.println("Add message to database error.");
+            return 0;
+        }
+    }
+
+    @Override
+    public int addChatMember(UUID chatId, UUID memberID) throws SQLException {
+        final String sqlFirst = "SELECT * FROM chat_members WHERE chat_id = '" + chatId + "' AND member_id = '" + memberID + "'";
+
+        List<UUID> listFind = jdbcTemplate.query(sqlFirst, (resultSet, i) -> {
+            return UUID.fromString(resultSet.getString("id"));
+        });
+        if (listFind.isEmpty()) {
+            try {
+                final String addChatSQL = "INSERT INTO chat_members(chat_id, member_id) " +
+                        "VALUES (" +
+                        "'" + chatId + "', " +
+                        "'" + memberID + "'" +
+                        ")";
+
+
+                jdbcTemplate.execute(addChatSQL);
+                return 1;
+            } catch (DataAccessException e) {
+                e.printStackTrace();
+                System.err.println("Add chat member to database error.");
+                return 0;
+            }
+        } else
+            return 0;
+    }
+
+    @Override
+    public List<Message> getChatMessages(Chat chat) throws SQLException {
+        final String sql = "SELECT * FROM messages WHERE chat_id = '" + chat.getId() + "'";
+
+        return jdbcTemplate.query(sql, (resultSet, i) -> {
+            return new Message(
+                    resultSet.getInt("id"),
+                    UUID.fromString(resultSet.getString("chat_id")),
+                    UUID.fromString(resultSet.getString("sender_id")),
+                    resultSet.getString("message"),
+                    Timestamp.valueOf(resultSet.getString("send_date"))
+            );
+        });
+    }
+
+    @Override
+    public List<Message> getChatHeaders(UUID memberId) throws SQLException {
+        final String sql = "Select DISTINCT on (chat_id)" +
+                "id,chat_id, message, sender_id, send_date " +
+                "from messages where " +
+                "                                                                  chat_id in " +
+                "                                                                  (select chat_id from chat_members where member_id ='" +
+                memberId+
+                "') " +
+                "order by chat_id, send_date desc";
+
+        return jdbcTemplate.query(sql, (resultSet, i) -> {
+            return new Message(
+                    resultSet.getInt("id"),
+                    UUID.fromString(resultSet.getString("chat_id")),
+                    UUID.fromString(resultSet.getString("sender_id")),
+                    resultSet.getString("message"),
+                    Timestamp.valueOf(resultSet.getString("send_date"))
+            );
+        });
+    }
+
+    @Override
+    public List<ChatMember> getChatMembers(Chat chat) throws SQLException {
+
+        final String sql = "select member_id from chat_members where chat_id ='" +
+                chat.getId() +
+                "'";
+
+        return jdbcTemplate.query(sql, (resultSet, i) -> {
+            return new ChatMember(
+                    null ,
+                    null,
+                    UUID.fromString(resultSet.getString("member_id"))
+            );
+        });
+
+    }
+
+    @Override
+    public List<Map<String, Object>> getChats(UUID id) {
+        final String sql = "SELECT c.id, cm.member_id, u.first_name, u.last_name, u.image FROM chats c\n" +
+                "    INNER JOIN chat_members cm on c.id = cm.chat_id\n" +
+                "    INNER JOIN users u on u.id = cm.member_id\n" +
+                "WHERE c.id IN(\n" +
+                "        SELECT c.id FROM chats c\n" +
+                "            INNER JOIN chat_members cm on c.id = cm.chat_id\n" +
+                "        WHERE cm.member_id = ?\n" +
+                "    )\n" +
+                "AND cm.member_id != ?";
+
+        List<Map<String, Object>> chatsList = jdbcTemplate.queryForList(sql, id, id);
+
+        return chatsList;
+    }
+
+    @Override
+    public void deleteChat(UUID id) {
+        final String sql1 = "DELETE FROM messages WHERE chat_id = ?";
+        final String sql2 = "DELETE FROM chat_members WHERE chat_id = ?";
+        final String sql3 = "DELETE FROM chats WHERE id = ?";
+
+        jdbcTemplate.update(sql1, id);
+        jdbcTemplate.update(sql2, id);
+        jdbcTemplate.update(sql3, id);
+    }
 }

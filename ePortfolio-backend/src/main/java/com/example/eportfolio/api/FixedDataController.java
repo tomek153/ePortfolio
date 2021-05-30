@@ -2,10 +2,13 @@ package com.example.eportfolio.api;
 
 import com.auth0.jwt.interfaces.Claim;
 import com.example.eportfolio.model.Login;
+import com.example.eportfolio.model.SearchingFilters;
 import com.example.eportfolio.model.User;
+import com.example.eportfolio.model.UserSearchingAll;
 import com.example.eportfolio.service.FixedDataService;
 import com.example.eportfolio.service.UserService;
 import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
@@ -152,6 +155,32 @@ public class FixedDataController {
 
         PrintWriter out = response.getWriter();
         out.print(responseString);
+        out.flush();
+    }
+
+    @RequestMapping (value = "/api/fixed-data/searching/filters", method = GET)
+    public void getSearchingFilters (HttpServletResponse response, HttpServletRequest request) throws IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        String token = request.getHeader("Authorization");
+        int decStatus = Login.checkJWT(token);
+        PrintWriter out = response.getWriter();
+
+        if (decStatus == 0) {
+            SearchingFilters searchingFilters = fixedDataService.getSearchingFilters();
+            out.print(this.gson.toJson(searchingFilters));
+
+        } else if (decStatus == 1) {
+            response.sendError(400, "token_invalid");
+
+        } else if (decStatus == 2) {
+            out.print(this.gson.toJson(new JsonParser().parse("{\"error\": \"token_expired\"}")));
+
+        } else {
+            response.sendError(405, "unknown_error");
+        }
+
         out.flush();
     }
 

@@ -10,12 +10,12 @@ public class GetMethods {
 
     public Map getUserMainData(Map<String, Object> map, UserService userService, UUID id) {
 
-        Optional<User> user = userService.getUserByID(id);
-        if (user.isPresent()) {
+        User user = userService.getUserByID(id);
+        if (user != null) {
             Map<String, Object> userMainData = new HashMap<>();
 
-            userMainData.put("firstName", user.get().getFirstName());
-            userMainData.put("lastName", user.get().getLastName());
+            userMainData.put("firstName", user.getFirstName());
+            userMainData.put("lastName", user.getLastName());
 
             map.put("user", userMainData);
         }
@@ -58,36 +58,12 @@ public class GetMethods {
                 userWorkData.put("work_time_end", userWork.get(i).getWork_time_end());
                 userWorkData.put("work_place", userWork.get(i).getWork_place());
                 userWorkData.put("work_desc", userWork.get(i).getWork_desc());
-                userWorkData.put("work_location", userWork.get(i).getWork_location());
 
                 userWorkArray[i] = userWorkData;
             }
             map.put("userWork", userWorkArray);
         }
 
-        return map;
-    }
-
-    public Map getUserEduData(Map<String, Object> map, UserService userService, UUID id) {
-
-        List<UserEdu> userEdu = userService.getUserEduByID(id);
-        if (!userEdu.isEmpty()) {
-            Map<String, Object>[] userEduArray = new HashMap[userEdu.size()];
-            for (int i = 0; i < userEdu.size(); i++) {
-                Map<String, Object> userEduData = new HashMap<>();
-
-                userEduData.put("edu_spec", userEdu.get(i).getEdu_spec());
-                userEduData.put("edu_type", userEdu.get(i).getEdu_type());
-                userEduData.put("edu_name", userEdu.get(i).getEdu_name());
-                userEduData.put("edu_time_start", userEdu.get(i).getEdu_time_start());
-                userEduData.put("edu_time_end", userEdu.get(i).getEdu_time_end());
-                userEduData.put("edu_place", userEdu.get(i).getEdu_place());
-                userEduData.put("edu_desc", userEdu.get(i).getEdu_desc());
-
-                userEduArray[i] = userEduData;
-            }
-            map.put("userEdu", userEduArray);
-        }
         return map;
     }
 

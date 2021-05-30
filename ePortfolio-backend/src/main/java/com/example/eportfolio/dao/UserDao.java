@@ -4,6 +4,7 @@ import com.example.eportfolio.model.*;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -11,12 +12,8 @@ import java.util.UUID;
 public interface UserDao {
 
     // ADD USER METHODS -START-
-    int addUser(UUID id, User user) throws SQLException;
+    int addUser(User user) throws SQLException;
 
-    default int addUser(User user) throws SQLException {
-        UUID id = UUID.randomUUID();
-        return addUser(id, user);
-    }
     // ADD USER METHODS -END-
 
     // GET USER METHODS -START-
@@ -24,13 +21,11 @@ public interface UserDao {
 
     boolean checkUserExistByEmail(String email);
 
-    Optional<User> getUserByID(UUID id);
+    User getUserByID(UUID id);
 
     Optional<UserBio> getUserBioByID(UUID id);
 
     List<UserWork> getUserWorkByID(UUID id);
-
-    List<UserEdu> getUserEduByID(UUID id);
 
     List<UserSkill> getUserSkillByID(UUID id);
 
@@ -44,21 +39,17 @@ public interface UserDao {
 
     int editUserSetting(UUID userUUID, UserSetting userSetting) throws SQLException;
 
-    int updateUserWork(UUID userUUID, UserWork userWork) throws SQLException;
-
-    int updateUserEdu(UUID userUUID, UserEdu userEdu) throws SQLException;
-
     int updateUserSkill(UUID userUUID, UserSkill userSkill) throws SQLException;
     // EDIT USER METHODS -END-
 
     // DELETE USER METHODS -START-
     int deleteUser(UUID id) throws SQLException;
 
-    int deleteUserWork(UUID userID, UUID propertyID) throws SQLException;
+    int deleteUserWork(UUID id, UUID userId);
 
-    int deleteUserEdu(UUID userID, UUID propertyID) throws SQLException;
+    int deleteUserEdu(UUID id, UUID userId);
 
-    int deleteUserSkill(UUID userID, UUID propertyID) throws SQLException;
+    int deleteUserSkill(UUID id, UUID userId);
     // DELETE USER METHODS -END-
 
     // CHANGE PASSWORD METHODS -START-
@@ -69,10 +60,21 @@ public interface UserDao {
 
 
     // ADD USER PROPERTIES -START-
-    int addUserWork(UUID id, UserWork userWork) throws SQLException;
+    int addUserWork(Map workMap, UUID id);
 
-    int addUserEdu(UUID id, UserEdu userEdu) throws SQLException;
+    int addUserEdu(Map addMap, UUID id);
 
-    int addUserSkill(UUID id, UserSkill userSkill) throws SQLException;
+    int addUserSkill(Map addMap, UUID id);
     // ADD USER PROPERTIES -END-
+
+    UserProfileAll getUserProfileAll(UUID id) throws SQLException;
+    List<UserEdu> getUserEdu(UUID id);
+
+    int updateUserProfile(Map profile, UUID id) throws SQLException;
+
+    int updateImage(String imageUrl, String imageSmallUrl, UUID userId) throws SQLException;
+
+    List<UserSearching> getSearchingUsers(List<String> ids);
+
+    UserSearchingAll getUserSearchingAll(UUID id);
 }

@@ -1,0 +1,22 @@
+version: "3"
+services:
+  backend:
+    build: ./ePortfolio-backend/
+    network_mode: host
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20000k"
+        max-file: "1"
+
+  frontend:
+    build: ./ePortfolio-frontend/
+    network_mode: host
+    depends_on:
+      - backend
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20000k"
+        max-file: "1"

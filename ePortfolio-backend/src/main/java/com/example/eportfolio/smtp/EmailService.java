@@ -60,6 +60,7 @@ public class EmailService {
                                 resultSet.getString("last_name"),
                                 resultSet.getString("email"),
                                 resultSet.getString("password"),
+                                resultSet.getString("image"),
                                 resultSet.getString("role"),
                                 resultSet.getBoolean("confirmed")
                         );
@@ -212,6 +213,7 @@ public class EmailService {
                                 resultSet.getString("last_name"),
                                 resultSet.getString("email"),
                                 resultSet.getString("password"),
+                                resultSet.getString("image"),
                                 resultSet.getString("role"),
                                 resultSet.getBoolean("confirmed")
                         );

@@ -18,7 +18,7 @@ import java.util.UUID;
 @Service
 public class Login {
     private static final String KEY = "{%-<Oz#@,EHb0V%qQ#.)g;}B5ONr{L";
-    private final int EXPIRATION_TIME_MINUTES = 30000;
+    private final int EXPIRATION_TIME_MINUTES = 1440;
 
     @Autowired
     private final JdbcTemplate jdbcTemplate;
@@ -40,7 +40,7 @@ public class Login {
                         resultSet.getString("first_name"),
                         resultSet.getString("last_name"),
                         resultSet.getString("email"),
-                        resultSet.getString("password"),
+                        resultSet.getString("image"),
                         resultSet.getString("role"),
                         resultSet.getBoolean("confirmed")
                 );

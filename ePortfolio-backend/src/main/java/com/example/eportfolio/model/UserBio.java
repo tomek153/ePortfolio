@@ -1,13 +1,17 @@
 package com.example.eportfolio.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.UUID;
 
+@Getter
+@Setter
 public class UserBio {
 
-    private final UUID id;
-    private final UUID userID;
+    private UUID id;
+    private UUID userID;
     private final String phone;
     private final String address_main;
     private final String address_city;
@@ -15,6 +19,7 @@ public class UserBio {
     private final String address_country;
     private final String date_birth;
     private final String gender;
+    private String image;
 
     public UserBio(@JsonProperty("id") UUID id,
                    @JsonProperty("userID") UUID userID,
@@ -24,7 +29,28 @@ public class UserBio {
                    @JsonProperty("zip") String address_zip,
                    @JsonProperty("country") String address_country,
                    @JsonProperty("dateBirth") String date_birth,
-                   @JsonProperty("gender") String gender) {
+                   @JsonProperty("gender") String gender,
+                   @JsonProperty("image") String image) {
+        this.id = id;
+        this.userID = userID;
+        this.phone = phone;
+        this.address_main = address_main;
+        this.address_city = address_city;
+        this.address_zip = address_zip;
+        this.address_country = address_country;
+        this.date_birth = date_birth;
+        this.gender = gender;
+        this.image = image;
+    }
+    public UserBio(UUID id,
+                   UUID userID,
+                   String phone,
+                   String address_main,
+                   String address_city,
+                   String address_zip,
+                   String address_country,
+                   String date_birth,
+                   String gender) {
         this.id = id;
         this.userID = userID;
         this.phone = phone;
@@ -36,38 +62,21 @@ public class UserBio {
         this.gender = gender;
     }
 
-    public UUID getUserBioId() {
-        return id;
-    }
-
-    public UUID getUserId() {
-        return userID;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public String getAddress_main() {
-        return address_main;
-    }
-
-    public String getAddress_city() {
-        return address_city;
-    }
-
-    public String getAddress_zip() {
-        return address_zip;
-    }
-
-    public String getAddress_country() {
-        return address_country;
-    }
-
-    public String getDate_birth() {
-        return date_birth;
-    }
-    public String getGender() {
-        return gender;
+    public UserBio(String phone,
+                   String address_main,
+                   String address_city,
+                   String address_zip,
+                   String address_country,
+                   String date_birth,
+                   String gender,
+                   String image) {
+        this.phone = phone;
+        this.address_main = address_main;
+        this.address_city = address_city;
+        this.address_zip = address_zip;
+        this.address_country = address_country;
+        this.date_birth = date_birth;
+        this.gender = gender;
+        this.image = image;
     }
 }

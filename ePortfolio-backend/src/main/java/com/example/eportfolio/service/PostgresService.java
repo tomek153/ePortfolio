@@ -14,6 +14,7 @@ import org.springframework.mail.MailAuthenticationException;
 import org.springframework.mail.MailException;
 import org.springframework.stereotype.Repository;
 
+import javax.xml.crypto.Data;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -1011,52 +1012,48 @@ public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao, 
     @Override
     public int createChat(UUID chatId, List<ChatMember> members) throws SQLException {
 
-    Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
-    conn.setAutoCommit(false);
-    try {
-        final String addChatSQL = "INSERT INTO Chats(id, chat_name) " +
-                "VALUES (" +
-                "'" + chatId + "', " +
-                "'Konwersacja'" +
-                ")";
+        try {
+            final String addChatSQL = "INSERT INTO Chats(id, chat_name) " +
+                    "VALUES (" +
+                    "uuid_generate_v4(), " +
+                    "'Konwersacja'" +
+                    ")";
 
+            final String newChatIdSQL = "SELECT id FROM chats ORDER BY CTID DESC LIMIT 1";
 
-        conn.prepareStatement(addChatSQL).executeUpdate();
-        conn.commit();
-        for (ChatMember member : members) {
-            if (member != null) {
-                addChatMember(chatId, member.getMemberId());
+            jdbcTemplate.execute(addChatSQL);
+            UUID newChatid = jdbcTemplate.queryForObject(newChatIdSQL, UUID.class);
+
+            System.out.println(newChatid);
+            for (ChatMember member : members) {
+                if (member != null) {
+                    addChatMember(newChatid, member.getMemberId());
+                }
             }
-        }
 
-        return 1;
-    } catch (SQLException e) {
-        conn.rollback();
-        e.printStackTrace();
-        System.err.println("Add chat to database error.");
-        return 0;
+            return 1;
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+            System.err.println("Add chat to database error.");
+            return 0;
+        }
     }
-}
 
     @Override
     public int sendMessage(Message message) throws SQLException {
 
-        Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
-        conn.setAutoCommit(false);
         try {
-            final String addChatSQL = "INSERT INTO messages(chat_id, sender_id, message) " +
+            final String sendMessageSQL = "INSERT INTO messages(chat_id, sender_id, message) " +
                     "VALUES (" +
                     "'" + message.getChatId() + "', " +
                     "'" + message.getSenderId() + "', " +
                     "'" + message.getMessage()+ "'" +
                     ")";
 
-            System.err.println(addChatSQL);
-            conn.prepareStatement(addChatSQL).executeUpdate();
-            conn.commit();
+            jdbcTemplate.execute(sendMessageSQL);
+
             return 1;
-        } catch (SQLException e) {
-            conn.rollback();
+        } catch (DataAccessException e) {
             e.printStackTrace();
             System.err.println("Add message to database error.");
             return 0;
@@ -1071,8 +1068,6 @@ public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao, 
             return UUID.fromString(resultSet.getString("id"));
         });
         if (listFind.isEmpty()) {
-            Connection conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource());
-            conn.setAutoCommit(false);
             try {
                 final String addChatSQL = "INSERT INTO chat_members(chat_id, member_id) " +
                         "VALUES (" +
@@ -1081,11 +1076,9 @@ public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao, 
                         ")";
 
 
-                conn.prepareStatement(addChatSQL).executeUpdate();
-                conn.commit();
+                jdbcTemplate.execute(addChatSQL);
                 return 1;
-            } catch (SQLException e) {
-                conn.rollback();
+            } catch (DataAccessException e) {
                 e.printStackTrace();
                 System.err.println("Add chat member to database error.");
                 return 0;

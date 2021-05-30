@@ -303,7 +303,7 @@ class UserProfile extends Component {
                                     </Row>
                                     <Row>
                                         <Col className="search-profile-section-text center">
-                                            {this.state.user.userSkillList.length !== 0
+                                            {this.state.user.userEduList.length !== 0
                                                 ? <>
                                                     {this.state.user.userEduList.map((edu, index) => edu.edu_type === "KURS/SZKOLENIE").includes(true)
                                                         ? this.state.user.userEduList.map((edu, index) => <UserCourseRow data={edu} key={index}/>)

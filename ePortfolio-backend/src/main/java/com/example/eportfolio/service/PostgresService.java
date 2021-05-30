@@ -435,13 +435,17 @@ public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao, 
     @Override
     public int addUserWork(Map workMap, UUID id) {
 
+        String workTimeEnd = null;
+        if (workMap.get("work_end_date") != null)
+            workTimeEnd = "'"+new Date((long)workMap.get("work_end_date"))+"'";
+
         final String sql = "INSERT INTO users_work(id, user_uuid, work_type, work_name, work_time_start, work_time_end, work_place, work_desc, work_industry, work_profession)" +
                 " VALUES (uuid_generate_v4(), " +
                 "'" + id + "', "+
                 "'" + workMap.get("work_type") + "', "+
                 "'" + workMap.get("work_name") + "', "+
                 "'" + new Date((long)workMap.get("work_start_date")) + "', "+
-                "'" + new Date((long)workMap.get("work_end_date")) + "', "+
+                "" + workTimeEnd + ", "+
                 "'" + workMap.get("work_place") + "', "+
                 "'" + workMap.get("work_description") + "', "+
                 "'" + workMap.get("work_industry") + "', " +
@@ -462,13 +466,17 @@ public class PostgresService implements UserDao, FixedDataDao, EduDao, WorkDao, 
     @Override
     public int addUserEdu(Map addMap, UUID id) {
 
+        String eduTimeEnd = null;
+        if (addMap.get("edu_time_end") != null)
+            eduTimeEnd = "'"+new Date((long)addMap.get("edu_time_end"))+"'";
+
         final String sql = "INSERT INTO users_edu(id, user_uuid, edu_type, edu_name, edu_time_start, edu_time_end, edu_place, edu_desc, edu_spec)" +
                 " VALUES (uuid_generate_v4(), " +
                 "'" + id + "', "+
                 "'" + addMap.get("edu_type") + "', "+
                 "'" + addMap.get("edu_name") + "', "+
                 "'" + new Date((long)addMap.get("edu_time_start")) + "', "+
-                "'" + new Date((long)addMap.get("edu_time_end")) + "', "+
+                "" + eduTimeEnd + ", "+
                 "'" + addMap.get("edu_place") + "', "+
                 "'" + addMap.get("edu_desc") + "', "+
                 "'" + addMap.get("edu_spec") + "'" +

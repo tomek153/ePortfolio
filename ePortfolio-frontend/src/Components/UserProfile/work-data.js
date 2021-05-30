@@ -15,6 +15,8 @@ import Select from 'react-select';
 import ModalHeaderError from "../Modals/error-header";
 import MenuList from "../Other/custom-select-fast";
 import pl from 'date-fns/locale/pl';
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
 registerLocale('pl', pl);
 
 class WorkData extends Component {
@@ -223,19 +225,61 @@ class WorkData extends Component {
     }
     changeStartDate (date) {
 
+        var work_time_end = this.state.form_end_date;
+
         this.setState({form_start_date: date});
         this.state.form_start_date = date;
-        this.setState({status_start_date: true});
-        this.state.status_start_date = true;
+        if (date != null ) {
+            this.setState({status_start_date: true});
+            this.state.status_start_date = true;
+        } else {
+            this.setState({status_start_date: false});
+            this.state.status_start_date = false;
+        }
+
+        if (work_time_end == null) {
+            this.setState({status_end_date: true});
+            this.state.status_end_date = true;
+        } else {
+            if (date != null ) {
+                const time_start = Date.parse(date);
+                const time_end = Date.parse(work_time_end);
+
+                if (time_start > time_end) {
+                    this.setState({status_end_date: false});
+                    this.state.status_end_date = false;
+                } else {
+                    this.setState({status_end_date: true});
+                    this.state.status_end_date = true;
+                }
+            }
+        }
 
         this.checkStatuses();
     }
     changeEndDate (date) {
 
+        var work_time_start = this.state.form_start_date;
+
         this.setState({form_end_date: date});
         this.state.form_end_date = date;
-        this.setState({status_end_date: true});
-        this.state.status_end_date = true;
+
+        if (date == null) {
+            this.setState({status_end_date: true});
+            this.state.status_end_date = true;
+        } else {
+            if (work_time_start != null ) {
+                const time_start = Date.parse(work_time_start);
+                const time_end = Date.parse(date);
+                if (time_start > time_end) {
+                    this.setState({status_end_date: false});
+                    this.state.status_end_date = false;
+                } else {
+                    this.setState({status_end_date: true});
+                    this.state.status_end_date = true;
+                }
+            }
+        }
 
         this.checkStatuses();
     }
@@ -365,6 +409,12 @@ class WorkData extends Component {
 
     render() {
 
+        const renderTooltip = (props) => (
+            <Tooltip id="button-tooltip" {...props}>
+                Jeżeli doświadczenie nadal trwa, zostaw poniższe pole puste.
+            </Tooltip>
+        );
+
         return (
             <>
                 <Container>
@@ -432,7 +482,16 @@ class WorkData extends Component {
 
                                                 <Col xs={2}>
                                                     <Form.Group>
-                                                        <Form.Label>Data ukończena<span className="text-error">*</span></Form.Label>
+                                                        <Form.Label>Data ukończena<span className="text-error">*</span>
+                                                            <OverlayTrigger
+                                                                placement="top"
+                                                                overlay={renderTooltip}
+                                                            >
+                                                                {({ ref, ...triggerHandler }) => (
+                                                                    <>&nbsp;&nbsp;<i {...triggerHandler} ref={ref} className="far fa-question-circle my-tooltip"/></>
+                                                                )}
+                                                            </OverlayTrigger>
+                                                        </Form.Label>
                                                         <DatePicker id="workEndDate" className="form-control profile-fields" autoComplete="off" selected={this.state.form_end_date} onChange={this.changeEndDate.bind(this)} locale="pl"/>
                                                     </Form.Group>
                                                 </Col>

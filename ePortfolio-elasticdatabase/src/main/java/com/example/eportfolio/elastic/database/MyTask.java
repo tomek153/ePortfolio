@@ -30,7 +30,7 @@ public class MyTask extends TimerTask {
         long start = System.currentTimeMillis();
         String url = "jdbc:postgresql://localhost:5432/eportfolio_db";
         String user = "eportfolio_user";
-        String password = "mysecretpassword";
+        String password = "Test123!";
         Connection connection = null;
 
         Statement stmtUSER, stmtPUBLIC, stmtBIO, stmtWORK, stmtEDU, stmtSKILL, stmtWORK_INDUSTRY, stmtEDU_SPEC;

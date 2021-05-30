@@ -457,3 +457,6 @@ textarea.form-control:focus {
 .breadcrumb-all {
     margin-bottom: 50px;
 }
+.my-tooltip:hover {
+    cursor: pointer;
+}

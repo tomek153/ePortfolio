@@ -14,6 +14,8 @@ import DatePicker, {registerLocale} from "react-datepicker";
 import Select from 'react-select';
 import ModalHeaderError from "../Modals/error-header";
 import pl from 'date-fns/locale/pl';
+import Tooltip from "react-bootstrap/Tooltip";
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 registerLocale('pl', pl);
 
 class EducationData extends Component {
@@ -48,7 +50,7 @@ class EducationData extends Component {
         }
     }
 
-    closeModal() {
+    closeModal = () => {
         this.setState({modal_add_err: false});
     }
     componentDidMount() {
@@ -187,19 +189,61 @@ class EducationData extends Component {
     }
     changeStartDate (date) {
 
+        var edu_time_end = this.state.form_end_date;
+
         this.setState({form_start_date: date});
         this.state.form_start_date = date;
-        this.setState({status_start_date: true});
-        this.state.status_start_date = true;
+        if (date != null ) {
+            this.setState({status_start_date: true});
+            this.state.status_start_date = true;
+        } else {
+            this.setState({status_start_date: false});
+            this.state.status_start_date = false;
+        }
+
+        if (edu_time_end == null) {
+            this.setState({status_end_date: true});
+            this.state.status_end_date = true;
+        } else {
+            if (date != null ) {
+                const time_start = Date.parse(date);
+                const time_end = Date.parse(edu_time_end);
+
+                if (time_start > time_end) {
+                    this.setState({status_end_date: false});
+                    this.state.status_end_date = false;
+                } else {
+                    this.setState({status_end_date: true});
+                    this.state.status_end_date = true;
+                }
+            }
+        }
 
         this.checkStatuses();
     }
     changeEndDate (date) {
 
+        var edu_time_start = this.state.form_start_date;
+
         this.setState({form_end_date: date});
         this.state.form_end_date = date;
-        this.setState({status_end_date: true});
-        this.state.status_end_date = true;
+
+        if (date == null) {
+            this.setState({status_end_date: true});
+            this.state.status_end_date = true;
+        } else {
+            if (edu_time_start != null ) {
+                const time_start = Date.parse(edu_time_start);
+                const time_end = Date.parse(date);
+                if (time_start > time_end) {
+                    this.setState({status_end_date: false});
+                    this.state.status_end_date = false;
+                } else {
+                    this.setState({status_end_date: true});
+                    this.state.status_end_date = true;
+                }
+            }
+        }
 
         this.checkStatuses();
     }
@@ -290,7 +334,7 @@ class EducationData extends Component {
                         window.location.href = '/logowanie';
                     } else {
                         this.setState({edu_add_btn_load: false});
-                        this.setState({modal_del_err: true});
+                        this.setState({modal_add_err: true});
                         this.hideForm();
                     }
                 });
@@ -319,6 +363,13 @@ class EducationData extends Component {
     }
 
     render() {
+
+        const renderTooltip = (props) => (
+            <Tooltip id="button-tooltip" {...props}>
+                Jeżeli edukacja nadal trwa, zostaw poniższe pole puste.
+            </Tooltip>
+        );
+
         return (
             <>
                 <Container>
@@ -367,7 +418,16 @@ class EducationData extends Component {
 
                                                 <Col xs={5}>
                                                     <Form.Group>
-                                                        <Form.Label>Data ukończena<span className="text-error">*</span></Form.Label>
+                                                        <Form.Label>Data ukończena<span className="text-error">*</span>
+                                                            <OverlayTrigger
+                                                                placement="right"
+                                                                overlay={renderTooltip}
+                                                            >
+                                                                {({ ref, ...triggerHandler }) => (
+                                                                    <>&nbsp;&nbsp;<i {...triggerHandler} ref={ref} className="far fa-question-circle my-tooltip"/></>
+                                                                )}
+                                                            </OverlayTrigger>
+                                                        </Form.Label>
                                                         <DatePicker id="eduEndDate" className="form-control profile-fields" autoComplete="off" selected={this.state.form_end_date} onChange={this.changeEndDate.bind(this)} locale="pl"/>
                                                     </Form.Group>
                                                 </Col>

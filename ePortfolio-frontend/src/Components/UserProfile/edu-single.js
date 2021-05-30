@@ -112,7 +112,10 @@ class EducationSingle extends Component {
                                         Czas zakończenia:
                                     </Form.Label>
                                     <Col sm="9">
-                                        <p style={data_text}>{this.props.data.edu_time_end}</p>
+                                        {this.props.data.edu_time_end
+                                            ? <p style={data_text}>{this.props.data.edu_time_end}</p>
+                                            : <p style={data_text}>obecnie</p>
+                                        }
                                     </Col>
                                 </Form.Group>
                                 <Form.Group style={row_group} as={Row}>

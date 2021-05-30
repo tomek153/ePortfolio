@@ -9,7 +9,10 @@ class UserEduRow extends Component {
                 {this.props.data.edu_type === "UCZELNIA WYŻSZA" || this.props.data.edu_type === "SZKOŁA"
                     ? <Row style={{marginBottom: "10px"}}>
                         <Col xs={3} className="search-profile-row-dates">
-                            {this.props.data.edu_time_start.replaceAll("-", ".")} - {this.props.data.edu_time_end.replaceAll("-", ".")}
+                            {this.props.data.edu_time_end
+                                ? <>{this.props.data.edu_time_start.replaceAll("-", ".")} - {this.props.data.edu_time_end.replaceAll("-", ".")}</>
+                                : <>{this.props.data.edu_time_start.replaceAll("-", ".")} - obecnie</>
+                            }
                         </Col>
                         <Col>
                             <FormLabel className="search-profile-row-main">

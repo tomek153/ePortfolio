@@ -20,6 +20,9 @@ class HomeContent extends Component {
     constructor() {
         super();
         this.state = {
+            searchInput: "",
+            _searchButtonDisabled: true,
+
             form: {
                 name: "",
                 email: "",
@@ -205,6 +208,24 @@ class HomeContent extends Component {
 
         this.setState({scrollbarWidth: scrollbarWidth});
     }
+    redirectToSearch() {
+        window.location.href = "/wyszukiwarka/search?query="+this.state.searchInput;
+    }
+    changeSearchInput(event) {
+        var value = event.target.value;
+        var regex = /[^a-zA-Z0-9żźćńółęąśŻŹĆĄŚĘŁÓŃ,./ -]/;
+
+        this.state.searchInput = value;
+
+        if (value.match(regex) == null &&
+            value.length >= 2 &&
+            value.length <= 200 &&
+            this.props.activePage !== "searching") {
+            this.setState({_searchButtonDisabled: false});
+        } else {
+            this.setState({_searchButtonDisabled: true});
+        }
+    }
 
     render() {
 
@@ -217,9 +238,10 @@ class HomeContent extends Component {
                             placeholder="Wprowadź szukane informacje..."
                             aria-label="Wprowadź szukane informacje..."
                             aria-describedby="basic-addon2"
+                            onChange={this.changeSearchInput.bind(this)}
                         />
                         <InputGroup.Append>
-                            <Button variant="outline-secondary">Szukaj</Button>
+                            <Button id="home-search-button" variant="outline-secondary" disabled={this.state._searchButtonDisabled} onClick={this.redirectToSearch.bind(this)}>Szukaj</Button>
                         </InputGroup.Append>
                     </InputGroup>
                     </div>

@@ -23,6 +23,7 @@ class UserProfile extends Component {
 
     componentDidMount() {
         if (Object.entries(this.props.userInfoContent).length !== 0) {
+            console.log(this.props);
             this._isMounted = true;
             var token = localStorage.getItem("token");
 

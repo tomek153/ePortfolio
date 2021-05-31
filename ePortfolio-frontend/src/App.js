@@ -24,7 +24,8 @@ function App() {
         if (window.location.href.toString().includes("/logowanie") ||
             window.location.href.toString().includes("/moj-profil") ||
             window.location.href.toString().includes("/wyszukiwarka") ||
-            window.location.href.toString().includes("/wiadomosci")
+            window.location.href.toString().includes("/wiadomosci") ||
+            window.location.href.toString().includes("/profil")
         ) {
 
             checkIsAuth();

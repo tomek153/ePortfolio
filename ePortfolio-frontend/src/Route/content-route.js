@@ -25,7 +25,7 @@ const ContentRoute = (props) => (
             <Route path="/wyszukiwarka" component={Searching} />
             <Route exact path="/wiadomosci" render={(props_redirect) => <Chat userInfoContent={props} {...props_redirect}/>}/>
             <Route exact path="/aktywacja-konta/:idKey/:registerKey" component={ConfirmationLinkSuccess} />
-            <Route exact path="/wyszukiwarka/profil/:id" render={(props_redirect) => <UserProfile userInfoContent={props} {...props_redirect}/>} />
+            <Route exact path="/profil/:id" render={(props_redirect) => <UserProfile userInfoContent={props} {...props_redirect}/>} />
             <Route exact path="/reset-hasla/:idKey/:registerKey" component={ResetPassword} />
             <Route path='*' component={NotFoundContent}/>
         </Switch>

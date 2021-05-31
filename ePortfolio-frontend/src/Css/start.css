@@ -460,3 +460,9 @@ textarea.form-control:focus {
 .my-tooltip:hover {
     cursor: pointer;
 }
+#home-search-button:disabled {
+    background-color: #efefef;
+    color: initial;
+    border: initial;
+    cursor: default;
+}

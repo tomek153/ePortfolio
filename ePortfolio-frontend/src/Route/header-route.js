@@ -13,7 +13,7 @@ const HeaderRoute = (props) => (
         <Switch>
             <Route exact path="/" component={HomeHeader} />
             <Route exact path="/moj-profil" render={() => <AuthHeader activePage="profile" userInfo={props}/>}/>
-            <Route exact path="/wyszukiwarka" render={() => <AuthHeader activePage="searching" userInfo={props}/>}/>
+            <Route path="/wyszukiwarka" render={() => <AuthHeader activePage="searching" userInfo={props}/>}/>
             <Route exact path="/wiadomosci" render={() => <AuthHeader activePage="chat" userInfo={props}/>}/>
             <Route path="/wyszukiwarka/profil/:id" render={() => <AuthHeader userInfo={props}/>}/>
             <Route path="/logowanie" component={HomeHeader}/>

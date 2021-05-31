@@ -72,6 +72,17 @@ class Searching extends Component {
             this.state.searchingDataAll = filtersList;
 
             this.setState({_dataLoaded: true});
+
+            const search = this.props.location.search.substring(7);
+            if (search) {
+                this.state.searchInput = search;
+                this.setState({searchInput: search});
+                this.searchingToggle();
+                document.getElementById("searching-search-toogle").classList.add("show");
+                document.getElementById("searchFilter_input").value = search;
+
+                await this.searchUsers();
+            }
         }
     }
     componentWillUnmount() {
@@ -846,7 +857,7 @@ class Searching extends Component {
                                                 : <i className="fas fa-angle-down filter-carret"/>
                                             }
                                         </Card.Header>
-                                        <Accordion.Collapse eventKey="1">
+                                        <Accordion.Collapse eventKey="1" id="searching-search-toogle">
                                             <Card.Body>
                                                 <br/>
                                                 <Row>

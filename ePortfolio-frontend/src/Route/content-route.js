@@ -22,7 +22,7 @@ const ContentRoute = (props) => (
             <Route exact path="/rejestracja" component={RegisterContent} />
             <Route exact path="/regulamin" component={RegulationsContent} />
             <Route exact path="/moj-profil" component={AuthProfile} />
-            <Route exact path="/wyszukiwarka" component={Searching} />
+            <Route path="/wyszukiwarka" component={Searching} />
             <Route exact path="/wiadomosci" render={(props_redirect) => <Chat userInfoContent={props} {...props_redirect}/>}/>
             <Route exact path="/aktywacja-konta/:idKey/:registerKey" component={ConfirmationLinkSuccess} />
             <Route exact path="/wyszukiwarka/profil/:id" render={(props_redirect) => <UserProfile userInfoContent={props} {...props_redirect}/>} />

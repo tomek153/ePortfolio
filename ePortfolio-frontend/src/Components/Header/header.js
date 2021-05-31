@@ -17,6 +17,9 @@ class AuthHeader extends Component {
     constructor() {
         super();
         this.state = {
+            searchInput: "",
+
+            _searchButtonDisabled: true,
             _redirectToMessages: false
         }
     }
@@ -33,6 +36,24 @@ class AuthHeader extends Component {
     componentDidMount() {}
     redirectToMessage() {
         this.setState({_redirectToMessages: true});
+    }
+    redirectToSearch() {
+        window.location.href = "/wyszukiwarka/search?query="+this.state.searchInput;
+    }
+    changeSearchInput(event) {
+        var value = event.target.value;
+        var regex = /[^a-zA-Z0-9żźćńółęąśŻŹĆĄŚĘŁÓŃ,./ -]/;
+
+        this.state.searchInput = value;
+
+        if (value.match(regex) == null &&
+            value.length >= 2 &&
+            value.length <= 200 &&
+            this.props.activePage !== "searching") {
+            this.setState({_searchButtonDisabled: false});
+        } else {
+            this.setState({_searchButtonDisabled: true});
+        }
     }
 
     render() {
@@ -52,8 +73,8 @@ class AuthHeader extends Component {
                                 }
                             </Nav>
                             <Form inline>
-                                <FormControl type="text" placeholder="Wpisz frazę..." className="mr-sm-2"/>
-                                <Button variant="outline-light">Szukaj</Button>
+                                <FormControl type="text" placeholder="Wpisz frazę..." className="mr-sm-2" onChange={this.changeSearchInput.bind(this)}/>
+                                <Button variant="outline-light" disabled={this.state._searchButtonDisabled} onClick={this.redirectToSearch.bind(this)}>Szukaj</Button>
                             </Form>
                             <DropdownButton className="header-itmes" menuAlign="right"
                                             id="dropdown-menu-align-right"

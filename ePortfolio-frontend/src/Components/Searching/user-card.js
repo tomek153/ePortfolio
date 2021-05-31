@@ -7,7 +7,7 @@ class UserCard extends Component {
         // console.log(this.props.data);
     }
     openUserProfile() {
-        window.location.href = "/wyszukiwarka/profil/"+this.props.data.id;
+        window.location.href = "/profil/"+this.props.data.id;
     }
 
     render() {

@@ -33,7 +33,9 @@ class AuthHeader extends Component {
             Wyloguj
         </Tooltip>
     );
-    componentDidMount() {}
+    componentDidMount() {
+        console.log(this.props);
+    }
     redirectToMessage() {
         this.setState({_redirectToMessages: true});
     }
